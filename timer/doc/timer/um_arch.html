@@ -1,0 +1,52 @@
+<html>
+   <style> pre.small {line-height: 0.5; font-weight:bold; }</style>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Архитектура</title>
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+      <h2>Архитектура</h2>
+
+      <h3 style="color: #0000CC">Интерфейс</h3>
+      <pre class="small">    ________________________</pre>
+      <pre class="small">   |                        |</pre>
+      <pre class="small">---| tmr_clk                |</pre>
+      <pre class="small">---| tmr_reset_n            |</pre>
+      <pre class="small">---| clk                    |</pre>
+      <pre class="small">---| reset_n                |</pre>
+      <pre class="small">---| wr                dout |---</pre>
+      <pre class="small">---| addr               irq |---</pre>
+      <pre class="small">---| din                    |</pre>
+      <pre class="small">---| cpt_in        cmp_oe_n |---</pre>
+      <pre class="small">---| reset_n        cmp_out |---</pre>
+      <pre class="small">   |________________________|</pre>
+
+
+      <table summary="axi_globals" cellpadding="4" width="90%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Количество</th>
+               <th>Тип</th>
+               <th>Назначение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>tmr_clk</td>     <td>NTIMERS</td> <td>I</td> <td>Синхросигнал таймеров. Все триггеры в схеме тактируются нарастающим фронтом синхросигнала.</td> </tr>
+            <tr> <td>tmr_reset_n</td> <td>NTIMERS</td> <td>I</td> <td>Асинхронный сброс таймеров. Активный уровень - 0. Должен быть синхронизован с соответствующим <b>tmr_clk</b>.</td> </tr>
+            <tr> <td>clk</td>         <td>1</td> <td>I</td> <td>Синхросигнал системной шины. Все триеггеры в схеме тактируются нарастащим фронтом <b>clk</b>.</td> </tr>
+            <tr> <td>reset_n</td>     <td>1</td> <td>I</td> <td>Асинхронный сброс управляющих регистров. Активный уровень 0. Должен быть синхронизован с соответствующим <b>clk</b>.</td> </td> </tr>
+            <tr> <td>wr</td>          <td>1</td> <td>I</td> <td>Строб записи в регистры контроллера.</td> </tr>
+            <tr> <td>addr</td>        <td>7</td> <td>I</td> <td>Шина байтового адреса. В 32-битном режиме (<b>BUS_WIDTH</b>=32) младшие 2 разряда не используются.</td> </tr>
+            <tr> <td>din</td>         <td>BUS_WIDTH</td> <td>I</td> <td>Вход системной шины данных.</td> </tr>
+            <tr> <td>dout</td>        <td>BUS_WIDTH</td> <td>O</td> <td>Выход системной шины данных.</td> </tr>
+            <tr> <td>irq</td>         <td>1</td> <td>O</td> <td>Прерывание. Активный уровень 1. Устанавливается (если разрешено) при регистрации события. Сбрасывается при устранении причины регистрации. Синхронен <b>clk</b>.</td> </tr>
+            <tr> <td>cpt_in</td>      <td>2*NTIMERS</td> <td>I</td> <td>Входы захвата. <!--Если таймер не сконфигурирован для поддержки захвата (параметр <B>CCP_ENA</b>), то соответствующие входы не используются в контроллере.--> Синхронизируются к частоте соответствующего таймера <b>tmr_clk</b>, если установлен соответствующий бит параметра <b>CPT_SYNC</b>.</td> </tr>
+            <tr> <td>cmp_oe_n</td>    <td>NTIMERS</td>   <td>O</td> <td>Управление направлением передачи данных в КП. Равны 0 (активны), когда таймер сконфигурирован в режим Сравнения или ШИМ. Может использоваться для объединения на одной КП сигналов <b>cmp_out</b> и <b>cpt_in</b>. Синхронны частоте <b>clk</b>.</td> </tr>
+            <tr> <td>cmp_out</td>     <td>3*NTIMERS</td> <td>O</td> <td>Выходы сравнения / ШИМ. <!--Если таймер не сконфигурирован для поддержки сравнения (параметр <B>CCP_ENA</b>), то соответствующие выходы равен 0. Выводы синхронны частоте таймера.--> Синхронны частоте соответствующего таймера <b>tmr_clk</b>.</td> </tr>
+         </tbody>
+      </table>
+
+   </body>
+</html>

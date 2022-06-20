@@ -1,0 +1,75 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Монитор шины</title>
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+      <h2>Монитор шины</h2>
+
+      <p>
+	     МШ может быть включен независимо от КШ/ОУ с помощью <b>Config.BME</b> и позволяет записывать принятые с шины данные с метками времени в кольцевой буфер.
+		 Для работы в режиме МШ следует также запрограммировать регистры <b>BM_ADDR_INIT</b>, <b>BM_ADDR_LAST</b> и <b>BM_ADDR_IRQ</b>.
+	  </p>
+
+      <p>Каждая запись, сделанная МШ в память, состоит из 2 слов: метки времени и данных. Записи имеют следующий формат:</p>
+      <table summary="Fields for Register: desc_cfg" cellpadding="1" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>63</td>
+               <td>DVAL</td>
+               <td>Признак валидности слова. МШ записывает 1 при записи слова.</td>
+            </tr>
+            <tr bgcolor="#E0E0E0">
+               <td>62:51</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+            </tr>
+            <tr>
+               <td>50</td>
+               <td>BUS</td>
+               <td>Шина: 0 - A, 1 - B.</td>
+            </tr>
+            <tr>
+               <td>49</td>
+               <td>WST</td>
+               <td><b>Word Status</b>. 0 - OK, 1 - ошибка протокола (четность, кодировка Манчестер, длина слова).</td>
+            </tr>
+            <tr>
+               <td>48</td>
+               <td>WTP</td>
+               <td><b>Word Type</b>. Тип слова:<li>0 - данные;</li><li>1 - команда / статус.</li></td>
+            </tr>
+            <tr>
+               <td>47:32</td>
+               <td>WD</td>
+               <td><b>Word Data</b>. Содержимое слова данных.</td>
+            </tr>
+
+            <tr>
+               <td>31</td>
+               <td>VAL</td>
+               <td>Признак валидности метки времени. МШ записывает 1 при заполнении памяти.</td>
+            </tr>
+            <tr bgcolor="#E0E0E0">
+               <td>30:24</td>
+               <td>-</td>
+               <td><b>Резерв</b>.</td>
+            </tr>
+            <tr>
+               <td>23:0</td>
+               <td>TS</td>
+               <td><b>Time Stamp</b>. Метка времени.</td>
+            </tr>
+         </tbody>
+      </table>
+
+   </body>
+</html>

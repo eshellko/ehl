@@ -1,0 +1,82 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Введение</title>
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+      <table summary="Reference" cellpadding="4" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col></colgroup>
+         <tbody>
+            <tr> <td bgcolor="#C0C0C0">Версия</td>      <td>1.0</td> </tr>
+            <tr> <td bgcolor="#C0C0C0">Дата</td>        <td>2021.12.08</td> </tr>
+            <tr> <td bgcolor="#C0C0C0">Разработчик</td> <td>А.В. Корнюхин (kornukhin@mail.ru)</td> </tr>
+         </tbody>
+      </table>
+      <h2>Введение</h2>
+
+      <p>
+         В данном документе приводятся технические характеристики, функционал и инструкции по применению блока <b>ehl_timer</b>, имеющего следующие основные характеристики:
+      </p>
+	  <ul>
+      <li>Конфигурируемое количество независимых таймеров (1-4);</li>
+      <li>Конфигурируемая разрядность таймера (8, 16, 24, 32<!--, 64, 80--> бит).<!-- Поддержка 80-битного счетчика с программируемым инкрементом для совместимости с IEEE 1588-->;</li>
+      <li>Конфигурируемая ширина шины управления (8, 32 бит);</li>
+      <li>Конфигурируемый ШИМ (до 3 каналов) для каждого таймера;</li>
+      <li>Конфигурируемый режим сравнения (3 канала) для каждого таймера (2 регистра сравнения);</li>
+      <li>Конфигурируемый режим захвата для каждого таймера (программный выбор одного из 2 внешних каналов захвата);</li>
+
+      <li>Таймер в режиме однократного и циклического счета с возможностью остановки;</li>
+      <li>Программное управление направлением счета (вверх, вниз<!--, вверх/вниз-->).</li>
+      <li>Программируемый коэффициент деления частоты таймера: 1 - 256.</li>
+
+<!--       <li>Синхронный или асинхронный режим работы таймера и шины;</li> -->
+
+<!--       <li>Режим счетчика с программно включаемым входным фильтром;</li> -->
+<!--       <li>Программное управление типом прерывания - 1 тактный импульс или 1 до сброса;</li> -->
+<!--
+      <li>free run counter to be run without ability to be programmed or reset;</li>
+-->
+<!--       <li>Поддержка целостности данных при чтении широких счетчиков за счет буферизации читаемого значения;</li> -->
+<!--
+      <li>count from/to bound, from/to 0, from/to MAX;</li>
+      <li>up to 4 input channels;</li>
+-->
+	  </ul>
+
+      <h2 class="title">История изменений</h2>
+      <p></p>
+      <table summary="Registers for Address Block: ehl_ddr" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Версия</th>
+               <th>Дата</th>
+               <th>Разработчик</th>
+               <th>Описание</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>1.0</td>
+               <td>2021.12.08</td>
+               <td>Корнюхин А.В.</td>
+               <td>Первая публикация документа</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <h2 class="title">Условные обозначения и сокращения</h2>
+      <table summary="abbreviations" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0"> <th>Сокращение</th> <th>Расшифровка</th> </tr>
+         </thead>
+         <tbody>
+            <tr> <td>0x</td>   <td>префикс шестнадцатеричных значений (например, 0xA7F5)</td> </tr>
+            <tr> <td>0b</td>   <td>префикс двоичных значений (например, 0b0101)</td> </tr>
+            <tr> <td>ШИМ</td>  <td>Широтно Импульсная Модуляция</td> </tr>
+         </tbody>
+      </table>
+
+   </body>
+</html>

@@ -1,0 +1,79 @@
+<html>
+   <style> pre.small {line-height: 0.5; font-weight:bold; color: #0000FF; }</style>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+   <title>Eshell Hardware Library (EHL) User Guide</title>
+   <h2 class="title">Eshell Hardware Library (EHL) User Guide</h2>
+   <hr>
+
+   <h3>Введение</h3>
+   <p>
+      В данном документе представлено описание основных положений, связанных с применением репозитория и средств унификации разработки.
+      Положения, приведенные здесь, по большей части применимы и к использованию при проектировании цифровых СнК, для которых применяются схожие механизмы работы.
+      Назначение репозитория - ведение разработки и хранение СФ-блоков, используемых при проектировании СнК.
+   </p>
+   <p>Структура репозитория выбрана таким образом, чтобы максимально соответствовать правилу "3 шагов": "доступ к любому файлу в проекте должен, по возможности, осуществляться не более, чем за 3 перехода между каталогами".</p>
+
+   <pre class="small">   IP_NAME_1            - СФ-блок 1, например, Mil-Std 1553</pre>
+   <pre class="small">     |- data            - каталог для хранения результатов работы САПР, входных сторонних библиотек (в структурно неизменном виде)...</pre>
+   <pre class="small">     |- doc             - документация на СФ-блок</pre>
+   <pre class="small">     |- reports         - каталог для хранения отчетов САПР</pre>
+   <pre class="small">     |- scripts         - скрипты САПР (перечень унифицирован и содержится в корневом makefile.inc)</pre>
+   <pre class="small">     |- src             - исходники, относящиеся к СФ-блоку</pre>
+   <pre class="small">        |- fv           - тестовые окружения, модели для функциональной верификации, тестовые паттерны, верификационные компоненты...</pre>
+   <pre class="small">        |- rtl          - RTL код СФ-блока</pre>
+   <pre class="small">        |- sdc          - ограничения для физической имплементации СФ-блока</pre>
+   <pre class="small">   IP_NAME_2            - СФ-блок 2, например, Interrupt Controller</pre>
+   <pre class="small">   IP_NAME_3            - СФ-блок 3, например, Ethernet MAC</pre>
+   <pre class="small">   Makefile             - скрипт с перечнем задача для выполнения общих действий над проектом</pre>
+   <pre class="small">   makefile.inc         - скрипт запуска САПР</pre>
+   <pre class="small">   env.sh               - скрипт с настройками САПР</pre>
+
+   <h3>Состав репозитория</h3>
+   <table cellpadding="4" width="90%" border="1" cellspacing="0" rules="all">
+      <colgroup><col><col></colgroup>
+      <thead>
+         <tr bgcolor="#C0C0C0">
+            <th>IP</th>
+            <th>Описание</th>
+         </tr>
+      </thead>
+      <tbody>
+      <tr> <td>1553</td>      <td>
+                                 <li><a href="1553/doc/ehl_m1553.html" target="Frame_data" class="olink">MIL-STD-1553B<a></li>
+                              </td> </tr>
+      <tr> <td>AMBA</td>      <td>
+                                 <li><a href="amba/doc/ehl_ahb_arbiter.html" target="Frame_data" class="olink">AHB Arbiter</a></li>
+                              </td> </tr>
+      <tr> <td>CDC</td>       <td>
+                                 <li><a href="cdc/doc/ehl_fifo.html" target="_blank" class="olink">FIFO</a></li>
+                              </td> </tr>
+      <tr> <td>FEC</td>       <td>
+                                  <li><a href="fec/doc/ehl_ecc.html" target="Frame_data" class="olink">Код Хэмминга</a></li>
+                                  <li><a href="fec/doc/ehl_crc.html" target="Frame_data" class="olink">CRC</a></li>
+                                  <li><a href="fec/doc/ehl_rs_enc.html" target="Frame_data" class="olink">Reed-Solomon Encoder</a></li>
+                                  <li><a href="fec/doc/ehl_rs_dec.html" target="Frame_data" class="olink">Reed-Solomon Decoder</a></li>
+                              </td> </tr>
+      <tr> <td>GPIO</td>      <td>
+                                 <li><a href="gpio/doc/ehl_gpio.html" target="_blank" class="olink">Контроллер асинхронного параллельного порта</a></li>
+                              </td> </tr>
+      <tr> <td>JTAG</td>      <td>
+                                 <li><a href="jtag/doc/ehl_tap.html" target="Frame_data" class="olink">TAP Controller</a></li>
+                              </td> </tr>
+      <tr> <td>LOGIC</td>     <td>
+                                 <li><a href="logic/doc/ehl_data_buffer.html" target="Frame_data" class="olink">Data Buffer</a></li>
+                                 <li><a href="logic/doc/ehl_arbiter.html" target="Frame_data" class="olink">Арбитр</a></li>
+                              </td> </tr>
+      <tr> <td>LSSI</td>      <td>
+                                 <li><a href="lssi/doc/ehl_lssi.html" target="Frame_data" class="olink">Low Speed Serial Interface - UART + SPI</a></li>
+                              </td> </tr>
+      <tr> <td>MEMORY</td>    <td>
+                                 <li><a href="memory/doc/mscrub.html" target="Frame_data" class="olink">Memory Scrubber</a></li>
+                              </td> </tr>
+      <tr> <td>TIMER</td>     <td>
+                                 <li><a href="timer/doc/timer/ehl_timer.html" target="Frame_data" class="olink">Универсальный таймер: ШИМ, захват, сравнение, интервальный счет, межсобытийный счет<a/></li>
+                                 <li><a href="timer/doc/rtc/ehl_rtc.html" target="Frame_data" class="olink">Часы реального времени</a></li>
+                              </td> </tr>
+      </tbody>
+   </table>
+   </body>
+</html>

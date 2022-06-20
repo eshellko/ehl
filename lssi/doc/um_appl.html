@@ -1,0 +1,128 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Применение</title>
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+      <h2>Применение</h2>
+
+      <h3>Пример 1</h3>
+      <p>spi_apb_ref - проект, демонстрирующий возможности <b>ehl_lssi</b> с интерфейсом APB при программировании SPI EEPROM памяти AT45DB011B от компании Atmel. Схема подключения Slave устройства представлена далее. В примере демонстрируется запись 1 страницы энергонезависимой памяти через буфер ОЗУ.</p>
+      <img src="um_ref_des.png" height="60%"></a>
+
+      <h3>Пример 2</h3>
+      <p>Видео ip_spi.flv демонстрирует еще один пример использования <b>ehl_lssi</b>.</p>
+
+      <h3>Пример 3</h3>
+      <p>В примере uart2usb UART используется в качестве передатчика данных от ПЛИС к терминалу, установленному на персональном компьютере.</p>
+      <p>Последовательность действий для запуска примера:</p>
+      <p>1. Выполнить make ip=uart xst для синтеза в ПЛИС, генерации файла прошивки и программирования ПЛИС.</p>
+      <p>2. Подключить через разъем USB плату ML605 к порту ПК.</p>
+      <p>3. Открыть программу TeraTerm (или аналог). Выбрать последовательный порт для работы.</p>
+      <img src="um_appl_1.png">
+      <p>4. Задать настройки, соответствующие выбранному режиму работы UART.</p>
+      <img src="um_appl_2.png">
+      <p>5. В терминале циклически будет отображаться последовательность (0?9 a?z).</p>
+      <img src="um_appl_3.png">
+      <p>6. На светодиодных индикаторах ML605 будет отображаться активность интерфейса UART.</p>
+
+<!--
+      <h3>Функциональная верификация</h3>
+      <p>Верификация <b>ehl_lssi</b> проводится с помощью тестового модуля <b>ehl_lssi_tb</b>. В процессе теста проверяются следующие проверки:</p>
+      <p>- выходы <b>ehl_lssi</b> принимают корректные начальные значения после сброса;</p>
+      <p>- корректно происходит запись/чтение регистра <b>SSR</b> в различных режимах;</p>
+      <p>- запись и передача одиночного значения буфера, чтение одиночного значения в режимах Master и Slave;</p>
+      <p>- запись и передача полного буфера, чтение полного буфера в режимах Master и Slave;</p>
+      <p>- приостановка передачи в режиме Master;</p>
+      <p>- переполнение при записи/чтении буфера;</p>
+      <p>- отсутствие приема данных при неактивном значении <b>ss0_cts_i</b> в режиме Slave;</p>
+      <p>В процессе верификации проверяется корректность следующих утверждений:</p>
+      <p>- запрещено переключение режима Master/Slave при сброшенном <b>ss0_cts_i</b>;</p>
+      <p>- запрещено изменение значений бит <b>SPCR.PHA</b>, <b>SPCR.POL</b>, <b>SPCR.TBO</b>, <b>SPCR.Mode</b> в процессе трансфера;</p>
+      <p>- запрещено изменение значений бит <b>SPCR.PHA</b>, <b>SPCR.POL</b>, <b>SPCR.TBO</b> при активном значении <b>ss0_cts_i</b>;</p>
+
+      <p><b>ehl_lssi_tb</b> показывает следующие результаты по покрытию кода.</p>
+
+      <table summary="fv" cellpadding="4" width="70%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Тип покрытия</th>
+               <th colspan="2">Кол-во проверок</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>Block</td> <td>312/312 (100%)</td> <td>312/312 (100%)</td> </tr>
+            <tr> <td>Expression</td> <td>592/592 (100%)</td> <td>592/592 (100%)</td> </tr>
+            <tr> <td>Toggle</td> <td>1402/1436 (98%)</td> <td>1702/1736 (98%)</td> </tr>
+            <tr bgcolor="#C0C0C0"> <td>DATA_WIDTH</td> <td>32</td> <td>32</td> </tr>
+            <tr bgcolor="#C0C0C0"> <td>TX_FIFO_DEPTH</td> <td>16</td> <td>512</td> </tr>
+            <tr bgcolor="#C0C0C0"> <td>RX_FIFO_DEPTH</td> <td>64</td> <td>2048</td> </tr>
+            <tr bgcolor="#C0C0C0"> <td>SYNC_STAGE</td> <td>2</td> <td>2</td> </tr>
+         </tbody>
+      </table>
+
+      <h3>Семейства ПЛИС</h3>
+      <p>Для использования <b>ehl_lssi</b> в ПЛИС требуется задать ограничения в <b>ehl_lssi.sdc</b> в соответствии с требованиями пользователя. Далее представлены результаты синтеза <b>ehl_lssi</b> в различных семействах ПЛИС.</p>
+      <table summary="fpga" cellpadding="4" width="70%" border="1" cellspacing="0" rules="all">
+         <colgroup><<col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th></th>
+               <th></th>
+               <th></th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td><b>Stratix II - EP2S60F672C5ES</b></td> <td colspan="2">Quartus II (10.0)</td> </tr>
+            <tr> <td>ALUTs</td> <td>592</td> <td>14319</td> </tr>
+            <tr> <td>Registers</td> <td>1192</td> <td>32997</td> </tr>
+            <tr> <td>Макс. частота pclk, МГц</td> <td>121</td> <td>91</td> </tr>
+            <tr> <td>Макс. частота sclk, МГц</td> <td>103</td> <td>85</td> </tr>
+
+            <tr> <td><b>Virtex 5 - XC5VLX30-3FF324</b></td> <td colspan="2">Ise 12.3</td> </tr>
+            <tr> <td>Slice LUTs</td> <td>251</td> <td>1209</td> </tr>
+            <tr> <td>Slice Registers</td> <td>200</td> <td>260</td> </tr>
+            <tr> <td>Макс. частота pclk, МГц</td> <td>450</td> <td>391</td> </tr>
+            <tr> <td>Макс. частота sclk, МГц</td> <td>360</td> <td>356</td> </tr>
+
+            <tr bgcolor="#C0C0C0"> <td>DATA_WIDTH</td> <td>32</td> <td>32</td> </tr>
+            <tr bgcolor="#C0C0C0"> <td>TX_FIFO_DEPTH</td> <td>16</td> <td>512</td> </tr>
+            <tr bgcolor="#C0C0C0"> <td>RX_FIFO_DEPTH</td> <td>64</td> <td>2048</td> </tr>
+            <tr bgcolor="#C0C0C0"> <td>SYNC_STAGE</td> <td>2</td> <td>2</td> </tr>
+         </tbody>
+      </table>
+
+      <h3>СБИС и СнК</h3>
+      <p>Для оценки используемых ресурсов <b>ehl_lssi</b> был синтезирован на библиотеке Artisan 90 нм в худших условиях с реализацией памяти на триггерах.</p>
+      <table summary="asic" cellpadding="4" width="70%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th></th>
+               <th></th>
+               <th></th>
+               <th></th>
+               <th></th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>Триггеры</td> <td>427</td> <td>693</td> <td>1223</td> <td>33027</td> </tr>
+            <tr> <td>Логические вентили</td> <td>492</td> <td>679</td> <td>1168</td> <td>33673</td> </tr>
+            <tr> <td>Площадь, мкм*мкм</td> <td>23427</td> <td>33676</td> <td>57544</td> <td>1587160</td> </tr>
+            <tr> <td>Число эквивалентных вентилей (NAND2)</td> <td>4244</td> <td>6100</td> <td>10424</td> <td>287528</td> </tr>
+            <tr> <td>Тактовая частота pclk, МГц</td> <td>155</td> <td>79</td> <td>58</td> <td>9</td> </tr>
+            <tr> <td>Тактовая частота rclk, МГц</td> <td>155</td> <td>78</td> <td>57</td> <td>9</td> </tr>
+            <tr bgcolor="#C0C0C0"> <td>DATA_WIDTH</td> <td>8</td> <td>16</td> <td>32</td> <td>32</td> </tr>
+            <tr bgcolor="#C0C0C0"> <td>TX_FIFO_DEPTH</td> <td>16</td> <td>16</td> <td>16</td> <td>512</td> </tr>
+            <tr bgcolor="#C0C0C0"> <td>RX_FIFO_DEPTH</td> <td>16</td> <td>32</td> <td>64</td> <td>2048</td> </tr>
+            <tr bgcolor="#C0C0C0"> <td>SYNC_STAGE</td> <td>2</td> <td>2</td> <td>2</td> <td>2</td> </tr>
+         </tbody>
+      </table>
+      <p>Для обеспечения корректного синтеза <b>ehl_lssi</b> необходимо задать ограничения в <b>ehl_lssi.sdc</b> согласно применению блока. Передача данных между частотами <b>SCLK</b> и <b>PCLK</b> проводится через схемы синхронизации и защиты от метастабильности и может быть задана в SDC файле в виде false_path / set_clock_groups.</p>
+      <p>Схема синхронна и соответствует требованиям DFT. Процент тестового покрытия дефектов типа Stuck-at составляет не менее 99% для указанных в таблице 10 модификаций.</p>
+      <p>Временные ограничения на каждую частоту задаются в зависимости от применения схемы. Переход между тактовыми частотами внутри схемы может быть ограничен параметром максимальной задержки. Исправление setup/hold между доменами не требуется, т.к. реализована схема защиты от метастабильности.</p>
+      <p>Входные и выходные задержки должны выбираться исходя из применения схемы. Рекомендуется использовать значение не менее 40% от периода синхросигнала.</p>
+-->
+   </body>
+</html>

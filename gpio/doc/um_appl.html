@@ -1,0 +1,135 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Применение</title>
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+      <div class="article">
+         <div class="titlepage">
+            <h2 class="title">Применение</h2>
+         </div>
+      </div>
+      <h3>Общие сведения о применении</h3>
+      <p><b>gpio_ref</b> - пример, демонстрирующий возможности <b>gpio</b> в качестве модуля управления 7-сегментным индикатором TDSR516 от компании TELEFUNKEN Semiconductors. Схема подключения gpio к TDSR516 представлена ниже. В примере демонстрируется последовательное выведение на индикатор значения от 5 до 15 в 16-ричном виде.
+      <p><img src="um_appl.png"></p>
+      
+      <p>В примере <b>button2led</b> <b>GPIO</b> используется в качестве контроллера выводов ПЛИС. С одной стороны к нему подключены счетчик и Push-Button кнопки, с другой LED индикаторы.</p>
+      <p>Последовательность действий для запуска примера:</p>
+      <p>1. Выполнить 'make ip=gpio xst' для синтеза в ПЛИС, генерации файла прошивки и программирования ПЛИС.</p>
+      <p>2. К светодиодам подключены 3 разряда счетчика, инкрементирующегося с частотой примерно 1 Гц. Push-Button также подключены к светодиодам и напрямую отражают нажатие на них.</p>
+      <p><img src="um_ml605.png"></p>
+      <p><img src="um_ml605_btn.png"></p>
+
+      <h3>Семейства ПЛИС</h3>
+      <p>Для использования <b>gpio</b> в ПЛИС требуется задать значение тактовой частоты <b>clk</b> и входные/выходные задержки для выводов блока исходя из характеристик ПЛИС и требований к системе. Следует задать параметры в соответствии с требованиями пользователя. Далее представлены результаты синтеза <b>gpio</b> в различных семействах ПЛИС.</p>
+
+      <table summary="fpga" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col></colgroup>
+         <tbody>
+            <tr bgcolor="#C0C0C0"> <td><b>Stratix II - EP2S60F672C5ES</b></td> <td colspan="2"><b>Quartus II (11.0)</b></td> </tr>
+            <tr> <td>ALUTs</td> <td>94</td> <td>1544</td> </tr>
+            <tr> <td>Registers</td> <td>97</td> <td>499</td> </tr>
+            <tr> <td>F(clk)max, MHz</td> <td>67</td> <td>58</td> </tr>
+            <tr bgcolor="#C0C0C0"> <td><b>Virtex 5 - XC5VLX30-3FF676</b></td> <td colspan="2"><b>Ise 12.3</b></td> </tr>
+            <tr> <td>Slice LUTs</td> <td>113</td> <td>1682</td> </tr>
+            <tr> <td>Slice registers</td> <td>89</td> <td>353</td> </tr>
+            <tr> <td>F(clk)max, MHz</td> <td>437</td> <td>380</td> </tr>
+            <tr> <td></td> <td></td> <td></td> </tr>
+            <tr> <td>WIDTH</td> <td>8</td> <td>32</td> </tr>
+            <tr> <td>IFG_POLARITY</td> <td>1</td> <td>0</td> </tr>
+            <tr> <td>META_ENA</td> <td>0x55</td> <td>0xFFFF0000</td> </tr>
+            <tr> <td>SET*ENA</td> <td>0</td> <td>1</td> </tr>
+            <tr> <td>CLR*ENA</td> <td>0</td> <td>1</td> </tr>
+            <tr> <td>INV*ENA</td> <td>0</td> <td>1</td> </tr>
+            <tr> <td>READ*ENA</td> <td>1</td> <td>1</td> </tr>
+            <tr> <td>WRITE*ENA</td> <td>1</td> <td>1</td> </tr>
+            <tr> <td>*INIT</td> <td>0</td> <td>0</td> </tr>
+            <tr> <td>REGISTERED_OUTPUT</td> <td>0</td> <td>0</td> </tr>
+         </tbody>
+      </table>
+
+      <h3>СБИС и СнК</h3>
+      <p>Для оценки используемых ресурсов <b>gpio</b> был синтезирован на библиотеке Artisan 90 нм.</p>
+      <table summary="asic" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Тип</th>
+               <th colspan="4">Значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>Триггеры</td> <td>81</td> <td>209</td> <td>417</td> <td>321</td> </tr>
+            <tr> <td>Логические вентилм</td> <td>172</td> <td>810</td> <td>1638</td> <td>691</td> </tr>
+            <tr> <td>Площадь, мкм*мкм</td> <td>4158</td> <td>14039</td> <td>28124</td> <td>16271</td> </tr>
+            <tr> <td>Число NAND2 эквивалентных вентилей</td> <td>754</td> <td>2544</td> <td>5095</td> <td>2948</td> </tr>
+            <tr> <td>Тактовая частота clk, МГц</td> <td>363</td> <td>262</td> <td>253</td> <td>337</td> </tr>
+            <tr> <td>WIDTH</td> <td>8</td> <td>16</td> <td>32</td> <td>32</td> </tr>
+            <tr> <td>IFG_POLARITY</td> <td>1</td> <td>0</td> <td>1</td> <td>0</td> </tr>
+            <tr> <td>META_ENA</td> <td>0x0</td> <td>0xFFFF</td> <td>0xFFFFFFFF</td> <td>0x0</td> </tr>
+            <tr> <td>SET*ENA</td> <td>0</td> <td>1</td> <td>1</td> <td>0</td> </tr>
+            <tr> <td>CLR*ENA</td> <td>0</td> <td>1</td> <td>1</td> <td>0</td> </tr>
+            <tr> <td>INV*ENA</td> <td>0</td> <td>1</td> <td>1</td> <td>0</td> </tr>
+            <tr> <td>READ*ENA</td> <td>0</td> <td>1</td> <td>1</td> <td>0</td> </tr>
+            <tr> <td>WRITE*ENA</td> <td>1</td> <td>1</td> <td>1</td> <td>1</td> </tr>
+            <tr> <td>*INIT</td> <td>0</td> <td>0</td> <td>0</td> <td>0</td> </tr>
+            <tr> <td>REGISTERED_OUTPUT</td> <td>0</td> <td>0</td> <td>0</td> <td>0</td> </tr>
+         </tbody>
+      </table>
+      <p>Для обеспечения корректного синтеза <b>gpio</b> необходимо задать требуемую тактовую частоту <b>clk</b>, входные/выходные задержки остальных входов/выходов относительно <b>clk</b>, согласно применению блока. Схема синхронна и соответствует требованиям DFT. Процент тестового покрытия дефектов типа Stuck-at составляет не менее 99 % для представленных выше конфигураций.</p>
+      <p>Входные и выходные задержки должны выбираться исходя из применения схемы. Рекомендуется использовать значение не менее 40% от периода синхросигнала.</p>
+
+      <h3>Функциональная верификация</h3>
+      <p>Верификация <b>gpio</b> проводится с помощью тестового модуля <b>gpio_tb</b>. В процессе теста проверяются следующие проверки:</p>
+      <li> выходы <b>gpio</b> принимают корректные начальные значения после сброса;</li>
+      <li> регистры имеют корректное начальное значение;</li>
+      <li> корректно происходит запись/чтение регистров, запись по неиспользуемому адресу не приводит к изменению состояния регистров;</li>
+      <li> корректно происходит установка/сброс/инверсия бит регистров;</li>
+      <li> регистры <b>GPER</b> и <b>GPTR</b> корректно определяют тип выбранной притяжки;</li>
+      <li> происходит генерация прерываний и установка соответствующих флагов прерываний при переключениях на различных разрядах <b>gpio</b>, проверяется влияние регистров <b>GIER</b>, <b>GISR</b>, <b>GAFR</b>, <b>GOER</b> на генерацию прерываний;</li>
+      <p><b>gpio_tb</b> показывает следующие результаты по покрытию кода:</p>
+      <table summary="coverage" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Тип покрытия</th>
+               <th colspan="2">Количество проверок</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>Block</td> <td>173/173 (100%)</td> <td>65/89 (73%)</td> </tr>
+            <tr> <td>Expression</td> <td>578/684 (84%)</td> <td>242/540 (45%)</td> </tr>
+            <tr> <td>Toggle</td> <td>4748/4781 (99%)</td> <td>482/1299 (37%)</td> </tr>
+            <tr>
+               <td></td>
+               <td>
+                  <p>WIDTH=32</p>
+                  <p>IFG_POLSRITY=1</p>
+                  <p>META_ENA=0xFFFFFFFF</p>
+                  <p>SET_*_ENA=1</p>
+                  <p>CLR_*_ENA=1</p>
+                  <p>INV_*_ENA=1</p>
+                  <p>READ_*_ENA=1</p>
+                  <p>WRITE_*_ENA=1</p>
+                  <p>*_INIT=0</p>
+                  <p>REGISTERED_OUTPUT=0</p>
+               </td>
+               <td>
+                  <p>WIDTH=16</p>
+                  <p>IFG_POLSRITY=1</p>
+                  <p>META_ENA=0xFFFF</p>
+                  <p>SET_*_ENA=0</p>
+                  <p>CLR_*_ENA=0</p>
+                  <p>INV_*_ENA=0</p>
+                  <p>READ_*_ENA=1</p>
+                  <p>WRITE_*_ENA=1</p>
+                  <p>*_INIT=0</p>
+                  <p>REGISTERED_OUTPUT=0</p>
+               </td>
+            </tr>
+
+         </tbody>
+      </table>
+
+   </body>
+</html>

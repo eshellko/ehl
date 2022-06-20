@@ -1,0 +1,224 @@
+<html>
+   <style> pre.small {line-height: 0.5; font-weight:bold; color: #FF00FF; }</style>
+   <style> pre.smal2 {line-height: 0.5; font-weight:bold; color: #0000FF; }</style>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Функционирование</title>
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+      <h2>Функционирование</h2>
+      <b>ehl_timer</b> является модулем таймера, поддерживающим набор функциональных режимов.
+<!--
+      <h2><a name="CLK"></a>Система тактирования</h2>
+      <p>
+         <b>ehl_rtc</b> использует 2 синхросигнала для работы. <b>clk</b> для доступа к регистрам (произвольное значение частоты) и <b>rtc_clk</b> для работы часов с частотой 10 Гц.
+      </p>
+-->
+      <h3><a name="REGS"></a>Регистры контроллера</h3>
+      <p><b>ehl_timer</b> содержит идентичные регистры для каждого из таймеров. Если таймер не реализован (в соответствии с параметром <b>NTIMERS</b>), его регистры доступны только по чтению нулями.</p>
+      <table summary="Registers for Address Block: ehl_timer" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Регистр</th>
+               <th>Адрес<p>(таймер 0)</p></th>
+               <th>Адрес<p>(таймер 1)</p></th>
+               <th>Адрес<p>(таймер 2)</p></th>
+               <th>Адрес<p>(таймер 3)</p></th>
+               <th>Описание</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td><a href="reg_desc.html#CFG"      class="olink">TMRx_CFG</a></td>     <td>0x00</td> <td>0x40</td> <td>0x80</td> <td>0xC0</td> <td>Регистр настройки</td> </tr>
+            <tr> <td><a href="reg_desc.html#CTRL"     class="olink">TMRx_CTRL</a></td>    <td>0x04</td> <td>0x44</td> <td>0x84</td> <td>0xC4</td> <td>Регистр управления</td> </tr>
+<!--            <tr> <td><a href="reg_desc.html#TMR0_r2"  class="olink">TMRx_r2</a></td>      <td>0x08</td> <td>0x48</td> <td>0x88</td> <td>0xC8</td> <td>Регистр </td> </tr>-->
+<!--            <tr> <td><a href="reg_desc.html#TMR0_r3"  class="olink">TMRx_r3</a></td>      <td>0x0C</td> <td>0x4C</td> <td>0x8C</td> <td>0xCC</td> <td>Регистр </td> </tr>-->
+            <tr> <td><a href="reg_desc.html#LOAD"     class="olink">TMRx_LOAD</a></td>    <td>0x10</td> <td>0x50</td> <td>0x90</td> <td>0xD0</td> <td>Регистр загрузки</td> </tr>
+            <tr> <td><a href="reg_desc.html#PRE"      class="olink">TMRx_PRE</a></td>     <td>0x14</td> <td>0x54</td> <td>0x94</td> <td>0xD4</td> <td>Регистр делителя частоты</td> </tr>
+            <tr> <td><a href="reg_desc.html#VALUE"    class="olink">TMRx_VALUE</a></td>   <td>0x18</td> <td>0x58</td> <td>0x98</td> <td>0xD8</td> <td>Регистр значения счетчика</td> </tr>
+            <tr> <td><a href="reg_desc.html#CPT"      class="olink">TMRx_CPT</a></td>     <td>0x1C</td> <td>0x5C</td> <td>0x9C</td> <td>0xDC</td> <td>Регистр захвата</td> </tr>
+            <tr> <td><a href="reg_desc.html#IRQ_CTRL" class="olink">IRQ_CTRL</a></td>     <td>0x20</td> <td>-</td>    <td>-</td>    <td>-</td>    <td>Регистр управления прерываниями</td> </tr>
+            <tr> <td><a href="reg_desc.html#IRQ_FLAG" class="olink">IRQ_FLAG</a></td>     <td>0x24</td> <td>-</td>    <td>-</td>    <td>-</td>    <td>Регистр флагов прерываний</td> </tr>
+            <tr> <td><a href="reg_desc.html#CMPA_T0"  class="olink">TMRx_CMPA_T0</a></td> <td>0x28</td> <td>0x68</td> <td>0xA8</td> <td>0xE8</td> <td>Регистр сравнения/ШИМ канала A T0</td> </tr>
+            <tr> <td><a href="reg_desc.html#CMPA_T1"  class="olink">TMRx_CMPA_T1</a></td> <td>0x2C</td> <td>0x6C</td> <td>0xAC</td> <td>0xEC</td> <td>Регистр сравнения/ШИМ канала A T1</td> </tr>
+            <tr> <td><a href="reg_desc.html#CMPB_T0"  class="olink">TMRx_CMPB_T0</a></td> <td>0x30</td> <td>0x70</td> <td>0xB0</td> <td>0xF0</td> <td>Регистр сравнения/ШИМ канала B T0</td> </tr>
+            <tr> <td><a href="reg_desc.html#CMPB_T1"  class="olink">TMRx_CMPB_T1</a></td> <td>0x34</td> <td>0x74</td> <td>0xB4</td> <td>0xF4</td> <td>Регистр сравнения/ШИМ канала B T1</td> </tr>
+            <tr> <td><a href="reg_desc.html#CMPC_T0"  class="olink">TMRx_CMPC_T0</a></td> <td>0x38</td> <td>0x78</td> <td>0xB8</td> <td>0xF8</td> <td>Регистр сравнения/ШИМ канала C T0</td> </tr>
+            <tr> <td><a href="reg_desc.html#CMPC_T1"  class="olink">TMRx_CMPC_T1</a></td> <td>0x3C</td> <td>0x7C</td> <td>0xBC</td> <td>0xFC</td> <td>Регистр сравнения/ШИМ канала C T1</td> </tr>
+         </tbody>
+      </table>
+
+      <h3>Режимы работы</h3>
+      <p>
+         <b>ehl_timer</b> может работать в одном из нескольких режимов, согласно <b>TMRx_CFG.MODE</b>.
+      </p>
+      <li><b style="color: #0000CC">Таймер</b>: <b>ehl_timer</b> отсчитывает записанный в <b>TMRx_LOAD</b> интервал;</li>
+      <li><b style="color: #0000CC">Захват</b>: <b>ehl_timer</b> записывает в регистр <b>TMRx_CPT</b> значение таймера в момент события на входах <b>cpt_in</b>, заданного <b>TMRx_CFG.CPT_TYPE</b>;</li>
+      <li><b style="color: #0000CC">Сравнение</b>: <b>ehl_timer</b> изменяет состояние выхода <b>cmp_out</b> при совпадении значения таймера со значением <b>TMRx_CMPy_Tz</b>;</li>
+      <li><b style="color: #0000CC">ШИМ</b>: частный случай режима "сравнения", при котором таймер формирует диаграмму на выходах <b>cmp_out</b> в формате ШИМ сигнала;</li>
+      <li><b style="color: #0000CC">Счетчик</b>: <b>ehl_timer</b> считает события, поступившие на вход <b>cpt_in</b>. Данные синхронизуются с частотой таймера перед изменением текущего значения счетчика (<b>TMRx_VALUE</b>).</li>
+
+      <h3 style="color: #0000CC">Режим таймера</h3>
+      <p>
+         Таймеры в <b>ehl_timer</b> отсчитывают период в соответствии с загруженным в них значением.
+         Значение задается регистрами <b>TMRx_LOAD</b> индивидуально для каждого таймера.
+         Таймеры могут работать в декрементном или инкрементном режиме в соответствии с <b>TMRx_CFG.DIR</b>.
+      </p>
+      <p>
+         В декрементном режиме (при <b>TMRx_CFG.DIR</b> = 0) счетчик в таймере производит декремент загруженного в него значения до достижения 0.
+         В однократном режиме (<b>TMRx_CFG.ONESHOT</b> = 1) счетчик останавливается.
+         В циклическом режиме загружается значением <b>TMRx_LOAD</b> и повторяет счет.
+      </p>
+      <p>
+         В инкрементном режиме (при <b>TMRx_CFG.DIR</b> = 1) счетчик в таймере производит инкремент от 0 до значения <b>TMRx_LOAD</b> включительно<!-- TODO: на момент начала счета -->.
+         В однократном режиме (<b>TMRx_CFG.ONESHOT</b> = 1) счетчик останавливается.
+         В циклическом режиме счетчик сбрасывается и повторяет счет.
+      </p>
+
+      <h3 style="color: #0000CC">Режим ШИМ</h3>
+      <p>
+         В режиме ШИМ каждый таймер может генерировать до 3 независимых ШИМ сигналов (0, 1, 2 или A, B и C соответственно) на своих выходах (<b>cmp_out</b>). Каждому генератору ШИМ поставлена в соответствие пара регистров <b>TMRx_CMPz_T0</b> и <b>TMRx_CMPz_T1</b>.
+         Выход равен 1, если значение таймера удовлетворяет условию <b>TMRx_CMPz_T0</b> <= <b>TMRx_VALUE</b> <= <b>TMRx_CMPz_T1</b>. В противном случае выход равен 0.
+      </p>
+      <p>
+         Неиспользуемые выводы <b>cmp_out</b> (в соответствии с <b>TMRx_CFG.CMP_EN</b>) равны 0 в режиме ШИМ.
+		 Вывод <b>cmp_out</b> хранит последнее записанное в него значение, пока таймер находится в режимах "сравнения" или "ШИМ" (в соответствии с <b>TMRx_CFG.MODE</b>), в противном случае вывод равен 0.
+      </p>
+      <pre class="smal2">                   _______               _______               _______               _______               </pre>
+      <pre class="smal2"> CMP_OUT   _______|       |_____________|       |_____________|       |_____________|       |______________</pre>
+      <pre class="small">                  .       .             .       .             .       .             .       .              </pre>
+      <pre class="small"> TMRx_LOAD - _ - -.- - - -.- - - - _ - -.- - - -.- - - - _ - -.- - - -.- - - - _ - -.- - - -.- - - - - - - </pre>
+      <pre class="small">            | |_  .       .       | |_  .       .       | |_  .       .       | |_  .       .              </pre>
+      <pre class="small">            |   |_.       .       |   |_.       .       |   |_.       .       |   |_.       .              </pre>
+      <pre class="small"> CMP_T1:    | - - |_ - - -+- - - -| - - |_ - - -+- - - -| - - |_ - - -+- - - -| - - |_ - - -+- - - - - - - </pre>
+      <pre class="small">            |       |_    .       |       |_    .       |       |_    .       |       |_    .              </pre>
+      <pre class="small">            |         |_  .       |         |_  .       |         |_  .       |         |_  .              </pre>
+      <pre class="small">            |           |_.       |           |_.       |           |_.       |           |_.              </pre>
+      <pre class="small"> CMP_T0:    | - - - - - - |_- - - | - - - - - - |_- - - | - - - - - - |_- - - | - - - - - - |_- - - - - - -</pre>
+      <pre class="small">            |               |_    |               |_    |               |_    |               |_           </pre>
+      <pre class="small">            |                 |_  |                 |_  |                 |_  |                 |_         </pre>
+      <pre class="small">           _|                   |_|                   |_|                   |_|                   |________</pre>
+
+      <h3 style="color: #0000CC">Режим захвата</h3>
+      <p>
+         В режиме "захвата" таймер записывает текущее значение счетчика (<b>TMRx_VALUE</b>) в регистр <b>TMRx_CPT</b> при наступлении события, сконфигурированного в <b>TMRx_CFG.CPT_TYPE</b> (для выбранного канала <b>TMRx_CFG.CPT_SEL</b>).
+         Принцип работы таймера без использования привязки к событиям начала и окончания захвата:
+      </p>
+      <pre class="smal2">                            ___________                   ___________           ___     __    </pre>
+      <pre class="smal2"> CPT_IN            ________|           |_________________|           |_________|   |___|  |___</pre>
+      <pre class="small">                                                                                              </pre>
+      <pre class="small">  ***CPT_TYPE=00   ________ _____________________________ _____________________ _______ ______</pre>
+      <pre class="small"> CPT:              ________X_____________________________X_____________________X_______X______</pre>
+      <pre class="small">                           T0                            T1                    T2      T3     </pre>
+      <pre class="small">  ***CPT_TYPE=01   ____________________ _____________________________ _____________ ______ ___</pre>
+      <pre class="small"> CPT:              ____________________X_____________________________X_____________X______X___</pre>
+      <pre class="small">                                       T0                            T1            T2     T3  </pre>
+      <pre class="small">  ***CPT_TYPE=10   ____________________________________________________________________ ______</pre>
+      <pre class="small"> CPT:              ____________________________________________________________________X______</pre>
+      <pre class="small">                                                                                       T0     </pre>
+      <pre class="small">  ***CPT_TYPE=11   ________ ___________ _________________ ___________ _________ ___ ___ __ ___</pre>
+      <pre class="small"> CPT:              ________X___________X_________________X___________X_________X___X___X__X___</pre>
+      <pre class="small">                           T0          T1                T2          T3        T4  T5  T6 T7  </pre>
+      <p>
+         Момент начала и окончания захвата может быть привязан к внешним событиям с помощью <b>TMRx_CFG.CPT_START</b> и <b>TMRx_CFG.CPT_STOP</b>.
+      </p>
+      <h4>Примеры использования</h4>
+      <li> <b>Измерение периода входного сигнала.</b>
+	     <ul>Сконфигурировать события старта (<b>TMRx_CFG.CPT_START</b>) и стопа (<b>TMRx_CFG.CPT_STOP</b>) на нарастающий фронт (либо на падающий фронт) выбранного входного сигнала <b>cpt_in</b> (<b>TMRx_CFG.CPT_SEL</b>).</ul>
+         <ul>В качестве типа захвата (<b>TMRx_CFG.CPT_TYPE</b>) выбрать каждый 4-й нарастающий фронт (для исключения обновления регистра захвата).</ul>
+		 <ul>Выбрать режим однократного счета (<b>TMRx_CFG.ONESHOT</b>).</ul>
+         <ul>Активировать режим захвата (<b>TMRx_CFG.MODE</b>) и включить таймер (<b>TMRx_CTRL.ENA</b>).</ul>
+         <ul>По окончании счета (опрос <b>TMRx_CTRL.ENA</b> или прерывание) результат будет доступен в регистре <b>TMRx_VALUE</b>.</ul>
+         Следует учитывать, что если за время периода таймера (<b>TMRx_LOAD</b>) не было обнаружено двух фронтов входного сигнала, то не будет сгенерировано событие захвата. Для этого случая предполагается использование флагов прерываний.
+<!--TODO: if no value get / if overflow / if stopped after single run -->
+      </li>
+      <pre class="small">                START          STOP      </pre>
+      <pre class="smal2">                  .________     .________</pre>
+      <pre class="smal2"> CPT_IN   ________|        |____|        </pre>
+      <pre class="small">                  .             .________</pre>
+      <pre class="small">                  .            _|        </pre>
+      <pre class="small">                  .          _|          </pre>
+      <pre class="small">                  .        _|            </pre>
+      <pre class="small">                  .      _|              </pre>
+      <pre class="small">                  .    _|                </pre>
+      <pre class="small">                  .  _|                  </pre>
+      <pre class="small">                  ._|                    </pre>
+      <pre class="small"> VALUE    ________|                      </pre>
+
+<!-- TODO: rewrite to fit new functionality...
+      <li> <b>Измерение периода входного сигнала с усреднением результата.</b>
+         может быть использован режим <b>TMRx_CFG.CPT_TYPE</b> = 10.
+         Этот режим аналогичен предыдущему, только значения T1 и T0 получаются для 4 импульсов и усредненный период будет равен (T1-T0)/4.
+      </li>
+-->
+
+      <li> <b>Измерение длительности входного сигнала.</b>
+	     <ul>Режим отличается от "измерения периода входного сигнала" только заданием событий START и STOP.
+		 Если требуется измерить длительность логической 1, то следует в качестве START выбрать нарастающий фронт, а в качестве STOP падающий фронт.</ul>
+<!--
+         Для измерения длительности входного сигнала может быть использован режим <b>TMRx_CFG.CPT_TYPE</b> = 11.
+         В этом режиме следует сохранить значения T0, T1 и расчитать длительность, как (T1-T0).
+         Следует иметь в виду, что длительность сигнала не привязана к начальному фронту, т.е. T0 может быть получен для падающего фронта входного сигнала.
+-->
+      </li>
+      <pre class="small">                START          STOP      </pre>
+      <pre class="smal2">                  ._____________.        </pre>
+      <pre class="smal2"> CPT_IN   ________|             |________</pre>
+      <pre class="small">                  .             .________</pre>
+      <pre class="small">                  .            _|        </pre>
+      <pre class="small">                  .          _|          </pre>
+      <pre class="small">                  .        _|            </pre>
+      <pre class="small">                  .      _|              </pre>
+      <pre class="small">                  .    _|                </pre>
+      <pre class="small">                  .  _|                  </pre>
+      <pre class="small">                  ._|                    </pre>
+      <pre class="small"> VALUE    ________|                      </pre>
+
+      <li> <b>Измерение скважности входного сигнала.</b>
+         <ul>Для измерения скважности входного сигнала может быть применен старт и стоп таймера по нарастающему фронту (<b>TMRx_CFG.CPT_START</b> и <b>TMRx_CFG.CPT_STOP</b> равны 0b01)
+         с захватом в <b>TMRx_CPT</b> значения по падающему фронту (<b>TMRx_CFG.CPT_TYPE</b> = 0b01).
+         По окончании счета значение <b>TMRx_VAL</b> содержит период, а <b>TMRx_CPT</b> длительность высокого уровня. При выборе противоположенных полярностей в регистрах настроек, значение <b>TMRx_CPT</b> имеет противоположенный смысл.</ul>
+      </li>
+
+      <h3 style="color: #0000CC">Режим сравнения</h3>
+      <p>
+         В режиме "сравнения" <b>ehl_timer</b> сигнализирует совпадение одного из регистров <b>TMRx_CMPy_T0</b> или <b>TMRx_CMPy_T1</b> со значением счетчика изменением состояния выхода <b>CMPy_OUT</b>.
+      </p>
+      <p>
+         Неиспользуемые выводы <b>cmp_out</b> (в соответствии с <b>TMRx_CFG.CMP_EN</b>) равны 0 в режиме сравнения.
+		 Вывод <b>cmp_out</b> хранит последнее записанное в него значение, пока таймер находится в режимах "сравнения" или "ШИМ" (в соответствии с <b>TMRx_CFG.MODE</b>), в противном случае вывод равен 0.
+      </p>
+      <pre class="smal2"> ***CMP_TYPE=00           _______________________________________</pre>
+      <pre class="smal2"> CMP_OUT          _______|                                       </pre>
+      <pre class="smal2"> ***CMP_TYPE=01   _______.                                       </pre>
+      <pre class="smal2"> CMP_OUT                 |_______________________________________</pre>
+      <pre class="smal2"> ***CMP_TYPE=1x          ._______               _______          </pre>
+      <pre class="smal2"> CMP_OUT          _______|       |_____________|       |_________</pre>
+      <pre class="small">                         .       .             .       .         </pre>
+      <pre class="small"> TMRx_LOAD        - - - -.- - - -.- - _ - - - -.- - - -.- - _ - -</pre>
+      <pre class="small">                         .       .  _| |       .       .  _| |   </pre>
+      <pre class="small">                         .       ._|   |       .       ._|   |   </pre>
+      <pre class="small"> CMP_T1:          - - - -+- - - _|- - -| - - - + - - -_|- - -|- -</pre>
+      <pre class="small">                         .    _|       |       .    _|       |   </pre>
+      <pre class="small">                         .  _|         |       .  _|         |   </pre>
+      <pre class="small">                         ._|           |       ._|           |   </pre>
+      <pre class="small"> CMP_T0:          - - - _| - - - - - - | - - -_| - - - - - - | - </pre>
+      <pre class="small">                      _|               |    _|               |   </pre>
+      <pre class="small">                    _|                 |  _|                 |   </pre>
+      <pre class="small">                  _|                   |_|                   |___</pre>
+
+      <h3 style="color: #0000CC">Режим счетчика</h3>
+      <p>
+         В режиме "счетчика" события на входе <b>cpt_in</b> приводят к изменению значения счетчика <b>TMRx_VALUE</b>.
+         В отличие от режима таймера счетчик меняется не на каждом такте частоты таймера.
+         Во всем остальном <b>ehl_timer</b> ведет себя аналогично режиму таймера.
+         Источник сигнала определяется <b>TMRx_CFG.CPT_SEL</b>, а тип события <b>TMRx_CFG.CPT_TYPE</b>.
+      </p>
+
+      <h3><a name="IRQ"></a>Прерывания</h3>
+      <li> <b>ehl_timer</b> генерирует прерывание при завершении счета таймера, если установлен соответствующий таймеру бит <b>IRQ_CTRL.IEx</b>. </li>
+      <li> <b>ehl_timer</b> генерирует прерывание по событию захвата, если установлен соответствующий таймеру бит <b>IRQ_CTRL.CPIEx</b>. </li>
+      <li> <b>ehl_timer</b> генерирует прерывание по событию сравнения, если установлен соответствующий таймеру бит <b>IRQ_CTRL.CMIEx</b>. </li>
+
+   </body>
+</html>

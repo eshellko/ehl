@@ -1,0 +1,74 @@
+<html>
+   <style> pre.small {line-height: 0.5; font-weight:bold; }</style>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>CRC</title>
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+      <p><b>ehl_crc</b> - Cyclic Redundancy Check</p>
+      <hr>
+      <p>Модуль подсчета циклической контрольной суммы.</p>
+      <pre class="small">    _______________________</pre>
+      <pre class="small">   |                       |</pre>
+      <pre class="small">---| data_in   crc_out     |---</pre>
+      <pre class="small">---| crc_in    crc_correct |---</pre>
+      <pre class="small">   |_______________________|</pre>
+
+      <h4>Описание</h4>
+      <li>Блок генерации/проверки контрольной суммы.</li>
+      <li>Параметризуемое значение полинома.</li>
+      <li>Ширина шины данных определяется параметром <b>DATA_WIDTH</b>.</li>
+
+      <h4>Параметры</h4>
+      <li>DATA_WIDTH – количество бит во входных данных. Допустимые значения от 1 до 1024 (значение по умолчанию 4).</li>
+      <li>POLY_WIDTH – количество бит в контрольной сумме. Допустимые значения от 1 до 1024 (значение по умолчанию 1024).</li>
+      <li>INIT_VALUE — начальное значение полинома (0 — все нули, 1 — все единицы (например, Ethernet)).</li>
+      <li>BIT_ORDER – порядок обработки бит в data_in. 0 – LSB, 1 – MSB (значение по умолчанию 0).</li>
+      <li>XOR_MSB — значение старшего бита полинома (1 для Ethernet).</li>
+      <li>POLY_COEF – генерирующий полином (значение по умолчанию 0x04C11DB7).</li>
+
+      <h4>Порты</h4>
+      <table cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Разрядность</th>
+               <th>Направление</th>
+               <th>Описание</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>data_in</td> <td>DATA_WIDTH</td> <td>Вход</td> <td>Входные данные</td> </tr>
+            <tr> <td>crc_in</td> <td>POLY_WIDTH</td> <td>Вход</td> <td>Текущее значение CRC</td> </tr>
+            <tr> <td>crc_out</td> <td>POLY_WIDTH</td> <td>Выход</td> <td>Следующее значение CRC</td> </tr>
+            <tr> <td>crc_correct</td> <td>1</td> <td>Выход</td> <td>Результат сравнения с ожидаемым остатком</td> </tr>
+         </tbody>
+      </table>
+
+      <h4>Пример функционирования</h4>
+      <p>Используется для генерации / проверки контрольной суммы. При генерации выход crc_correct следует оставить неподключенным.</p>
+      <p>При проверке контрольной суммы пакетов данных USB (CRC16) следует задать параметры <b>POLY_WIDTH</b> = 16, <b>POLY_COEF</b> = 16’h8005. Остальные параметры зависят от реализации схемы подачи данных на <b>ehl_crc</b>.</p>
+      <p>При проверке контрольной суммы пакетов данных Ethernet (CRC32) следует задать параметры <b>POLY_WIDTH</b> = 32, <b>POLY_COEF</b> = 32’h04C11DB7. Остальные параметры зависят от реализации схемы подачи данных на <b>ehl_crc</b>.</p>
+      <p>Может применяться для проверки целостности содержимого области памяти перед началом исполнения харнящегося в ней кода.</p>
+
+      <h4>Аналогичные функции</h4>
+      <table cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Библиотека</th>
+               <th>Производитель</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td></td> <td>DesignWare</td> <td>Synopsys</td> </tr>
+            <tr> <td></td> <td>ChipWare</td> <td>Cadence</td> </tr>
+            <tr> <td></td> <td>LPM Megafunction</td> <td>Altera</td> </tr>
+            <tr> <td></td> <td>LogiCORE</td> <td>Xilinx</td> </tr>
+         </tbody>
+      </table>
+
+   </body>
+</html>

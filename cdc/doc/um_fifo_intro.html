@@ -1,0 +1,76 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Введение</title>
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+      <div class="table">
+         <table summary="Reference" cellpadding="4" width="50%" border="1" cellspacing="0" rules="all">
+            <colgroup><col><col></colgroup>
+            <tbody>
+               <tr> <td bgcolor="#C0C0C0">Версия</td> <td>1.1</td> </tr>
+               <tr> <td bgcolor="#C0C0C0">Дата</td> <td>2015.01.20</td> </tr>
+               <tr> <td bgcolor="#C0C0C0">Разработчик</td> <td>А.В. Корнюхин (kornukhin@mail.ru)</td> </tr>
+            </tbody>
+         </table>
+      </div>
+
+      <div class="article">
+         <div class="titlepage">
+            <h2 class="title">Введение</h2>
+         </div>
+      </div>
+      <p>
+         В данной спецификации описываются структура, порядок использования и технические характеристики блока <b>ehl_fifo</b>, представляющего собой синхронный буфер с двумя независимыми тактовыми сигналами (одним для записи и одним для чтения), флагами заполнения и настраиваемыми ширинами входной и выходной шин данных, глубиной буфера и количеством стадий синхронизации между тактовыми частотами.
+      </p>
+      <h2 class="title">История изменений</h2>
+      <p></p>
+      <div class="table">
+         <table summary="Registers for Address Block: ehl_fifo" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+            <colgroup><col><col><col><col></colgroup>
+            <thead>
+               <tr bgcolor="#C0C0C0">
+                  <th>Версия</th>
+                  <th>Дата</th>
+                  <th>Разработчик</th>
+                  <th>Описание</th>
+               </tr>
+            </thead>
+            <tbody>
+
+               <tr>
+                  <td>1.0</td>
+                  <td>2011.07.09</td>
+                  <td>Корнюхин А.В.</td>
+                  <td>Первая публикация документа</td>
+               </tr>
+               <tr>
+                  <td>1.1</td>
+                  <td>2015.01.20</td>
+                  <td>Корнюхин А.В.</td>
+                  <td>Добавлены флаги almost*</td>
+               </tr>
+
+            </tbody>
+         </table>
+      </div>
+
+      <h2 class="title">Условные обозначения и сокращения</h2>
+      <div class="table">
+         <table summary="abbreviations" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+            <colgroup><col><col></colgroup>
+            <thead>
+               <tr bgcolor="#C0C0C0"> <th>Сокращение</th> <th>Расшифровка</th> </tr>
+            </thead>
+            <tbody>
+               <tr> <td>DFT</td> <td>Design For Testability</td> </tr>
+               <tr> <td>FIFO</td> <td>First In First Out</td> </tr>
+               <tr> <td>SERDES</td> <td>Serializer / Deserializer</td> </tr>
+               <tr> <td>0x</td> <td>префикс шестнадцатеричных значений (например, 0xA7F5)</td> </tr>
+               <tr> <td>0b</td> <td>префикс двоичных значений (например, 0b0101)</td> </tr>
+            </tbody>
+         </table>
+      </div>
+
+   </body>
+</html>

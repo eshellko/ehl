@@ -1,0 +1,149 @@
+<html>
+   <style> pre.small {line-height: 0.5; font-weight:bold; }</style>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Error Correction Code</title>
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+      <h2>Error Correction Code</h2>
+      <hr>
+      <table cellpadding="4" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col></colgroup>
+         <tbody>
+            <tr> <td bgcolor="#C0C0C0">Версия</td>      <td>1.0</td> </tr>
+            <tr> <td bgcolor="#C0C0C0">Дата</td>        <td>2016.02.20</td> </tr>
+            <tr> <td bgcolor="#C0C0C0">Разработчик</td> <td>А.В. Корнюхин (kornukhin@mail.ru)</td> </tr>
+         </tbody>
+      </table>
+
+      <h3>Введение</h3>
+      <p>В данной спецификации описываются структура, порядок использования и технические характеристики блока декодера Хэмминга.</p>
+
+      <h2>Справочные материалы</h2>
+      <table cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0"> <th>Номер</th> <th>Наименование</th> </tr>
+         </thead>
+         <tbody>
+            <tr> <td>1</td> <td>Freescale AN3532 "Error Correction and Error Handling on PowerQUICC III Processors". Section 2.2</td> </tr>
+         </tbody>
+      </table>
+
+      <h2>Условные обозначения и сокращения</h2>
+      <table cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0"> <th>Сокращение</th> <th>Расшифровка</th> </tr>
+         </thead>
+         <tbody>
+            <tr> <td>ECC</td>  <td>Error Correction Code</td> </tr>
+            <tr> <td>EDAC</td>  <td>Error Detection and Correction</td> </tr>
+            <tr> <td>SECDED</td> <td>Single Error Correction Double Error Detection</td> </tr>
+         </tbody>
+      </table>
+
+      <h2>Общие сведения</h2>
+      <p><b>ehl_ecc</b> представляет собой кодер-декодер данных кодом Хэмминга. Блок имеет набор параметров, позволяющих настроить его под требования проекта.</p>
+      <h4>Основные возможности</h4>
+      <li>Кодирование данных кодом Хэмминга.</li>
+      <li>Обнаружение до 2 ошибок и исправление 1 ошибки с сигнализацией ошибок.</li>
+      <h4>Области применения</h4>
+      <li>Защита данных во встраиваемой памяти.</li>
+
+      <h2>Интерфейс</h2>
+      <p><b>ehl_ecc</b> является комбинаторной схемой, работающей в режимах кодирования и декодирования.</p>
+      <pre class="small">    ____________________________</pre>
+      <pre class="small">   |                            |</pre>
+      <pre class="small">---| din                   dout |---</pre>
+      <pre class="small">---| cbin                 cbout |---</pre>
+      <pre class="small">---| gen           double_error |---</pre>
+      <pre class="small">---| chk           single_error |---</pre>
+      <pre class="small">   |____________________________|</pre>
+
+      <table summary="io" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Количество</th>
+               <th>Тип</th>
+               <th>Назначение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>din</td>          <td>WIDTH</td>  <td>I</td> <td>Входная шина данных.</td> </tr>
+            <tr> <td>dout</td>         <td>WIDTH</td>  <td>O</td> <td>Выходная шина данных.</td> </tr>
+            <tr> <td>cbin</td>         <td>WIDTH</td>  <td>I</td> <td>Входная шина контрольных бит.</td> </tr>
+            <tr> <td>cbout</td>        <td>WIDTH</td>  <td>O</td> <td>Выходная шина контрольных бит.</td> </tr>
+            <tr> <td>double_error</td> <td>1</td>      <td>O</td> <td>Флаг обнаружения неисправляемой ошибки.</td> </tr>
+            <tr> <td>single_error</td> <td>1</td>      <td>O</td> <td>Флаг исправления ошибки.</td> </tr>
+            <tr> <td>gen</td>          <td>1</td>      <td>I</td> <td>Запрос на генерацию (активный уровень b’1).</td> </tr>
+            <tr> <td>chk</td>          <td>1</td>      <td>I</td> <td>Запрос на проверку (активный уровень b’1).</td> </tr>
+         </tbody>
+      </table>
+      <p>Сигналы <b>gen</b> и <b>chk</b> не должны одновременно принимать значение b’1.</p>
+
+      <h2>Структура</h2>
+      <p>Модуль является комбинаторной схемой, выполняющей кодирование данных в соответствии с формулой 1. Поскольку модуль параметризуемый, то в режимах с <b>WIDTH</b> меньше 64 соответствующие биты <b>din</b> и <b>cbout</b> равны 0.</p>
+      <p>Формула 1. Алгоритм кодирования кодом Хэмминга.</p>
+      <pre class="small">cbout[0] = din[0] ^ din[1] ^ din[2] ^ din[3] ^ din[4] ^ din[5] ^ din[6] ^ din[7] ^ din[8] ^ din[9] ^ din[10] ^ din[11] ^ din[12] ^ din[13] ^ din[14] ^ din[15] ^ din[16] ^ din[17] ^ din[18] ^ din[19] ^ din[20] ^ din[21] ^ din[22] ^ din[23] ^ din[24] ^ din[25] ^ din[26] ^ din[27] ^ din[28] ^ din[29] ^ din[30] ^ din[31] ^ din[32] ^ din[33] ^ din[34] ^ din[35] ^ din[36] ^ din[37] ^ din[38] ^ din[39] ^ din[40] ^ din[41] ^ din[42] ^ din[43] ^ din[44] ^ din[45] ^ din[46] ^ din[47] ^ din[48] ^ din[49] ^ din[50] ^ din[51] ^ din[52] ^ din[53] ^ din[54] ^ din[55] ^ din[56] ^ din[57] ^ din[58] ^ din[59] ^ din[60] ^ din[61] ^ din[62] ^ din[63] ^ cbout[1] ^ cbout[2] ^ cbout[3] ^ cbout[4] ^ cbout[5] ^ cbout[6] ^ cbout[7];</pre>
+      <pre class="small">cbout[1] = din[0] ^ din[1] ^ din[3] ^ din[4] ^ din[6] ^ din[8] ^ din[10] ^ din[11] ^ din[13] ^ din[15] ^ din[17] ^ din[19] ^ din[21] ^ din[23] ^ din[25] ^ din[26] ^ din[28] ^ din[30] ^ din[32] ^ din[34] ^ din[36] ^ din[38] ^ din[40] ^ din[42] ^ din[44] ^ din[46] ^ din[48] ^ din[50] ^ din[52] ^ din[54] ^ din[56] ^ din[57] ^ din[59] ^ din[61];</pre>
+      <pre class="small">cbout[2] = din[0] ^ din[2] ^ din[3] ^ din[5] ^ din[6] ^ din[9] ^ din[10] ^ din[12] ^ din[13] ^ din[16] ^ din[17] ^ din[20] ^ din[21] ^ din[24] ^ din[25] ^ din[27] ^ din[28] ^ din[31] ^ din[32] ^ din[35] ^ din[36] ^ din[39] ^ din[40] ^ din[43] ^ din[44] ^ din[47] ^ din[48] ^ din[51] ^ din[52] ^ din[55] ^ din[56] ^ din[58] ^ din[59] ^ din[62] ^ din[63];</pre>
+      <pre class="small">cbout[3] = din[1] ^ din[2] ^ din[3] ^ din[7] ^ din[8] ^ din[9] ^ din[10] ^ din[14] ^ din[15] ^ din[16] ^ din[17] ^ din[22] ^ din[23] ^ din[24] ^ din[25] ^ din[29] ^ din[30] ^ din[31] ^ din[32] ^ din[37] ^ din[38] ^ din[39] ^ din[40] ^ din[45] ^ din[46] ^ din[47] ^ din[48] ^ din[53] ^ din[54] ^ din[55] ^ din[56] ^ din[60] ^ din[61] ^ din[62] ^ din[63];</pre>
+      <pre class="small">cbout[4] = din[4] ^ din[5] ^ din[6] ^ din[7] ^ din[8] ^ din[9] ^ din[10] ^ din[18] ^ din[19] ^ din[20] ^ din[21] ^ din[22] ^ din[23] ^ din[24] ^ din[25] ^ din[33] ^ din[34] ^ din[35] ^ din[36] ^ din[37] ^ din[38] ^ din[39] ^ din[40] ^ din[49] ^ din[50] ^ din[51] ^ din[52] ^ din[53] ^ din[54] ^ din[55] ^ din[56];</pre>
+      <pre class="small">cbout[5] = din[11] ^ din[12] ^ din[13] ^ din[14] ^ din[15] ^ din[16] ^ din[17] ^ din[18] ^ din[19] ^ din[20] ^ din[21] ^ din[22] ^ din[23] ^ din[24] ^ din[25] ^ din[41] ^ din[42] ^ din[43] ^ din[44] ^ din[45] ^ din[46] ^ din[47] ^ din[48] ^ din[49] ^ din[50] ^ din[51] ^ din[52] ^ din[53] ^ din[54] ^ din[55] ^ din[56];</pre>
+      <pre class="small">cbout[6] = din[26] ^ din[27] ^ din[28] ^ din[29] ^ din[30] ^ din[31] ^ din[32] ^ din[33] ^ din[34] ^ din[35] ^ din[36] ^ din[37] ^ din[38] ^ din[39] ^ din[40] ^ din[41] ^ din[42] ^ din[43] ^ din[44] ^ din[45] ^ din[46] ^ din[47] ^ din[48] ^ din[49] ^ din[50] ^ din[51] ^ din[52] ^ din[53] ^ din[54] ^ din[55] ^ din[56];</pre>
+      <pre class="small">cbout[7] = din[57] ^ din[58] ^ din[59] ^ din[60] ^ din[61] ^ din[62] ^ din[63];</pre>
+
+      <h3>Параметры</h3>
+      <p><b>ehl_ecc</b> может быть настроен под задачу пользователя. За настройку отвечают параметры, представленные в таблице.</p>
+      <table cellpadding="4" width="80%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Значение по умолчанию</th>
+               <th>Допустимые значения</th>
+               <th>Описание</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>WIDTH</td> <td>8</td> <td>8, 16, 32, 64</td> <td>Количество бит данных.</td> </tr>
+         </tbody>
+      </table>
+      <p>Параметр <b>WIDTH</b> может принимать значения 8, 16, 32, 64. В этом случае количество проверочных бит равно соответственно 5, 6, 7, 8.</p>
+
+      <h3>Функционирование</h3>
+      <p>В режиме кодирования (<b>gen</b> равен b’1) данные со входа <b>din</b> шифруются с помощью кода <b>cbout</b>.</p>
+      <p>В режиме проверки (<b>chk</b> равен b’1) данные со входа <b>din</b> и контрольные биты со входа <b>cbin</b> используются для проверки наличия ошибок. Если обнаружена единичная ошибка, то устанавливается <b>single_error</b>. Если обнаружена двойная или более сложная ошибка, то устанавливается <b>double_error</b>. В случае наличия единичной ошибки на выходе <b>dout</b> появляются исправленные данные, в противном случае на выход <b>dout</b> транслируются данные со входа <b>din</b>.</p>
+
+      <h3>Функциональная верификация</h3>
+      <p>Верификация <b>ehl_ecc</b> проводится с помощью тестового модуля <b>ehl_ecc_tb</b>. В процессе теста проверяется реакция модуля на данные с различным количеством ошибок.</p>
+      <p><b>ehl_ecc_tb</b> показывает следующие результаты по покрытию кода (см. таблицу).</p>
+      <table cellpadding="4" width="80%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Тип покрытия</th>
+               <th>Характеристики</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>Block</td> <td>2/3 (67%)<p>2/3 (67%)</p></td> </tr>
+            <tr> <td>Expression</td> <td>3/3 (100%)<p>3/3 (100%)</p></td> </tr>
+            <tr> <td>Toggle</td> <td>126/242 (52%)<p>139/242 (57%)</p></td> </tr>
+            <tr> <td></td> <td>WIDTH=16</td> </tr>
+         </tbody>
+      </table>
+
+      <h2>Применение</h2>
+      <h3>Общие сведения о применении</h3>
+      <p>Модуль следует расположить на пути данных, так, что входные контрольные биты и данные поступают на входы <b>cbin</b>/<b>din</b>. Флаг <b>double_error</b> следует использовать для детектирования неисправляемых ошибок в потоке данных. Флаг <b>single_error</b> следует использовать для получения статистики, о количество поврежденных, но исправляемых данных. Для генерации контрольных бит следует установить <b>gen</b>. Для проверки контрольных бит следует установить <b>chk</b>. <b>dout</b>/<b>cbout</b> следует подключить в дальнейший путь данных.</p>
+      <h3>Семейства ПЛИС</h3>
+      <p>Поскольку <b>ehl_ecc</b> является служебным модулем, его синтез в базис ПЛИС не производился.</p>
+      <h3>СБИС и СнК</h3>
+      <p>Поскольку <b>ehl_ecc</b> является служебным модулем, его синтез в базис СБИС не производился.</p>
+
+   </body>
+</html>

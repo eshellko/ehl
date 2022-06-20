@@ -1,0 +1,125 @@
+<html>
+   <style> pre.small {line-height: 0.5; font-weight:bold; }</style>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Архитектура</title>
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+      <h2>Архитектура</h2>
+      <p>
+         <b>ehl_lssi</b> представляет собой контроллер SPI / UART с интерфейсом APB3.
+         Контроллер тактируется системной частотой.
+         Интерфейсные частоты формируются делением системной частоты на коэффициенты от 1 до 255 со скважностью не равной 50%.
+      </p>
+      <p>Пользователь может настроить глубину приемо-передающих буферов FIFO, наличие контроллеров SPI / UART в составе LSSI и некоторые другие параметры (см. <a href="um_params.html" class="olink">"Параметры"</a>).</p>
+
+      <h3>Структура</h3>
+      <img src="um_struct.png" width="75%">
+      <p><b>ehl_lssi</b> состоит из 8 структурных частей:</p>
+      <li> контроллера интерфейса APB (<b>APB Controller</b>),</li>
+      <ul>
+         <li> запись/чтение регистров управления,</li>
+         <li> запись буфера передатчика,</li>
+         <li> чтение буфера приемника.</li>
+      </ul>
+      <li> регистров управления интерфейсом контроллером (<b>CSR</b>),</li>
+      <ul>
+         <li> выбор режима обмена,</li>
+         <li> выбор ведомого устройства SPI,</li>
+         <li> мониторинг и управление состоянием буферов приемника/передатчика.</li>
+      </ul>
+      <li> буфера передатчика <b>ehl_sc_fifo</b> (<b>Transmit FIFO</b>),</li>
+      <ul>
+         <li> запись данных по APB,</li>
+         <li> формирование данных для передачи через последовательную шину.</li>
+      </ul>
+      <li> буфера приемника <b>ehl_sc_fifo</b> (<b>Receive FIFO</b>),</li>
+      <ul>
+         <li> заполнение данными, полученными по последовательной шине,</li>
+         <li> формирование данных для передачи по APB.</li>
+      </ul>
+      <li> контроллер ведущего spi (<b>SPI Master</b>),</li>
+      <ul>
+         <li> последовательные передача и прием данных через SPI, в соответствии с выбранным режимом.</li>
+      </ul>
+      <li> контроллер ведомого spi (<b>SPI Slave</b>),</li>
+      <ul>
+         <li> прием и передача последовательных данных и формирование данных для записи в буфер.</li>
+      </ul>
+      <li> контроллер uart (<b>UART Rx/Tx</b>),</li>
+      <ul>
+         <li> прием и передача данных по протоколу UART.</li>
+      </ul>
+      <li> выходной мульптиплексор (<b>Serial Bus</b>).</li>
+      <ul>
+         <li> управление подключением к шине и направлением передачи данных.</li>
+      </ul>
+
+      <h3>Перечень выводов</h3>
+      <ul>
+      <pre class="small">    _____________________________</pre>
+      <pre class="small">   |                             |</pre>
+      <pre class="small">---| pclk                 pready |---</pre>
+      <pre class="small">---| presetn              prdata |---</pre>
+      <pre class="small">---| paddr                   irq |---</pre>
+      <pre class="small">---| pwrite                      |</pre>
+      <pre class="small">---| psel                        |</pre>
+      <pre class="small">---| penable                     |</pre>
+      <pre class="small">---| pwdata                      |</pre>
+      <pre class="small">   | . . . . . . . . . . . . . . |</pre>
+      <pre class="small">---| sin                    sout |---</pre>
+      <pre class="small">---|                     sout_oe |---</pre>
+      <pre class="small">---| sck_i             sck_rts_o |---</pre>
+      <pre class="small">   |                      sck_oe |---</pre>
+      <pre class="small">---| ss0_cts_i            ss0_oe |---</pre>
+      <pre class="small">   |                          ss |---</pre>
+      <pre class="small">   | . . . . . . . . . . . . . . |</pre>
+      <pre class="small">---| test_mode                   |</pre>
+      <pre class="small">   |_____________________________|</pre>
+      </ul>
+
+      <p><b>ehl_lssi</b> имеет интерфейс APB со стороны пользователя и интерфейсы обмена SPI / UART. Информация об интерфейсе APB содержится в [1].</p>
+      <table summary="if" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Имя</th>
+               <th>Тип</th>
+               <th>Размер</th>
+               <th>Описание</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr bgcolor="#C0C0C0"> <td colspan="4"><b>APB</b></td> </tr>
+            <tr> <td>pclk</td>    <td>I</td> <td>1</td> <td>Тактовый сигнал. Тактирует контроллер APB, регистры, а также запись в fifo_tx и чтение из fifo_rx. Все триггеры в схеме тактируются нарастающим фронтом PCLK.</td> </tr>
+            <tr> <td>presetn</td> <td>I</td> <td>1</td> <td>Асинхронный сигнал сброса. Активный уровень 0. Сбрасывает все регистры в начальное состояние.</td> </tr>
+            <tr> <td>paddr</td>   <td>I</td> <td>4</td> <td>Адрес регистра. Указывает регистр, к которому происходит обращение. Шина сокращена до 4 бит, в отличие от стандарта APB, допускающего расширение до 32 бит. </td> </tr>
+            <tr> <td>pwrite</td>  <td>I</td> <td>1</td> <td>Направление передачи данных. 0 - чтение из регистра; 1 - запись в регистр.</td> </tr>
+            <tr> <td>psel</td>    <td>I</td> <td>1</td> <td>Сигнал выбора Slave устройства на шине APB.</td> </tr>
+            <tr> <td>penable</td> <td>I</td> <td>1</td> <td>Сигнал разрешения фазы доступа к регистрам lssi.</td> </tr>
+            <tr> <td>pwdata</td>  <td>I</td> <td>8</td> <td>Данные для записи в регистры.</td> </tr>
+            <tr> <td>pready</td>  <td>O</td> <td>1</td> <td>Сигнал готовности к фазе доступа к регистрам. Всегда равен 1 и оставлен для совместимости с интерфейсом APB.</td> </tr>
+            <tr> <td>prdata</td>  <td>O</td> <td>8</td> <td>Выход данных регистров.</td> </tr>
+            <tr bgcolor="#C0C0C0"> <td colspan="4"><b>Interrupts</b></td> </tr>
+            <tr> <td>irq</td> <td>O</td> <td>1</td> <td>Выход прерывания. Активный уровень 1. Синхронен pclk.</td> </tr>
+            <tr bgcolor="#C0C0C0"> <td colspan="4"><b>UART / SPI</b></td> </tr>
+            <tr> <td>sin</td>       <td>I</td> <td>1</td> <td>Вход данных.</td> </tr>
+            <tr> <td>sout</td>      <td>O</td> <td>1</td> <td>Выход данных.</td> </tr>
+            <tr> <td>sout_oe</td>   <td>O</td> <td>1</td> <td>Сигнал разрешения выходных данных на <b>sout</b>. Равен b'0 в режиме SPI Slave при <b>ss0_cts_i</b> равном 1. В остальных случаях равен 1.</td> </tr>
+            <tr> <td>sck_i</td>     <td>I</td> <td>1</td> <td>Тактовый сигнал устройства в режиме Slave. В режиме Master игнорируется. Формируется Master для синхронизации передачи данных через SPI. Частота <b>sck</b> должна быть как минимум в 4 раза меньше <b>rclk</b>.</td> </tr>
+            <tr> <td>sck_rts_o</td> <td>O</td> <td>1</td> <td><li>Тактовый сигнал для внешних Slave устройств. В режиме Slave равен b'0. Является производной частотой от <b>rclk</b> - формируется путем деления пополам.</li><li>Сигнал UART Ready-to-Send - разрешение приема. Активный уровень - 0.</li></td> </tr>
+            <tr> <td>sck_oe</td>    <td>O</td> <td>1</td> <td>Сигнал разрешения выходных данных на <b>sck_rts_o</b>. Равен b'1 в режиме Master и b'0 в режиме Slave.</td> </tr>
+            <tr> <td>ss0_cts_i</td> <td>I</td> <td>1</td> <td><li>Вход выбора устройства в режиме SPI Slave</li><li>Сигнал UART Clear-to-Send - разрешение передачи. Активный уровень - 0.</li></td> </tr>
+            <tr> <td>ss0_oe</td>    <td>O</td> <td>1</td> <td>Сигнал разрешения выходных данных на <b>ss</b>[0]. Равен b'1 в режиме Master и b'0 в режиме Slave.</td> </tr>
+            <tr> <td>ss</td>        <td>O</td> <td>8</td> <td>Выход выбора Slave устройств.</td> </tr>
+            <tr bgcolor="#C0C0C0"> <td colspan="4"><b>Test</b></td> </tr>
+            <tr> <td>test_mode</td> <td>I</td> <td>1</td> <td>Режим производственного тестирования:<li>0 - рабочий режим;</li><li>1 - тестовый режим.</li></td> </tr>
+         </tbody>
+      </table>
+
+      <h3>Подключение к контактным площадкам</h3>
+      <p>Для корректного использования <b>ehl_lssi</b> в составе системы следует подключить интерфейс SPI согласно представленной схеме. Если <b>ehl_lssi</b> будет работать только в одном из режимов (Master или Slave), то схема может быть упрощена.</p>
+      <img src="um_io.png" width="75%">
+
+   </body>
+</html>

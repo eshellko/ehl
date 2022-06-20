@@ -1,0 +1,38 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Параметры</title>
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+     <div class="article">
+         <div class="titlepage">
+            <h2 class="title">Параметры</h2>
+         </div>
+      </div>
+      <p><b>ehl_fifo</b> имеет возможность быть настроенным под задачу пользователя. За настройку отвечают параметры, представленные далее.</p>
+      <p></p>
+      <table summary="eth_cfg" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Значение по умолчанию</th>
+               <th>Допустимые значения</th>
+               <th>Описание</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>WIDTH_DIN</td> <td>8</td> <td>1-128</td> <td>Ширина входной шины данных wdat.</td> </tr>
+            <tr> <td>WIDTH_DOUT</td> <td>8</td> <td>1-128</td> <td>Ширина выходной шины данных rdat.</td> </tr>
+            <tr> <td>DEPTH</td> <td>8</td> <td>1,2,4,8,16,32,64,128,256,512,1024,2048,4096, 8192, 16384</td> <td>Глубина буфера, выраженная в единицах WIDTH_DIN.</td> </tr>
+            <tr> <td>SYNC_STAGE</td> <td>2</td> <td>0-3</td> <td>Количество стадий синхронизации между fifo_wc и fifo_rc (0 - без регистров синхронизации).</td> </tr>
+         </tbody>
+      </table>
+      <p></p>
+
+      <p>Отношение параметров <b>WIDTH_DIN</b> и <b>WIDTH_DOUT</b> должно быть целым числом, т.е. либо <b>WIDTH_DIN</b> = K * <b>WIDTH_DOUT</b>, либо <b>WIDTH_DOUT</b> = K * <b>WIDTH_DIN</b>.</p>
+      <p>Произведение <b>WIDTH_DIN</b> * <b>DEPTH</b> не должно превышать 65536.</p>
+      <p>Должно выполняться соотношение <b>DEPTH</b>*<b>WIDTH_DIN</b>≥<b>WIDTH_DOUT</b>.</p>
+
+   </body>
+</html>

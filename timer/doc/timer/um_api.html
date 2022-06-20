@@ -1,0 +1,149 @@
+<html>
+   <style> pre.small {line-height: 0.5; font-weight:bold; color: #0000FF; }</style>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>API</title>
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+      <h3>Базовые функции</h3>
+	  <hr>
+      <p><b>API_TIMER_SET_PERIOD</b>: записывает значение периода счета для выбранного таймера.</p>
+      <pre class="small">void API_TIMER_SET_PERIOD(struct EHL_TIMER* dev_id, int timer, int value);</pre>
+      <pre class="small">   dev_id - указатель на структуру таймера</pre>
+      <pre class="small">   timer  - индекс таймера (0..3, максимальное значение задается параметром NTIMERS)</pre>
+      <pre class="small">   value  - значение периода счета (+1) в тактах частоты таймера поделенной в регистре TMRx_PRE (максимальное значение задается TIMER_WIDTH)</pre>
+	  <hr>
+      <p><b>API_TIMER_SET_COMPARE_A_T0</b>: записывает значение регистра сравнения/ШИМ TMRx_CMPA_T0 для выбранного таймера.</p>
+      <p><b>API_TIMER_SET_COMPARE_A_T1</b>: записывает значение регистра сравнения/ШИМ TMRx_CMPA_T1 для выбранного таймера.</p>
+      <p><b>API_TIMER_SET_COMPARE_B_T0</b>: записывает значение регистра сравнения/ШИМ TMRx_CMPB_T0 для выбранного таймера.</p>
+      <p><b>API_TIMER_SET_COMPARE_B_T1</b>: записывает значение регистра сравнения/ШИМ TMRx_CMPB_T1 для выбранного таймера.</p>
+      <p><b>API_TIMER_SET_COMPARE_C_T0</b>: записывает значение регистра сравнения/ШИМ TMRx_CMPC_T0 для выбранного таймера.</p>
+      <p><b>API_TIMER_SET_COMPARE_C_T1</b>: записывает значение регистра сравнения/ШИМ TMRx_CMPC_T1 для выбранного таймера.</p>
+      <pre class="small">void API_TIMER_SET_COMPARE_A_T0(struct EHL_TIMER* dev_id, int timer, int value);</pre>
+      <pre class="small">   dev_id - указатель на структуру таймера</pre>
+      <pre class="small">   timer  - индекс таймера (0..3, максимальное значение задается параметром NTIMERS)</pre>
+      <pre class="small">   value  - значение, используемое для сравнения с базовым счетчиком таймера</pre>
+	  <hr>
+      <p><b>API_TIMER_SET_ONESHOT</b>: включает режим однократного счета - устанавливает TMRx_CFG.ONESHOT без изменения остальных бит регистра TMRx_CFG</p>
+      <pre class="small">void API_TIMER_SET_ONESHOT(struct EHL_TIMER* dev_id, int timer);</pre>
+      <pre class="small">   dev_id - указатель на структуру таймера</pre>
+      <pre class="small">   timer  - индекс таймера (0..3, максимальное значение задается параметром NTIMERS)</pre>
+	  <hr>
+      <p><b>API_TIMER_SET_CYCLIC</b>: включает режим циклического счета - сбрасывает TMRx_CFG.ONESHOT без изменения остальных бит регистра TMRx_CFG</p>
+      <pre class="small">void API_TIMER_SET_CYCLIC(struct EHL_TIMER* dev_id, int timer);</pre>
+      <pre class="small">   dev_id - указатель на структуру таймера</pre>
+      <pre class="small">   timer  - индекс таймера (0..3, максимальное значение задается параметром NTIMERS)</pre>
+	  <hr>
+      <p><b>API_TIMER_SET_INCR</b>: устанавливает режим инкрементального счета таймера - устанавливает TMRx_CFG.DIR без изменения остальных бит регистра TMRx_CFG</p>
+      <pre class="small">void API_TIMER_SET_INCR(struct EHL_TIMER* dev_id, int timer);</pre>
+      <pre class="small">   dev_id - указатель на структуру таймера</pre>
+      <pre class="small">   timer  - индекс таймера (0..3, максимальное значение задается параметром NTIMERS)</pre>
+	  <hr>
+      <p><b>API_TIMER_SET_DECR</b>: устанавливает режим декрементального счета таймера - сбрасывает TMRx_CFG.DIR без изменения остальных бит регистра TMRx_CFG</p>
+      <pre class="small">void API_TIMER_SET_DECR(struct EHL_TIMER* dev_id, int timer);</pre>
+      <pre class="small">   dev_id - указатель на структуру таймера</pre>
+      <pre class="small">   timer  - индекс таймера (0..3, максимальное значение задается параметром NTIMERS)</pre>
+	  <hr>
+      <p><b>API_TIMER_SET_COMPARE</b>: настройка режима сравнения - задает активные каналы cmp_out, тип события на них и задает режим работы "сравнение" (TMRx_CFG.MODE=2)</p>
+      <pre class="small">void API_TIMER_SET_COMPARE(struct EHL_TIMER* dev_id, int timer, int channel_en, int cmp_mode);</pre>
+      <pre class="small">   dev_id     - указатель на структуру таймера</pre>
+      <pre class="small">   timer      - индекс таймера (0..3, максимальное значение задается параметром NTIMERS)</pre>
+      <pre class="small">   channel_en - разрешает генерацию сигнала сравнения на выводе cmp_out. Значения от 0 до 7. Записывается в TMRx_CFG.CMP_EN</pre>
+      <pre class="small">   cmp_mode   - задает тип события на выводе cmp_out. Значения от 0 до 2. Записывается в TMRx_CFG.CMP_TYPE.</pre>
+	  <hr>
+      <p><b>API_TIMER_SET_PWM</b>: настройка режима ШИМ - задает активные каналы cmp_out, задает режим работы "ШИМ" (TMRx_CFG.MODE=3). TMRx_CFG.CMP_TYPE сбрасывается</p>
+      <pre class="small">void API_TIMER_SET_PWM(struct EHL_TIMER* dev_id, int timer, int channel_en);</pre>
+      <pre class="small">   dev_id     - указатель на структуру таймера</pre>
+      <pre class="small">   timer      - индекс таймера (0..3, максимальное значение задается параметром NTIMERS)</pre>
+      <pre class="small">   channel_en - разрешает генерацию сигнала ШИМ на выводе cmp_out. Значения от 0 до 7. Записывается в TMRx_CFG.CMP_EN</pre>
+	  <hr>
+      <p><b>API_TIMER_SET_COUNTER</b>: настройка режима счетчика - задает cpt_in, используемый для подсчета, тип подсчитываемого события и задает режим работы "счетчик" (TMRx_CFG.MODE=4)</p>
+      <pre class="small">void API_TIMER_SET_COUNTER(struct EHL_TIMER* dev_id, int timer, int channel, int ttype);</pre>
+      <pre class="small">   dev_id  - указатель на структуру таймера</pre>
+      <pre class="small">   timer   - индекс таймера (0..3, максимальное значение задается параметром NTIMERS)</pre>
+      <pre class="small">   channel - выбор вывода cpt_in. Значения от 0 до 1. Записывается в TMRx_CFG.CPT_SEL</pre>
+      <pre class="small">   ttype   - задает тип события на выводе cpt_in для подсчета. Значения от 0 до 3. Записывается в TMRx_CFG.CPT_TYPE.</pre>
+	  <hr>
+      <p><b>API_TIMER_SET_CAPTURE</b>: настройка режима захвата - задает cpt_in, используемый для захвата, тип захватываемого события, события начала и окончания захвата и режим работы "захват" (TMRx_CFG.MODE=1)</p>
+      <pre class="small">void API_TIMER_SET_CAPTURE(struct EHL_TIMER* dev_id, int timer, int channel, int ttype, int start, int stop);</pre>
+      <pre class="small">   dev_id  - указатель на структуру таймера</pre>
+      <pre class="small">   timer   - индекс таймера (0..3, максимальное значение задается параметром NTIMERS)</pre>
+      <pre class="small">   channel - выбор вывода cpt_in. Значения от 0 до 1. Записывается в TMRx_CFG.CPT_SEL</pre>
+      <pre class="small">   ttype   - задает тип события на выводе cpt_in для захвата. Значения от 0 до 3. Записывается в TMRx_CFG.CPT_TYPE.</pre>
+      <pre class="small">   start   - задает тип события на выводе cpt_in для начала захвата. Значения от 0 до 3. Записывается в TMRx_CFG.CPT_START.</pre>
+      <pre class="small">   stop    - задает тип события на выводе cpt_in для окончания захвата. Значения от 0 до 3. Записывается в TMRx_CFG.CPT_STOP.</pre>
+	  <hr>
+      <p><b>API_TIMER_SET_TIMER</b>: настройка таймера в режим таймера (TMRx_CFG.MODE=0)</p>
+      <pre class="small">void API_TIMER_SET_TIMER(struct EHL_TIMER* dev_id, int timer);</pre>
+      <pre class="small">   dev_id - указатель на структуру таймера</pre>
+      <pre class="small">   timer  - индекс таймера (0..3, максимальное значение задается параметром NTIMERS)</pre>
+	  <hr>
+      <p><b>API_TIMER_SET_PRESCALER</b>: задает коэффициент деления частоты таймера (регистр TMRx_PRE)</p>
+      <pre class="small">void API_TIMER_SET_PRESCALER(struct EHL_TIMER* dev_id, int timer, int value);</pre>
+      <pre class="small">   dev_id - указатель на структуру таймера</pre>
+      <pre class="small">   timer  - индекс таймера (0..3, максимальное значение задается параметром NTIMERS)</pre>
+      <pre class="small">   value  - коэффициент деления частоты таймера. Значения от 0 до 255. Записывается в TMRx_PRE</pre>
+	  <hr>
+      <p><b>API_TIMER_GET_VALUE</b>: возвращает текущее значение таймера (регистр TMRx_VALUE). Возвращаемое значение ограничено количеством бит, заданным TIMER_WIDTH</p>
+      <pre class="small">unsigned int API_TIMER_GET_VALUE(struct EHL_TIMER* dev_id, int timer);</pre>
+      <pre class="small">   dev_id - указатель на структуру таймера</pre>
+      <pre class="small">   timer  - индекс таймера (0..3, максимальное значение задается параметром NTIMERS)</pre>
+	  <hr>
+      <p><b>API_TIMER_GET_CAPTURE</b>: возвращает текущее значение регистра сравнения TMRx_CPT. Возвращаемое значение ограничено количеством бит, заданным TIMER_WIDTH</p>
+      <pre class="small">unsigned int API_TIMER_GET_CAPTURE(struct EHL_TIMER* dev_id, int timer);</pre>
+      <pre class="small">   dev_id - указатель на структуру таймера</pre>
+      <pre class="small">   timer  - индекс таймера (0..3, максимальное значение задается параметром NTIMERS)</pre>
+	  <hr>
+      <p><b>API_TIMER_GET_CTRL</b>: возвращает текущее значение регистра управления TMRx_CTRL.</p>
+      <pre class="small">unsigned int API_TIMER_GET_CTRL(struct EHL_TIMER* dev_id, int timer);</pre>
+      <pre class="small">   dev_id - указатель на структуру таймера</pre>
+      <pre class="small">   timer  - индекс таймера (0..3, максимальное значение задается параметром NTIMERS)</pre>
+	  <hr>
+      <p><b>API_TIMER_START</b>: запускает таймер установкой TMRx_CTRL.ENA.</p>
+      <pre class="small">void API_TIMER_START(struct EHL_TIMER* dev_id, struct EHL_TIMER* dev_id, int timer);</pre>
+      <pre class="small">   dev_id - указатель на структуру таймера</pre>
+      <pre class="small">   timer  - индекс таймера (0..3, максимальное значение задается параметром NTIMERS)</pre>
+	  <hr>
+      <p><b>API_TIMER_STOP</b>: останавливает таймер сбросом TMRx_CTRL.ENA.</p>
+      <pre class="small">void API_TIMER_STOP(struct EHL_TIMER* dev_id, int timer);</pre>
+      <pre class="small">   dev_id - указатель на структуру таймера</pre>
+      <pre class="small">   timer  - индекс таймера (0..3, максимальное значение задается параметром NTIMERS)</pre>
+	  <hr>
+      <p><b>API_TIMER_PAUSE</b>: приостанавливает таймер записью TMRx_CTRL=3. Предполагается, что таймер уже запущен на момент вызова функции</p>
+      <pre class="small">void API_TIMER_PAUSE(struct EHL_TIMER* dev_id, int timer);</pre>
+      <pre class="small">   dev_id - указатель на структуру таймера</pre>
+      <pre class="small">   timer  - индекс таймера (0..3, максимальное значение задается параметром NTIMERS)</pre>
+	  <hr>
+      <p><b>API_TIMER_DISABLE_IRQ</b>: запрещает прерывания записью 0 в IRQ_CTRL</p>
+      <pre class="small">void API_TIMER_DISABLE_IRQ(struct EHL_TIMER* dev_id);</pre>
+      <pre class="small">   dev_id - указатель на структуру таймера</pre>
+	  <hr>
+      <p><b>API_TIMER_ENABLE_IRQ</b>: разрешает выбранные прерывания записью в IRQ_CTRL</p>
+      <pre class="small">void API_TIMER_ENABLE_IRQ(struct EHL_TIMER* dev_id, int value);</pre>
+      <pre class="small">   dev_id - указатель на структуру таймера</pre>
+      <pre class="small">   value  - разрешенные прерывания, записываемые в IRQ_CTRL</pre>
+	  <hr>
+      <p><b>API_TIMER_CLEAR_IRQ</b>: сбрасывает выбранные флаги прерываний в IRQ_FLAG</p>
+      <pre class="small">void API_TIMER_CLEAR_IRQ(struct EHL_TIMER* dev_id, int value);</pre>
+      <pre class="small">   dev_id - указатель на структуру таймера</pre>
+      <pre class="small">   value  - сбрасываемые прерывания</pre>
+	  <hr>
+      <p><b>API_TIMER_GET_IRQ</b>: возвращает текущие флаги прерываний - значение регистра IRQ_FLAG</p>
+      <pre class="small">unsigned int API_TIMER_GET_IRQ(struct EHL_TIMER* dev_id);</pre>
+      <pre class="small">   dev_id - указатель на структуру таймера</pre>
+	  <hr>
+      <h3>Примеры</h3>
+      <p>Примеры использования API расположены в timer/src/fv/timer.</p>
+      <p><b>Режим циклического счета</b></p>
+      <pre class="small">   API_TIMER_SET_TIMER(dev_timer, timer);       // настройка таймера в режим "таймера"</pre>
+      <pre class="small">   API_TIMER_SET_CYCLIC(dev_timer, timer);      // ... циклический режим</pre>
+      <pre class="small">   API_TIMER_SET_INCR(dev_timer, timer);        // ... инкрементальный счет</pre>
+      <pre class="small">   API_TIMER_SET_PERIOD(dev_timer, timer, 250); // период счета - 250 тактов</pre>
+      <pre class="small">   API_TIMER_ENABLE_IRQ(dev_timer, 1 << timer); // прерывание по переполнению счетчика</pre>
+      <pre class="small">   API_TIMER_START(dev_timer, timer);           // пуск таймера</pre>
+      <pre class="small">   ...</pre>
+      <pre class="small">   API_TIMER_CLEAR_IRQ(dev_timer, 1 << timer);  // обработка прерывания - сброс флага</pre>
+      <pre class="small">   ...</pre>
+      <pre class="small">   API_TIMER_STOP(dev_timer, timer);            // остановка таймера</pre>
+   </body>
+</html>

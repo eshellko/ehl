@@ -1,0 +1,346 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Режим контроллера шины</title>
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+      <h2>Режим контроллера шины</h2>
+   </body>
+
+   <p>Для перевода <b>ehl_m1553</b> в режим Контроллера Шины / Bus Controller следует задать <b>CFG.MS</b>=1 и <b>CFG.BE</B>=1.</p>
+   <p>
+      Работа КШ организована в виде последовательной обработки заданий из списка (каждое задание состоит из передачи сообщения по шине).
+      Начало обработки заданий инициируется записью 1 в <b>CTRL.RUN</b>.
+   </p>
+   <p>
+      Перед началом работы список заданий следует проинициализировать.
+      Адрес первого задания задается в <b>BC_ADDR</b> перед запуском контроллера.
+      Размещение заданий в памяти (доступной через AHB порт контроллера) представлено на рисунке.
+   </p>
+   <img src="um_bc_desc.png" width="70%">
+   <p>
+      Формат заданий соответствует формату дескрипторов КШ.
+      Каждое задание содержит 4 32-битных слова (<b>Config</b>, <b>Command</b>, <b>Addr</b> и <b>Result</b>).
+      Пользователь заполняет первые 3 поля перед запуском задания.
+      Если задание является последним в списке, для него должен быть установлен <b>Config.SOC</b>.
+      По окончании выполнения задания контроллер заполняет <b>Result</b> (за исключением случая ошибки DMA).
+   </p>
+   <p>
+      Контроллер последовательно опрашивает дескрипторы (и выполняет задания), пока не обработает дескриптор с <b>CONFIG.SOC</b>=1, либо не случится ошибки в обработке задания при установленном <b>CONFIG.SOE</b>=1.
+   </p>
+<!-- TODO: добавить форматы сообщений и форматы слов -- или дать ссылку на стандарт -->
+
+   <h2><a name="DESCR"></a>Дескрипторы</h2>
+   <p>
+      <b>ehl_m1553</b> обрабатывает задания (в режиме Bus Controller) в соответствии с дескрипторами, расположенными в памяти.
+      Доступ к дескрипторам, а также доступ к данным осуществляется с помощью DMA, являющегося ведущим на шине AHB.
+      DMA в процессе работы зачитывает дескрипторы и данные, требуемые для следующего трансфера. В процессе работы DMA возможны следующие проблемы:
+   </p>
+   <ul>
+      <li>длительное чтение дескрипторов - приводит к подвисанию шины, в случае, если чтение не выполнилось за 120 тактов <b>ref_clk</b>, генерируется прерывание <b>irq_dma</b> и модуль прекращает обработку заданий;</li>
+      <li>ERROR RESPONSE с шины AHB при чтении дескрипторов - обрабатывается аналогично выставлением <b>irq_dma</b> и прекращением обработки заданий;</li>
+      <li>длительное чтение данных - приводит к неготовности данных к моменту начала передачи, контроллер передает данные с испорченным parity и продолжает работу с шиной.
+         Такой подход не вносит сигнальных и протокольных ошибок в шину (кроме ошибок parity, детектируемых устройствами на шине), снижая вероятность некорректного деокдирования RT состояний шины.
+         По завершении попытки задание повторяется (если не достигнут предел);</li>
+      <li>ERROR RESPONSE с шины AHB при чтении данных - обрабатывается аналогично длительному чтению данных - передачей данных с испорченным parity;</li>
+      <li>длительная запись данных - обрабатывается аналогично длительному чтению;</li>
+      <li>ERROR RESPONSE с шины AHB при записи данных - обрабатывается аналогично длительной записи;</li>
+      <li>длительная запись дескриптора или Error Response при записи дескрипторов - установка <b>irq_dma</b>;</li>
+   </ul>
+   <p>
+      <b style="color: #FF0000">Замечание</b>.
+	  В случае обнаружения ошибок DMA контроллер прекращает обработку цепочки заданий вне зависимости от количества повторений (<b>Config.RC</b>) и наличия элементов в цепочке (<b>Config.SOC</b>).
+	  В случае данного вида ошибок, содержимое <b>Result</b> дескриптора не валидно.
+	  Актуальное значение содержится в регистре <b>LSTAT</b>.
+   </p>
+
+   <table summary="Descriptors" cellpadding="1" width="0%" border="1" cellspacing="0" rules="all">
+      <colgroup><col><col><col><col></colgroup>
+      <thead>
+         <tr bgcolor="#C0C0C0">
+            <th>Название</th>
+            <th>Смещение</th>
+            <th>Доступ</th>
+            <th>Описание</th>
+         </tr>
+      </thead>
+      <tbody>
+         <tr>
+            <td>Config</td>
+            <td>0x0</td>
+            <td>W</td>
+            <td>Настройка задания</td>
+         </tr>
+         <tr>
+            <td>Command</td>
+            <td>0x4</td>
+            <td>W</td>
+            <td>Командное слово</td>
+         </tr>
+         <tr>
+            <td>Addr</td>
+            <td>0x8</td>
+            <td>W</td>
+            <td>Адрес буфера данных. Должен быть выравнен до границы 2 байт.</td>
+         </tr>
+         <tr>
+            <td>Result</td>
+            <td>0xC</td>
+            <td>R</td>
+            <td>Результат выполнения задания</td>
+         </tr>
+      </tbody>
+   </table>
+
+   <p>
+	  Дескрипторы имеют следующий формат:
+   </p>
+
+   <p><a name="Config"></a><span class="bold" style="color: #0000CC"><b>Config [0x0]: </b></span>Настройка задания</p>
+   <table summary="Fields for Register: desc_cfg" cellpadding="1" width="0%" border="1" cellspacing="0" rules="all">
+      <colgroup><col><col><col><col></colgroup>
+      <thead>
+         <tr bgcolor="#C0C0C0">
+            <th>Биты</th>
+            <th>Название</th>
+            <th>Описание</th>
+            <th>Доступ</th>
+         </tr>
+      </thead>
+      <tbody>
+         <tr>
+            <td>31:9</td>
+            <td>-</td>
+            <td><b>Резерв</b></td>
+            <td>R</td>
+         </tr>
+<!--
+TODO: implement functionality...
+         <tr>
+            <td>9</td>
+            <td>BA</td>
+            <td>
+   <b>Bus analysis</b>. Включение режима анализа шины:<p>0 - выключен;</p><p>1 - включен.</p>
+<p>При включенном режиме КШ будет начинать передавать данные не по шине, указанной в <b>BS</b>, а по шине, по которой было передано последнее успешное сообщение (если такое было после сброса, иначе в с оответствии с <b>BS</b>).</p>
+<p>В процессе работы возможен случай выхода из строя одной из шин. Если эта шина выбрана в качестве основной для передачи, то трафик будет дублироваться. Установка <b>BA</b> приводит к началу передачи по последней успешно переданной шине.
+В случае ошибки передачи, повторная посылка осуществляется по альтернативной шине (если установлен <b>RM</b>, или по шине, указанной в <b>BS</b>.</p>
+</td>
+            <td>R/W</td>
+         </tr>
+-->
+         <tr>
+            <td>8:6</td>
+            <td>RC</td>
+            <td><b>Retry Count</b>. Количество попыток передать сообщение (повторная попытак переслать сообщение в случае возникновения ошибки при значении больше 1). Допустимые значения от 1 до 7.</td>
+            <td>R/W</td>
+         </tr>
+         <tr>
+            <td>5</td>
+            <td>IOE</td>
+            <td><b>Interrupt On Error</b>. Разрешение генерации прерывания в случае ошибки при передаче сообщения:<li>0 - запрещено;</li><li>1 - разрешено.</li></td>
+            <td>R/W</td>
+         </tr>
+         <tr>
+            <td>4</td>
+            <td>IOC</td>
+            <td><b>Interrupt On Completion</b>. Разрешение генерации прерывания при завершении передачи сообщения:<li>0 - запрещено;</li><li>1 - разрешено.</li></td>
+            <td>R/W</td>
+         </tr>
+         <tr>
+            <td>3</td>
+            <td>SOE</td>
+            <td><b>Suspend On Error</b>. Завершение выполнения заданий в случае ошибки в сообщении:<li>0 - запрещено;</li><li>1 - разрешено.</li></td>
+            <td>R/W</td>
+         </tr>
+         <tr>
+            <td>2</td>
+            <td>SOC</td>
+            <td><b>Suspend On Completion</b>. Завершение выполнения заданий после обработки сообщения:<li>0 - запрещено;</li><li>1 - разрешено.</li>Следует установить для последнего задания в цепочке.</td>
+            <td>R/W</td>
+         </tr>
+         <tr>
+            <td>1</td>
+            <td>RM</td>
+            <td><b>Retry mode</b>. Выбор шины для повторной передачи сообщения:<li>0 - та же шина (<b>CONFIG.BS</b>);</li><li>1 - по обеим линиям поочередно.</li></b></td>
+            <td>R/W</td>
+         </tr>
+         <tr>
+            <td>0</td>
+            <td>BS</td>
+            <td><b>Bus selection</b>. Выбор шины для передачи сообщения:<li>0 - bus A;</li><li>1 - bus B.</li></td>
+            <td>R/W</td>
+         </tr>
+      </tbody>
+   </table>
+
+   <p><a name="Command"></a><span class="bold" style="color: #0000CC"><b>Command [0x4]: </b></span>Командное слово</p>
+   <table summary="Fields for Register: desc_cmd" cellpadding="1" width="0%" border="1" cellspacing="0" rules="all">
+      <colgroup><col><col><col><col></colgroup>
+      <thead>
+         <tr bgcolor="#C0C0C0">
+            <th>Биты</th>
+            <th>Название</th>
+            <th>Описание</th>
+            <th>Доступ</th>
+         </tr>
+      </thead>
+      <tbody>
+         <tr>
+            <td>31:26</td>
+            <td>-</td>
+            <td><b>Резерв</b></td>
+            <td>R</td>
+         </tr>
+         <tr>
+            <td>25:21</td>
+            <td>RTA2</td>
+            <td><b>RT Address 2</b>. Адрес удаленного терминала для передачи RT-RT.</td>
+            <td>R/W</td>
+         </tr>
+         <tr>
+            <td>20:16</td>
+            <td>RTS2</td>
+            <td><b>RT Subaddress 2</b> для передачи RT-RT.</td>
+            <td>R/W</td>
+         </tr>
+         <tr>
+            <td>15:11</td>
+            <td>RTA</td>
+            <td><b>RT Address.</b> Адрес удаленного терминала.</td>
+            <td>R/W</td>
+         </tr>
+         <tr>
+            <td>10</td>
+            <td>TR</td>
+            <td><b>Transmit (1)/receive (0)</b></td>
+            <td>R/W</td>
+         </tr>
+         <tr>
+            <td>9:5</td>
+            <td>RTS</td>
+            <td><b>RT Subaddress</b></td>
+            <td>R/W</td>
+         </tr>
+         <tr>
+            <td>4:0</td>
+            <td>WC</td>
+            <td><b>Word count / Mode code</b></td>
+            <td>R/W</td>
+         </tr>
+      </tbody>
+   </table>
+   <br>
+   <p>Далее приведено значение полей <b>Command</b> для различных видов трансферов.</p>
+   <table summary="Fields for Register: cmd_decode" cellpadding="1" width="0%" border="1" cellspacing="0" rules="all">
+      <colgroup><col><col><col><col><col><col><col><col></colgroup>
+      <thead>
+         <tr bgcolor="#C0C0C0">
+            <th>Transfer type</th>
+            <th>RTA</th>
+            <th>RTS</th>
+            <th>RTA2</th>
+            <th>RTS2</th>
+            <th>WC</th>
+            <th>TR</th>
+            <th>Data buffer direction</th>
+         </tr>
+      </thead>
+      <tbody>
+         <tr> <td>Data, BC-to-RT           </td> <td>RT address(0-30)      </td> <td>RT subaddr(1-30)      </td> <td>-                 </td> <td>0                    </td> <td>Word Count</td> <td>0</td> <td>Read (2-64 bytes) </td> </tr>
+         <tr> <td>Data, RT-to-BC           </td> <td>RT address(0-30)      </td> <td>RT subaddr(1-30)      </td> <td>-                 </td> <td>0                    </td> <td>Word Count</td> <td>1</td> <td>Write (2-64 bytes)</td> </tr>
+         <tr> <td>Data, RT-to-RT           </td> <td>Recv. RT address(0-30)</td> <td>Recv. RT subaddr(1-30)</td> <td>Xmit RT Addr(0-30)</td> <td>Xmit RT Subaddr(1-30)</td> <td>Word Count</td> <td>0</td> <td>Write (2-64 bytes)</td> </tr>
+         <tr> <td>Mode, no data            </td> <td>RT address(0-30)      </td> <td>0 or 31               </td> <td>-                 </td> <td>-                    </td> <td>Mode Code </td> <td>1</td> <td>Unused            </td> </tr>
+         <tr> <td>Mode, RT-to-BC           </td> <td>RT address(0-30)      </td> <td>0 or 31               </td> <td>-                 </td> <td>-                    </td> <td>Mode Code </td> <td>1</td> <td>Write (2 bytes)   </td> </tr>
+         <tr> <td>Mode, BC-to-RT           </td> <td>RT address(0-30)      </td> <td>0 or 31               </td> <td>-                 </td> <td>-                    </td> <td>Mode Code </td> <td>0</td> <td>Read (2 bytes)    </td> </tr>
+         <tr> <td>Broadcast Data, BC-to-RTs</td> <td>31                    </td> <td>RTs subaddr(1-30)     </td> <td>-                 </td> <td>0                    </td> <td>Word Count</td> <td>0</td> <td>Read (2-64 bytes) </td> </tr>
+         <tr> <td>Broadcast Data, RT-to-RTs</td> <td>31                    </td> <td>Recv RTs subaddr(1-30)</td> <td>Xmit RT Addr(0-30)</td> <td>Xmit RT Subaddr(1-30)</td> <td>Word Count</td> <td>0</td> <td>Write (2-64 bytes)</td> </tr>
+         <tr> <td>Broadcast Mode, no data  </td> <td>31                    </td> <td>0 or 31               </td> <td>-                 </td> <td>-                    </td> <td>Mode Code </td> <td>1</td> <td>Unused            </td> </tr>
+         <tr> <td>Broadcast Mode, BC-to-RT </td> <td>31                    </td> <td>0 or 31               </td> <td>-                 </td> <td>-                    </td> <td>Mode Code </td> <td>0</td> <td>Read (2 bytes)    </td> </tr>
+      </tbody>
+   </table>
+   <br>      
+   
+   <p><a name="Result"></a><span class="bold" style="color: #0000CC"><b>Result [0xC]: </b></span>Результат</p>
+   <table summary="Fields for Register: desc_result" cellpadding="1" width="0%" border="1" cellspacing="0" rules="all">
+      <colgroup><col><col><col><col></colgroup>
+      <thead>
+         <tr bgcolor="#C0C0C0">
+            <th>Биты</th>
+            <th>Название</th>
+            <th>Описание</th>
+            <th>Доступ</th>
+         </tr>
+      </thead>
+      <tbody>
+         <tr>
+            <td>31:24</td>
+            <td>-</td>
+            <td><b>Резерв</b></td>
+            <td>R</td>
+         </tr>
+         <tr>
+            <td>23:16</td>
+            <td>SW2</td>
+            <td>
+               <b>Status Word 2</b>. Принятое статусное слово принимающего удаленного терминала в RT-to-RT. Кодируется аналогично <b>SW</b>.
+            </td>
+            <td>R</td>
+         </tr>
+         <tr>
+            <td>15:8</td>
+            <td>SW</td>
+            <td>
+               <b>Status Word</b>. Принятое статусное слово удаленного терминала (передающего терминала в RT-to-RT).
+               <!--<p>15:11 - адрес удаленного терминала. Несовпадение с адресом удаленного терминала в командном слове (<b>Command.RTA</b>) приводит к ошибке протокола (<b>Result.ST</b>);</p>-->
+               <li>15 - Message Error. 1 в данном поле приводит к ошибке статусного слова (<b>Result.ST</b>);</li>
+               <li>14 - Instrumentation. 1 в данном поле приводит к ошибке статусного слова (<b>Result.ST</b>);</li>
+               <li>13 - Service Request;</li>
+               <li>12 - broadcast command received;</li>
+               <li>11 - busy. 1 в данном поле приводит к ошибке статусного слова (<b>Result.ST</b>);</li>
+               <li>10 - subsystem flag;</li>
+               <li>9 - dynamic bus control acceptance;</li>
+               <li>8 - terminal flag;</li>
+            </td>
+            <td>R</td>
+         </tr>
+         <tr>
+            <td>7:4</td>
+            <td>RC</td>
+            <td><b>Retry Count</b>. Количество повторений, после которых завершено задание.</td>
+            <td>R</td>
+         </tr>
+         <tr>
+            <td>3</td>
+            <td>TB</td>
+            <td><b>Task Bus</b>. Шина, использованная для последней передачи в задании.</td>
+            <td>R</td>
+         </tr>
+         <tr>
+            <td>2:0</td>
+            <td>ST</td>
+            <td><b>Status</b>. Состояние задания:
+               <li>000 - завершено успешно;</li>
+               <li>001 - Remote Terminal не ответил на команду (BC-to-RT или передающий RT в RT-to-RT);</li>
+               <li>010 - принимающий Remote Terminal не ответил на команду (RT-to-RT);</li>
+<!-- Q: TERM_FLAG, or SS_FLAG asserted? -->
+               <li>011 - ошибка в статусном слове, полученном от Remote Terminal (один или более бит Message Error, Instrumentation, Busy, reserved установлен в 1);</li>
+               <li>100 - ошибка протокола (нарушение тайм-аутов, ошибка декодирования, некорректная длина слов<!-- TODO: некорректное количество слов-->);</li>
+               <li>101 - некорректный дескриптор задания (
+                  1. Mode Code без данных и TR=0;
+                  2. RT-2-RT с адресом передатчика 31;
+                  3. RT-2-RT с одинаковыми адресами приемника и передатчика;
+                  4. RT-2-RT с субадресом передатчика 0 или 31;
+                  5. широковещательный запрос с TR=1;
+6. Mode Code с неподдерживаемым аттрибутом TR, Broadcast;
+                  7. Mode Code в режиме RT-2-RT;
+                  8. RT-2-RT с TR=1).
+               </li>
+               <li>110 - ошибочный отклик буфера DMA или превышение тайм-аута (данный тип ошибок доступен только в регистре <b>LSTAT</b>, в память AHB он не пишется);</li>
+               <li>111 - ошибка в петле обратной связи - принимаемые данные отличны от передаваемых.</li>
+            </td>
+            <td>R</td>
+         </tr>
+      </tbody>
+   </table>
+
+</html>

@@ -1,0 +1,158 @@
+<html>
+   <style> pre.small {line-height: 0.5; font-weight:bold; }</style>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Reed-Solomon Decoder</title>
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+      <h2>Reed-Solomon Decoder</h2>
+	  <hr>
+      <table cellpadding="4" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col></colgroup>
+         <tbody>
+            <tr> <td bgcolor="#C0C0C0">Версия</td>      <td>1.0</td> </tr>
+            <tr> <td bgcolor="#C0C0C0">Дата</td>        <td>2016.02.15</td> </tr>
+            <tr> <td bgcolor="#C0C0C0">Разработчик</td> <td>А.В. Корнюхин (kornukhin@mail.ru)</td> </tr>
+         </tbody>
+      </table>
+
+      <h3>Введение</h3>
+	  <p>В данной спецификации описываются структура, порядок использования и технические характеристики блока декодера Рида-Соломона.</p>
+
+      <h2>Справочные материалы</h2>
+      <table cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0"> <th>Номер</th> <th>Наименование</th> </tr>
+         </thead>
+         <tbody>
+            <tr> <td>1</td> <td>Reed-Solomon Codes by Bernard Sklar</td> </tr>
+            <tr> <td>2</td> <td>https://ru.wikipedia.org/wiki/%D0%9A%D0%BE%D0%B4_%D0%A0%D0%B8%D0%B4%D0%B0_%E2%80%94_%D0%A1%D0%BE%D0%BB%D0%BE%D0%BC%D0%BE%D0%BD%D0%B0</td> </tr>
+            <tr> <td>3</td> <td>Lin Shu, Costello Daniel J., Error Control coding</td> </tr>
+         </tbody>
+      </table>
+
+      <h2>Условные обозначения и сокращения</h2>
+      <table cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0"> <th>Сокращение</th> <th>Расшифровка</th> </tr>
+         </thead>
+         <tbody>
+            <tr> <td>RS</td>  <td>Reed-Solomon</td> </tr>
+         </tbody>
+      </table>
+
+      <h2>Общие сведения</h2>
+	  <p><b>ehl_rs_dec</b> представляет собой декодер данных по алгоритму Рида-Соломона. Блок имеет набор параметров, позволяющих настроить его под требования проекта.</p>
+      <h4>Основные возможности</h4>
+	  <li>Декодирование данных кодом Рида-Соломона.</li>
+      <h4>Области применения</h4>
+	  <li>Телевизионные приемо-передатчики (DVB-T2);</li>
+	  <li>Защита данных во встраиваемой памяти.</li>
+
+      <h2>Интерфейс</h2>
+	  <p><b>ehl_rs_dec</b> может быть использован как полностью комбинаторный модуль или как datapath модуль, на вход которого поступают данные и контрольные биты для декодирования, а на выходе появляются исправленные данные и флаги наличия ошибок и их исправляемости.</p>
+      <pre class="small">    ____________________________</pre>
+      <pre class="small">   |                            |</pre>
+      <pre class="small">---| stream_in       stream_out |---</pre>
+      <pre class="small">---| clk         error_detected |---</pre>
+      <pre class="small">---| res        error_corrected |---</pre>
+      <pre class="small">   |____________________________|</pre>
+
+      <table summary="io" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Количество</th>
+               <th>Тип</th>
+               <th>Назначение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>stream_in</td>       <td>N</td> <td>I</td> <td>Входная шина данных.</td> </tr>
+            <tr> <td>stream_out</td>      <td>M</td> <td>O</td> <td>Выходная шина данных.</td> </tr>
+            <tr> <td>error_detected</td>  <td>1</td> <td>O</td> <td>Флаг обнаружения ошибки.</td> </tr>
+            <tr> <td>error_corrected</td> <td>1</td> <td>O</td> <td>Флаг исправления ошибки.</td> </tr>
+            <tr> <td>clk</td>             <td>1</td> <td>I</td> <td>Тактовый сигнал.</td> </tr>
+            <tr> <td>res</td>             <td>1</td> <td>I</td> <td>Асинхронный сброс (активный уровень b’0).</td> </tr>
+         </tbody>
+      </table>
+	  <p>Значение N определяется параметрами <b>DATA_SYMBOL</b>, <b>SYMBOL_WIDTH</b> и <b>ERROR_FIXED</b>.</p>
+	  <p>Значение M определяется параметрами <b>DATA_SYMBOL</b> и <b>SYMBOL_WIDTH</b>.</p>
+
+      <h2>Структура</h2>
+	  <p>Модуль является конвейеризованным декодером с опционально включаемыми стадиями:</p>
+	  <p>1. Поиск синдрома ошибки. Если ошибка обнаружена, устанавливается флаг <b>error_detected</b>.</p>
+	  <p>2. Вычисление полинома ошибок.</p>
+	  <p>3. Вычисление вектора локализации ошибки.</p>
+	  <p>4. Коррекция ошибок.</p>
+	  <p>5. Дополнительная стадия, используемая для ретайминга. На выходе <b>stream_out</b> скорректированные данные, если установлен флаг <b>error_corrected</b>, в противном случае, ошибок не было, либо не удалось исправить (в зависимости от значения <b>error_detected</b> на 1 стадии).</p>
+      <img src="um_rs_dec_arch.png" width="50%">
+
+      <h3>Параметры</h3>
+	  <p><b>ehl_rs_dec</b> может быть настроен под задачу пользователя. За настройку отвечают параметры, представленные в таблице.</p>
+      <table cellpadding="4" width="80%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Значение по умолчанию</th>
+               <th>Допустимые значения</th>
+               <th>Описание</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>SYMBOL_WIDTH</td> <td>4</td> <td>3-12</td> <td>Количество бит в символе данных.</td> </tr>
+            <tr> <td>DATA_SYMBOLS</td> <td>11</td> <td>2-255</td> <td>Количество символов во входных данных.</td> </tr>
+            <tr> <td>ERROR_FIXED</td> <td>2</td> <td>1-7</td> <td>Количество исправляемых ошибок.</td> </tr>
+            <tr> <td>PIPELINE</td> <td>0</td> <td>0, 1</td> <td>Тип конвейера.</td> </tr>
+            <tr> <td>EXTRA_STAGE</td> <td>0</td> <td>0, 1</td> <td>Дополнительная стадия конвейера на выходе.</td> </tr>
+         </tbody>
+      </table>
+	  <p>Параметр <b>PIPELINE</b> определяет тип логики в модуле (0 – полностью комбинаторная схема, 1 – конвейер с триггерами между стадиями). Для небольших значений параметров <b>SYMBOL_WIDTH</b>, <b>DATA_SYMBOLS</b>, <b>ERROR_FIXED</b> при соответствующем выборе технологии вычисления могут выполняться за 1 такт. Если это требование не выполняется, то рекомендуется использовать конвейер.</p>
+	  <p>Параметр <b>EXTRA_STAGE</b> позволяет добавить дополнительный регистр на выходе декодера. Если параметр равен 0, то <b>stream_out</b> и <b>error_detected</b> формируются на такт раньше, до “Dummy retime stage” (рис. 1).</p>
+      <p>Для параметров должно выполняться следующее соотношение:</p>
+	  <p><b>DATA_SYMBOLS</b> + 2*<b>ERROR_FIXED</b> > 2**<b>SYMBOL_WIDTH</b> – 1 [3, Раздел 7.3].</p>
+	  <p>Ширина входных данных определяется соотношением (<b>DATA_SYMBOLS</b> + 2*<b>ERROR_FIXED</b>) * <b>SYMBOL_WIDTH</b>.</p>
+	  <p>Ширина выходных данных определяется соотношением <b>DATA_SYMBOLS</b> * <b>SYMBOL_WIDTH</b>.</p>
+
+      <h3>Функционирование</h3>
+	  <p>Код Рида-Соломона является недвоичным кодом, т.е. он работает с символами, а не с битами. Символ состоит из 3 и более бит (“Reed-Solomon codes are nonbinary cyclic codes with symbols made up of m-bit sequences, where m is any positive integer having a value greater than 2.” [1]). Поэтому исправление ошибок происходит на уровне символов, независимо от того, сколько бит в символе было повреждено.</p>
+	  <p>Исходными данными для генерации кода является примитивный полином.</p>
+      <table cellpadding="4" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>SYMBOL_WIDTH</th>
+               <th>Примитивный полином</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>3</td> <td>x<sup>3</sup>+x<sup>1</sup>+1</td> </tr>
+            <tr> <td>4</td> <td>x<sup>4</sup>+x<sup>1</sup>+1</td> </tr>
+            <tr> <td>5</td> <td>x<sup>5</sup>+x<sup>2</sup>+1</td> </tr>
+            <tr> <td>6</td> <td>x<sup>6</sup>+x<sup>1</sup>+1</td> </tr>
+            <tr> <td>7</td> <td>x<sup>7</sup>+x<sup>3</sup>+1</td> </tr>
+            <tr> <td>8</td> <td>x<sup>8</sup>+x<sup>4</sup>+x<sup>3</sup>+x<sup>2</sup>+1</td> </tr>
+            <tr> <td>9</td> <td>x<sup>9</sup>+x<sup>4</sup>+1</td> </tr>
+            <tr> <td>10</td> <td>x<sup>10</sup>+x<sup>3</sup>+1</td> </tr>
+            <tr> <td>11</td> <td>x<sup>11</sup>+x<sup>2</sup>+1</td> </tr>
+            <tr> <td>12</td> <td>x<sup>12</sup>+x<sup>6</sup>+x<sup>4</sup>+x<sup>1</sup>+1</td> </tr>
+         </tbody>
+      </table>
+
+      <h3>Функциональная верификация</h3>
+	  <p><b>ehl_rs_dec</b> верифицировался с помощью CRT UVM тестирования в связке с <b>ehl_rs_enc</b>.</p>
+
+      <h2>Применение</h2>
+      <h3>Общие сведения о применении</h3>
+	  <p>Модуль следует расположить на пути данных, так, что входные контрольные биты и данные поступают на вход <b>stream_in</b> (контрольные биты в старших разрядах). Флаг <b>error_detected</b> следует использовать для детектирования наличия ошибок в потоке данных. В случае обнаружения ошибки, следует подождать 4 такта до момента появления скорректированных данных и флага <b>error_corrected</b> на выходе модуля. Если <b>error_corrected</b> равен b’0, значит, в данных содержится более <b>ERROR_FIXED</b> ошибок, и они не могут быть исправлены. Если ошибок детектировано не было, то данных со входа модуля могут быть использованы в схеме без необходимости декодирования.</p>
+      <h3>Семейства ПЛИС</h3>
+	  <p>Поскольку <b>ehl_rs_dec</b> является служебным модулем, его синтез в базис ПЛИС не производился.</p>
+      <h3>СБИС и СнК</h3>
+	  <p>Поскольку <b>ehl_rs_dec</b> является служебным модулем, его синтез в базис СБИС не производился.</p>
+
+   </body>
+</html>

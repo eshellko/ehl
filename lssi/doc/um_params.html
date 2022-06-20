@@ -1,0 +1,43 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Параметры</title>
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+      <h2>Параметры конфигурации</h2>
+      <p><b>ehl_lssi</b> имеет возможность быть настроенным под задачу пользователя. За настройку отвечают параметры, представленные далее.</p>
+      <p></p>
+
+      <table cellpadding="4" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Разрядность</th>
+               <th>Значение по умолчанию</th>
+               <th>Допустимые значения</th>
+               <th>Описание</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>FIFO_SIZE</td>    <td>16</td> <td>16</td> <td>4, 8, 16, 32, 64, 128</td> <td>Количество байт в буферах fifo_tx и fifo_tx.</td> </tr>
+            <tr> <td>TICKS_TO_BIT</td> <td>2</td>  <td>0</td>  <td>0-2</td>
+               <td>
+                  Определяет число стробов RCLK (выход частоты делителя синхросигнала) на 1 бит принимаемых/передаваемых данных в режиме UART.
+                  Увеличение этого параметра приводит к небольшому росту аппаратуры, но позволяет получить более точную синхронизацию с устройством на шине UART.
+                  Может принимать следующие значения:
+                  <li>0 - бит данных стробируется 4 тактами <b>RCLK</b>;</li>
+                  <li>1 - бит данных стробируется 8 тактами <b>RCLK</b>;</li>
+                  <li>2 - бит данных стробируется 16 тактами <b>RCLK</b>.</li>
+               </td>
+            </tr>
+            <tr> <td>SS_WIDTH</td>     <td>32</td> <td>8</td>  <td>1-8</td> <td>Количество бит в регистре <b>SSR</b> - количество управляемых контроллером сигналов SPI Slave Select.</td> </tr>
+            <tr> <td>ECC_ENA</td>      <td>1</td>  <td>0</td>  <td>0, 1</td> <td>Применение Single Error Correction логики в FIFO приемо-передатчиков. 1 - добавляет SEC в буферы при записи и исправляет (без сигнализации) при чтении.</td> </tr>
+            <tr> <td>TECHNOLOGY</td>   <td>32</td> <td>0</td>  <td>см. techmap/doc/readme*</td> <td>Технологический базис для отдельных элементов дизайна - CDC синхронизаторов, clock gating.</td> </tr>
+            <tr> <td>USE_CG</td>       <td>1</td>  <td>1</td>  <td>0, 1</td> <td>Разрешение использования Clock Gating элементов в контроллере.<li>1 - применять clock gating и регистр <b>CDR</b>;</li><li>0 - не использовать clock gating для технологий не поддерживающих указанные элементы.</li></td> </tr>
+            <tr> <td>DEVICE_CFG</td>   <td>2</td>  <td>3</td>  <td>1-3</td> <td>Реализация логики работы схемы. Бит 1 отвечает за UART, бит 0 за SPI. 1 в разряде реализует логику в контроллере.</td> </tr>
+         </tbody>
+      </table>
+
+   </body>
+</html>

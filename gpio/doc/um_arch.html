@@ -1,0 +1,98 @@
+<html>
+   <style> pre.small {line-height: 0.5; font-weight:bold; }</style>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Архитектура</title>
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+      <div class="article">
+         <div class="titlepage">
+            <h2 class="title">Архитектура</h2>
+         </div>
+      </div>
+      <p><b>GPIO</b> представляет собой контроллер параллельного двунаправленного интерфейса общего назначения. Он имеет интерфейс generic со стороны пользователя. <b>GPIO</b> имеет набор параметров, позволяющих настроить его для конкретной задачи.</p>
+      <p><b>gpio</b> состоит из 3 структурных частей:</p>
+	  <ul>
+      <li> регистров управления (<b>Software Registers</b>)</li>
+      <li> контроллера прерываний (<b>Interrupt Generator</b>)</li>
+      <li> входного фильтра (<b>Input Filter</b>)</li>
+	  </ul>
+      <img src="um_arch.png">
+      <p> <b>Software Registers</b> выполняет следующие функции: </p>
+	  <ul>
+      <li> запись/чтение регистров <b>GPIO</b>,</li>
+      <li> сброс/установка/инверсия отдельных бит регистров <b>GPIO</b>,</li>
+      <li> установка/захват данных с I/O,</li>
+      <li> выбор направления передачи данных,</li>
+      <li> управление притяжками,</li>
+      <li> разрешение, выбор события для генерации прерывания, определение источника и сброс флагов прерывания.</li>
+	  </ul>
+      <p> <b>Interrupt Generator</b> выполняют следующие функции:</p>
+	  <ul>
+      <li> захват переключения на I/O, приводящего к генерации прерывания,</li>
+      <li> установка флагов прерывания,</li>
+      <li> генерация прерывания.</li>
+	  </ul>
+      <p> <b>Input Filter</b> выполняют следующие функции:</p>
+	  <ul>
+      <li> защита от метастабильности,</li>
+      <li> синхронизация захватываемых данных с частотой <b>clk</b>.</li>
+	  </ul>
+
+      <h3>Перечень выводов</h3>
+	  <ul>
+      <pre class="small">    _____________________</pre>
+      <pre class="small">   |                     |</pre>
+      <pre class="small">---| clk        data_out |---</pre>
+      <pre class="small">---| res             ifg |---</pre>
+      <pre class="small">---| addr                |</pre>
+      <pre class="small">---| wr                  |</pre>
+      <pre class="small">---| rd                  |</pre>
+      <pre class="small">---| data_in             |</pre>
+      <pre class="small">   | . . . . . . . . . . |</pre>
+      <pre class="small">---| gpio_in    gpio_out |---</pre>
+      <pre class="small">   |             gpio_oe |---</pre>
+      <pre class="small">   |             gpio_pd |---</pre>
+      <pre class="small">   |             gpio_pu |---</pre>
+      <pre class="small">   |             gpio_en |---</pre>
+      <pre class="small">   |_____________________|</pre>
+	  </ul>
+
+      <p><b>ehl_lssi</b> имеет интерфейс APB со стороны пользователя и интерфейсы обмена SPI / UART. Информация об интерфейсе APB содержится в [1].</p>
+      <table summary="if" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Имя</th>
+               <th>Тип</th>
+               <th>Размер</th>
+               <th>Описание</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr bgcolor="#C0C0C0"> <td colspan="4"><b>Generic</b></td> </tr>
+            <tr> <td>clk</td>      <td>I</td> <td>1</td>     <td>Тактовый сигнал. Все триггеры в схеме тактируются нарастающим фронтом <b>clk</b>.</td> </tr>
+            <tr> <td>res</td>      <td>I</td> <td>1</td>     <td>Асинхронный сигнал сброса. Активный уровень 0. Сбрасывает все регистры в начальное состояние.</td> </tr>
+            <tr> <td>wr</td>       <td>I</td> <td>1</td>     <td>Разрешение записи в регистр или отдельный бит регистра:<li>0 - изменение регистра запрещено;</li><li>1 - разрешено.</li></td> </tr>
+            <tr> <td>rd</td>       <td>I</td> <td>1</td>     <td>Разрешение чтения регистра:<li>0 - запрещено;</li><li>1 - разрешено.</li></td> </tr>
+            <tr> <td>data_in</td>  <td>I</td> <td>WIDTH</td> <td>Шина данных для записи в регистр. Записывается в регистр при операции параллельной записи. Для побитовых операций задает адресуемые разряды (активный уровень 1).</td> </tr>
+            <tr> <td>addr</td>     <td>I</td> <td>6</td>     <td>Шина адреса для доступа к <a href="um_func.html#GPIO_REGS" class="olink">регистрам <b>GPIO</b></a>.</td> </tr>
+            <tr> <td>data_out</td> <td>O</td> <td>WIDTH</td> <td>Выходная шина данных регистров. Содержит значение регистра, выбранного адресом <b>addr</b>.</td> </tr>
+            <tr> <td>ifg</td>      <td>O</td> <td>1</td>     <td>Сигнализирует прерывание от <b>GPIO</b>. </td> </tr>
+            <tr bgcolor="#C0C0C0"> <td colspan="4"><b>GPIO</b></td> </tr>
+            <tr> <td>gpio_in</td>  <td>I</td> <td>WIDTH</td> <td>Входная шина данных с I/O.</td> </tr>
+            <tr> <td>gpio_out</td> <td>O</td> <td>WIDTH</td> <td>Выходная шина данных для I/O.</td> </tr>
+            <tr> <td>gpio_oe</td>  <td>O</td> <td>WIDTH</td> <td>Разрешение данных на gpio_out:<li>0 - запрещены;</li><li>1 - разрешены.</li></td> </tr>
+            <tr> <td>gpio_pd</td>  <td>O</td> <td>WIDTH</td> <td>Разрешение притяжки к "земле":<li>1 - разрешена.</li></td> </tr>
+            <tr> <td>gpio_pu</td>  <td>O</td> <td>WIDTH</td> <td>Разрешение притяжки к "питанию":<li>1 - разрешена.</li></td> </tr>
+            <tr> <td>gpio_en</td>  <td>O</td> <td>WIDTH</td> <td>Разрешение функции gpio для вывода:<li>0 - gpio;</li><li>1 - альтернативная функция.</li></td> </tr>
+         </tbody>
+      </table>
+
+      <p>Пример подключения GPIO к контактной площадке.</p>
+      <img src="um_io.png">
+
+      <p>Если блок I/O содержит притяжки к "земле" и/или "питанию", то управление ими должно быть подключено к выводам <b>gpio_pd</b> и <b>gpio_pd</b> соответственно. Если притяжки отсутствуют, то соответствующие выводы gpio должны быть оставлены неподключенными для оптимизации в процессе синтеза схемы.</p>
+      <p>Если один I/O используется для нескольких функций, то <b>gpio_en</b> определяет какая функций в данный момент использует блок I/O. Двунаправленная альтернативная функция должна подключаться к сигналам "alternative function" мультиплексоров. Однонаправленная входная альтернативная функция должна переводить I/O в режим приема данных (при <b>gpio_en</b> равном 0b0) путем установки сигналов "alternative function o" и "alternative function oe" в неактивные значения. Однонаправленная выходная альтернативная функция должна переводить I/O в режим передачи (при <b>gpio_en</b> равном 0b1) путем установки сигналов "alternative function i" и "alternative function oe" в неактивные значения. Для всех типов подключения сигнал "inactive value" должен содержать значение, приходящее на вход альтернативной функции, когда выбрана функция <b>GPIO</b>. Это значение не должно приводить к изменению состояния альтернативной функции (например, ложной генерации прерывания).</p>
+   </body>
+</html>

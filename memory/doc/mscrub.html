@@ -1,0 +1,409 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Memory Scrubber</title>
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+      <h2 class="title" style="clear: both"><a name="sectionStart"></a>Memory Scrubber</h2>
+      <hr>
+      <p>
+         <b>mscrub</b> предназначен для работы с модулями памяти, снабженными механизмом проверки целостности данных (кодом Хэмминга, Рида-Соломона...).
+         <b>mscrub</b> выполняет периодическое чтение из заданных диапазонов адресов.
+         В случае обнаружения корректируемой ошибки модули памяти исправляют ее без сигнализации.
+         В случае обнаружения некорректируемой ошибки происходит сигнализация через шину AHB.
+         <b>mscrub</b>, в свою очередь, сигнализирует некорректируемую ошибку прерыванием или сбросом (в соответствии с <b>SCTRL</b>).
+      </p>
+      <h3>Основные характеристики</h3>
+      <li>1. Мастер на шине AHB (32 бит адрес и данные) для доступа к памяти. Только чтение и только 32-битное.</li>
+      <li>2. Slave на шине APB для конфигурирования. Общий синхросигнал и сброс с AHB.</li>
+      <li>3. 8 программируемых диапазонов - начальный адрес, конечный адрес, разрешение скрабирования.</li>
+      <li>4. Программно задаваемое включение / выключение блока, режим работы: циклический / однократный.</li>
+      <li>5. Маскируемое прерывание / сброс при обнаружении некорректируемой ошибки.</li>
+      <li>6. Сохранение в программно доступный регистр адреса последней ошибки.</li>
+      <li>7. Текущий тестируемый адрес доступен по чтению.</li>
+      <li>8. Программирование интервала запуска заданий и интервала между командами чтения.</li>
+
+      <h2><a name="REGS"></a>Регистры контроллера</h2>
+      <p><b style="color: #FF0000">Замечание</b>. Не допускается модифицировать регистры при установленном <b>CTRL.ACT</b> (за исключением <b>CTRL.CE</b>, <b>CTRL.STOP</b>, <b>CTRL.RUN</b>).</p>
+
+      <table summary="Registers for Address Block: mscrub" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Регистр</th>
+               <th>Адрес</th>
+               <th>Описание</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>CTRL</a></td>     <td>0x00</td> <td>Регистр управления</td> </tr>
+            <tr> <td>BAD_ADDR</a></td> <td>0x04</td> <td>Регистр адреса последней обнаруженной ошибки</td> </tr>
+            <tr> <td>CUR_ADDR</a></td> <td>0x08</td> <td>Регистр текущего тестируемого адреса</td> </tr>
+            <tr> <td>TIMER</a></td>    <td>0x0C</td> <td>Регистр управления интервалами</td> </tr>
+            <tr> <td>A0_INIT</a></td>  <td>0x10</td> <td>Начальный адрес диапазона 0</td> </tr>
+            <tr> <td>A0_FIN</a></td>   <td>0x14</td> <td>Конечный адрес диапазона 0</td> </tr>
+            <tr> <td>A1_INIT</a></td>  <td>0x18</td> <td>Начальный адрес диапазона 1</td> </tr>
+            <tr> <td>A1_FIN</a></td>   <td>0x1C</td> <td>Конечный адрес диапазона 1</td> </tr>
+            <tr> <td>A2_INIT</a></td>  <td>0x20</td> <td>Начальный адрес диапазона 2</td> </tr>
+            <tr> <td>A2_FIN</a></td>   <td>0x24</td> <td>Конечный адрес диапазона 2</td> </tr>
+            <tr> <td>A3_INIT</a></td>  <td>0x28</td> <td>Начальный адрес диапазона 3</td> </tr>
+            <tr> <td>A3_FIN</a></td>   <td>0x2C</td> <td>Конечный адрес диапазона 3</td> </tr>
+            <tr> <td>A4_INIT</a></td>  <td>0x30</td> <td>Начальный адрес диапазона 4</td> </tr>
+            <tr> <td>A4_FIN</a></td>   <td>0x34</td> <td>Конечный адрес диапазона 4</td> </tr>
+            <tr> <td>A5_INIT</a></td>  <td>0x38</td> <td>Начальный адрес диапазона 5</td> </tr>
+            <tr> <td>A5_FIN</a></td>   <td>0x3C</td> <td>Конечный адрес диапазона 5</td> </tr>
+            <tr> <td>A6_INIT</a></td>  <td>0x40</td> <td>Начальный адрес диапазона 6</td> </tr>
+            <tr> <td>A6_FIN</a></td>   <td>0x44</td> <td>Конечный адрес диапазона 6</td> </tr>
+            <tr> <td>A7_INIT</a></td>  <td>0x48</td> <td>Начальный адрес диапазона 7</td> </tr>
+            <tr> <td>A7_FIN</a></td>   <td>0x4C</td> <td>Конечный адрес диапазона 7</td> </tr>
+            <tr> <td>SCTRL</a></td>    <td>0x50</td> <td>Управление сигнализацией ошибок</td> </tr>
+            <tr> <td>ECNT0</a></td>    <td>0x54</td> <td>Счетчики ошибок 0-3</td> </tr>
+            <tr> <td>ECNT1</a></td>    <td>0x58</td> <td>Счетчики ошибок 4-7</td> </tr>
+         </tbody>
+      </table>
+
+      <p><a name="CTRL"></a><span class="bold" style="color: #0000CC"><b>CTRL [0x0]: </b></span>Регистр управления</p>
+      <table summary="Fields for Register: CTRL" cellpadding="1" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:24</td>
+               <td>-</td>
+               <td>Резерв</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>23:16</td>
+               <td>EE</td>
+               <td>
+                  <p>
+                     <b>ECC Enable</b>. Управляет отключением проверки и генерации проверочного кода для выбранной памяти.
+                     Полярность сигнала определяется внешним устройством. Начальное значение задается параметром <b>ECC_ENA_INIT</b>.
+                  </p>
+                  <p>
+                     Генерация ECC может быть выключена, если не требуется в выбранном применении микросхемы с целью снижения времени доступа к памяти. Байтовая запись в память в таком случае не требует последовательности Read-Modify-Write и выполняется за 1 такт.
+                  </p>
+                  <p>
+				     Кодирование блоков памяти регистрами контроллера определяется применением блока.
+                  </p>
+               </td>
+               <td>R/W</td>
+               <td>ECC_ENA_INIT</td>
+            </tr>
+            <tr>
+               <td>15</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>14</td>
+               <td>ACT</td>
+               <td>
+                  <b>Active</b>. Признак активности блока:
+                  <li>0 - выключен;</li>
+                  <li>1 - активен.</li>
+                  При записи 1 в <b>STOP</b> бит сбрасывается после проверки очередного диапазона.
+               </td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>13</td>
+               <td>CE</td>
+               <td>
+                  <p><b>Clear Error</b>. Очистка флагов прерываний и счетчиков ошибок. Сбрасывается аппаратно.</p>
+                  <p>Бит сбрасывается автоматически после записи. По чтению всегда равен 0.</p>
+               </td>
+               <td>R/W/SC</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>12</td>
+               <td>EV</td>
+               <td><b>Error Valid</b>. Признак валидности данных в регистре <b>BAD_ADDR</b>. При одновременном сбросе и обнаружении ошибки устанавливается в  1.</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>11</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>10</td>
+               <td>MODE</td>
+               <td>
+                  Режим работы:
+                  <li>0 - однократный;</li>
+                  <li>1 - циклический.</li>
+                  В однократном режиме контроллер проведет скрабирование разрешенных регионов (<b>CTRL.RE</b>) и остановится. В циклическом режиме после проверки всех разрешенных регионов, проверка повторится по истечении паузы <b>TIMER.TI</b>.
+               </td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>9</td>
+               <td>STOP</td>
+               <td>
+                  <p>Запись 1 останавливает контроллер после проверки очередного диапазона.</p>
+                  <p>Бит сбрасывается автоматически после записи. По чтению всегда равен 0.</p>
+               </td>
+               <td>R/W/SC</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>8</td>
+               <td>RUN</td>
+               <td>
+                  <p>Запись 1 запускает контроллер. Запись 1 не имеет действия, если контроллер уже активен (<b>CTRL.ACT</b>) или одновременно происходит запись 1 в <b>CTRL.STOP</b>.</p>
+                  <p>Бит сбрасывается автоматически после записи. По чтению всегда равен 0.</p>
+               </td>
+               <td>R/W/SC</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>7:0</td>
+               <td>RE</td>
+               <td><b>Range Enable</b>. Разрешение проверки соответствующего диапазона адресов.
+			      <p>Младший бит (0) отвечает за проверку диапазона 0 (<b>A0_INIT</b>:<b>A0_FIN</b>).</p>
+			      <p>Старший бит (7) отвечает за проверку диапазона 7 (<b>A7_INIT</b>:<b>A7_FIN</b>).</p>
+			   </td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <p><a name="BAD_ADDR"></a><span class="bold" style="color: #0000CC"><b>BAD_ADDR [0x4]: </b></span>Регистр адреса обнаруженной ошибки</p>
+      <table summary="Fields for Register: BAD_ADDR" cellpadding="1" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:0</td>
+               <td>-</td>
+               <td>Адрес, по которому была обнаружена ошибка.</td>
+               <td>R</td>
+               <td>x</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <p><a name="CUR_ADDR"></a><span class="bold" style="color: #0000CC"><b>CUR_ADDR [0x8]: </b></span>Регистр текущего тестируемого адреса</p>
+      <table summary="Fields for Register: CUR_ADDR" cellpadding="1" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:0</td>
+               <td>-</td>
+               <td>Текущий тестируемый адрес (при <b>CTRL.ACT</b> = 1), или последний протестированный адрес (при <b>CTRL.ACT</b> = 0).</td>
+               <td>R</td>
+               <td>x</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <p><a name="TIMER"></a><span class="bold" style="color: #0000CC"><b>TIMER [0xC]: </b></span>Регистр управления интервалами</p>
+      <table summary="Fields for Register: TIMER" cellpadding="1" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:24</td>
+               <td>RI</td>
+               <td><b>Read Interval</b>. Интервал ожидания между последовательными командами чтения. Служит для балансирования нагрузки на систему.</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>23:0</td>
+               <td>TI</td>
+               <td><b>Task Interval</b>. Интервал между последовательными запусками скрабирования. Каждый запуск состоит из последовательной проверки всех интервалов.</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <p><a name="A0_INIT"></a><span class="bold" style="color: #0000CC"><b>Ax_INIT [0x10...]: </b></span>Начальный адрес диапазона <b>x</b></p>
+      <table summary="Fields for Register: Ax_INIT" cellpadding="1" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:2</td>
+               <td>-</td>
+               <td>Начальный адрес диапазона тестируемой памяти.</td>
+               <td>R/W</td>
+               <td>x</td>
+            </tr>
+            <tr>
+               <td>1:0</td>
+               <td>-</td>
+               <td><b>Резерв</b>.</td>
+               <td>R</td>
+               <td>x</td>
+            </tr>
+         </tbody>
+      </table>
+      <p><a name="A0_FIN"></a><span class="bold" style="color: #0000CC"><b>Ax_FIN [0x14...]: </b></span>Конечный адрес диапазона <b>x</b></p>
+      <table summary="Fields for Register: Ax_FIN" cellpadding="1" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:2</td>
+               <td>-</td>
+               <td>Следующий за тестируемым диапазоном адрес. Для диапазона, завершающегося адресом 0xFFFFFFFF следует задать равным 0x0. Должен быть больше, чем соответствующий ему начальный адрес, если диапазон разрешен для проверки.</td>
+               <td>R/W</td>
+               <td>x</td>
+            </tr>
+            <tr>
+               <td>1:0</td>
+               <td>-</td>
+               <td><b>Резерв</b>.</td>
+               <td>R</td>
+               <td>x</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <p><a name="SCTRL"></a><span class="bold" style="color: #0000CC"><b>SCTRL [0x50]: </b></span>Управление сигнализацией ошибок</p>
+      <table summary="Fields for Register: SCTRL" cellpadding="1" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:8</td>
+               <td>-</td>
+               <td>Резерв.</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>7:0</td>
+               <td>SM</td>
+               <td>
+                  <b>Signal Mode</b>. Выбор режима сигнализации ошибки для каждого диапазона.
+                  <li>0 - прерывание;</li>
+                  <li>1 - сброс.</li>
+                  Для диапазонов, содержащих код программ, может быть правильнее проводить сброс системы при обнаружении некорректируемой ошибки. Для диапазонов данных может быть достаточно прерывания.
+               </td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <p><a name="ECNT"></a><span class="bold" style="color: #0000CC"><b>ECNT0 [0x54]: </b></span>Регистры счетчиков ошибок 0-3. Регистр ECNT1 аналогичен для ошибок диапазонов 4-7.</p>
+      <table summary="Fields for Register: ECNT" cellpadding="1" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:24</td>
+               <td>ECNT3</td>
+               <td>Аналогично ECNT0</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>23:16</td>
+               <td>ECNT2</td>
+               <td>Аналогично ECNT0</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>15:8</td>
+               <td>ECNT1</td>
+               <td>Аналогично ECNT0</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>7:0</td>
+               <td>ECNT0</td>
+               <td>
+                  <b>Error Counter</b>. Счетчик количества обнаруженных ошибок.
+                  Инкрементируется при обнаружении ошибки до достижения максимального значения 255.
+                  Сбрасывается установкой <b>CTRL.CE</b>. При одновременном сбросе и обнаружении ошибки записывается значением 1.
+               </td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+<br class="table-break"></body></html>

@@ -1,0 +1,164 @@
+<html>
+   <style> pre.small {line-height: 0.5;}</style>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Функционирование</title>
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+      <h2>Функционирование</h2>
+	  <hr>
+
+      <p><b>ehl_rtc</b> является модулем часов реального времени.
+	  Помимо часов, работающих с шагом 0,1 с он содержит календарь и будильник, генерирующий прерывания при совпадении одного или нескольких параметров времени.
+
+      <h2><a name="CLK"></a>Система тактирования</h2>
+      <p>
+         <b>ehl_rtc</b> использует 2 синхросигнала для работы. <b>clk</b> для доступа к регистрам (произвольное значение частоты) и <b>rtc_clk</b> для работы часов с частотой 10 Гц.
+      </p>
+
+      <h2><a name="REGS"></a>Регистры контроллера</h2>
+      <table summary="Registers for Address Block: ehl_rtc" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Регистр</th>
+               <th>Адрес</th>
+               <th>Описание</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td><a href="um_func.html#TIME"   class="olink">RTC_TIME</a></td>   <td>0x00</td> <td>Регистр времени</td> </tr>
+            <tr> <td><a href="um_func.html#DATE"   class="olink">RTC_DATE</a></td>   <td>0x04</td> <td>Регистр даты</td> </tr>
+            <tr> <td><a href="um_func.html#TALARM" class="olink">RTC_TALARM</a></td> <td>0x08</td> <td>Регистр времени будильника</td> </tr>
+            <tr> <td><a href="um_func.html#DALARM" class="olink">RTC_DALARM</a></td> <td>0x0C</td> <td>Регистр даты будильника</td> </tr>
+            <tr> <td><a href="um_func.html#CTRL"   class="olink">RTC_CTRL</a></td>   <td>0x10</td> <td>Регистр управления</td> </tr>
+         </tbody>
+      </table>
+
+      <p><span class="bold" style="color: #FF0000"><b>Замечание. </b></span>Запись в регистры контроллера некорректных значений времени / даты (например, 30 февраля) приведет к неопределенному поведению модуля. Проверка корректности записываемых данных возлагается на пользователя.</p>
+
+      <p><span class="bold" style="color: #FF0000"><b>Замечание. </b></span>Включение часов реального времени занимает 2 такта <b>rtc_clk</b>, требуемых для синхронизации <b>RTC_CTRL.EN</b>. Это смещение следует учитывать при записи в регистры модуля.</p>
+
+      <p><a name="TIME"></a><span class="bold" style="color: #0000CC"><b>RTC_TIME [0x00]: </b></span>Регистр времени. Записывается текущим временем перед запуском часов (<b>RTC_CTRL.EN</b> сброшен). Модифицируется аппаратно.</p>
+      <table summary="Fields for Register: RTC_TIME" cellpadding="1" width="80%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>31:24</td> <td>-</td>    <td><b>Резерв</b></td> <td>R</td> <td>0</td> </tr>
+            <tr> <td>23:21</td> <td>DOW</td>  <td>День недели. 0 - понедельник, 6 - воскресенье. Не допускается записывать в регистр значение 7.</td> <td>R/W</td> <td>x</td> </tr>
+            <tr> <td>20:16</td> <td>HR</td>   <td>Часы. Не допускается запись в регистр значения больше 23.</td> <td>R/W</td> <td>x</td> </tr>
+            <tr> <td>15:10</td> <td>MIN</td>  <td>Минуты. Не допускается запись в регистр значения больше 59.</td> <td>R/W</td> <td>x</td> </tr>
+            <tr> <td>9:4</td>   <td>SEC</td>  <td>Секунды. Не допускается запись в регистр значения больше 59.</td> <td>R/W</td> <td>x</td> </tr>
+            <tr> <td>3:0</td>   <td>SSEC</td> <td>Десятые доли секунды. Не допускается запись в регистр значения больше 9.</td> <td>R/W</td> <td>x</td> </tr>
+         </tbody>
+      </table>
+      <p><a name="DATE"></a><span class="bold" style="color: #0000CC"><b>RTC_DATE [0x04]: </b></span>Регистр даты. Записывается текущим временем перед запуском часов (<b>RTC_CTRL.EN</b> сброшен). Модифицируется аппаратно.</p>
+      <table summary="Fields for Register: RTC_DATE" cellpadding="1" width="80%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>31:23</td> <td>-</td>    <td><b>Резерв</b></td> <td>R</td> <td>0</td> </tr>
+            <tr> <td>22:16</td> <td>CEN</td>  <td>Век. Не допускается запись в регистр значения больше 99.</td> <td>R/W</td> <td>x</td> </tr>
+            <tr> <td>15:9</td>  <td>YEAR</td> <td>Год. Не допускается запись в регистр значения больше 99.</td> <td>R/W</td> <td>x</td> </tr>
+            <tr> <td>8:5</td>  <td>MON</td>  <td>Месяц. 0 - январь, 11 - декабрь. Не допускается запись в регистр значения больше 11.</td> <td>R/W</td> <td>x</td> </tr>
+            <tr> <td>4:0</td>   <td>DAY</td>  <td>День. Значение 0 соответсвует первому дню месяца. Не допускается запись в регистр значения больше количества дней в месяце (минус 1).</td> <td>R/W</td> <td>x</td> </tr>
+         </tbody>
+      </table>
+      <p><a name="TALARM"></a><span class="bold" style="color: #0000CC"><b>RTC_TALARM [0x08]: </b></span>Регистр времени будильника. Запись регистра следует проводить при сброшенном <b>RTC_TRL.INTE</b> для избежания ложного срабатывания будильника.</p>
+      <table summary="Fields for Register: RTC_TALARM" cellpadding="1" width="80%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>31:29</td> <td>-</td>     <td><b>Резерв</b></td> <td>R</td> <td>0</td> </tr>
+            <tr> <td>28</td>    <td>EDOW</td>  <td>Разрешение срабатывания будильника при совпадении дня недели.<li>1 - разрешено;</li><li>0 - запрещено.</li></td> <td>R/W</td> <td>x</td> </tr>
+            <tr> <td>27</td>    <td>EHR</td>   <td>Разрешение срабатывания будильника при совпадении часов.</td> <td>R/W</td> <td>x</td> </tr>
+            <tr> <td>26</td>    <td>EMIN</td>  <td>Разрешение срабатывания будильника при совпадении минут.</td> <td>R/W</td> <td>x</td> </tr>
+            <tr> <td>25</td>    <td>ESEC</td>  <td>Разрешение срабатывания будильника при совпадении секунд.</td> <td>R/W</td> <td>x</td> </tr>
+            <tr> <td>24</td>    <td>ESSEC</td> <td>Разрешение срабатывания будильника при совпадении десятых долей секунды.</td> <td>R/W</td> <td>x</td> </tr>
+            <tr> <td>23:21</td> <td>DOW</td>   <td>День недели.</td> <td>R/W</td> <td>x</td> </tr>
+            <tr> <td>20:16</td> <td>HR</td>    <td>Часы.</td> <td>R/W</td> <td>x</td> </tr>
+            <tr> <td>15:10</td> <td>MIN</td>   <td>Минуты.</td> <td>R/W</td> <td>x</td> </tr>
+            <tr> <td>9:4</td>   <td>SEC</td>   <td>Секунды.</td> <td>R/W</td> <td>x</td> </tr>
+            <tr> <td>3:0</td>   <td>SSEC</td>  <td>Десятые доли секунды.</td> <td>R/W</td> <td>x</td> </tr>
+         </tbody>
+      </table>
+      <p><a name="DALARM"></a><span class="bold" style="color: #0000CC"><b>RTC_DALARM [0x0C]: </b></span>Регистр даты будильника. Запись регистра следует проводить при сброшенном <b>RTC_TRL.INTE</b> для избежания ложного срабатывания будильника.</p>
+      <table summary="Fields for Register: RTC_DALARM" cellpadding="1" width="80%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>31:27</td> <td>-</td>    <td><b>Резерв</b></td> <td>R</td> <td>0</td> </tr>
+            <tr> <td>26</td>    <td>EC</td>   <td>Разрешение срабатывания будильника при совпадении века.</td> <td>R/W</td> <td>x</td> </tr>
+            <tr> <td>25</td>    <td>EY</td>   <td>Разрешение срабатывания будильника при совпадении года.</td> <td>R/W</td> <td>x</td> </tr>
+            <tr> <td>24</td>    <td>EM</td>   <td>Разрешение срабатывания будильника при совпадении месяца.</td> <td>R/W</td> <td>x</td> </tr>
+            <tr> <td>23</td>    <td>ED</td>   <td>Разрешение срабатывания будильника при совпадении дня.</td> <td>R/W</td> <td>x</td> </tr>
+            <tr> <td>22:16</td> <td>CEN</td>  <td>Век.</td> <td>R/W</td> <td>x</td> </tr>
+            <tr> <td>15:9</td>  <td>YEAR</td> <td>Год.</td> <td>R/W</td> <td>x</td> </tr>
+            <tr> <td>8:5</td>   <td>MON</td>  <td>Месяц.</td> <td>R/W</td> <td>x</td> </tr>
+            <tr> <td>4:0</td>   <td>DAY</td>  <td>День.</td> <td>R/W</td> <td>x</td> </tr>
+         </tbody>
+      </table>
+      <p><a name="CTRL"></a><span class="bold" style="color: #0000CC"><b>RTC_CTRL [0x10]: </b></span>Регистр управления</p>
+      <table summary="Fields for Register: RTC_CTRL" cellpadding="1" width="80%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>31</td>   <td>EN</td>    <td>Разрешение работы часов.<li>1 - разрешено.</li><p>Запись в регистры <b>RTC_DATE</b> и <b>RTC_TIME</b> разрешена только при сброшенном бите.</p></td> <td>R/W</td> <td>0</td> </tr>
+            <tr> <td>30</td>   <td>ALARM</td> <td>Состояние будильника. Устанавливается аппаратно при совпадении регистров будильника и таймера только при установленном <b>INTE</b>. При этом генерируется прерывание. Сбрасывается програмно. Для избежания повторного срабатывания будильника перед сбросом флага следует устранить источник срабатывания: либо сбросить <b>EN</b>, либо изменить значение <b>DALARM</b> / <b>TALARM</b>.</td> <td>R/W</td> <td>0</td> </tr>
+            <tr> <td>29</td>   <td>INTE</td>  <td>Разрешение срабатывания будильника / генерации прерывания. 1 - разрешено. Запись в регистры <b>RTC_DALARM</b> и <b>RTC_TALARM</b> допускается только при сброшенном бите.</td> <td>R/W</td> <td>0</td> </tr>
+            <tr> <td>28:0</td> <td>-</td>     <td><b>Резерв</b></td> <td>R</td> <td>0</td> </tr>
+         </tbody>
+      </table>
+
+      <h2><a name="IRQ"></a>Прерывания</h2>
+      <p>
+         <b>ehl_rtc</b> генерирует прерывание (если установлен <b>RTC_CTRL.INTE</b>) при срабатывании будильника - совпадении значений регистров <b>RTC_TIME</b> и <b>RTC_DATE</b> со значением <b>RTC_TALARM</b>, <b>RTC_DALARM</b>.
+      </p>
+      <p>
+         Перед разрешением прерывания (установкой <b>RTC_CTRL.INTE</b>) следует проинициализировать регистры <b>RTC_TALARM</b>, <b>RTC_DALARM</b>, <b>RTC_TIME</b> и <b>RTC_DATE</b>, имеющие неопределенное состояние после сброса.
+      </p>
+      <p>
+         <b>Примечание:</b> При записи некорректных значений в некоторых ситуациях часы зависнут в некорректном значении. Для выхода из данной ситуации необходимо перезаписать регистр, содержащий некорректные значения, корректными. После чего модуль продолжит работать нормально.
+      </p>
+   </body>
+</html>

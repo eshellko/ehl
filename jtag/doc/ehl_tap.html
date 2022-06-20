@@ -1,0 +1,103 @@
+<html>
+   <style> pre.small {line-height: 0.5; font-weight:bold; }</style>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>TAP</title>
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+
+      <h2>TAP Controller</h2>
+	  <hr>
+      <table cellpadding="4" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col></colgroup>
+         <tbody>
+            <tr> <td bgcolor="#C0C0C0">Версия</td>      <td>1.0</td> </tr>
+            <tr> <td bgcolor="#C0C0C0">Дата</td>        <td>2015.01.27</td> </tr>
+            <tr> <td bgcolor="#C0C0C0">Разработчик</td> <td>А.В. Корнюхин (kornukhin@mail.ru)</td> </tr>
+         </tbody>
+      </table>
+
+      <h3>Введение</h3>
+	  <p>В данной спецификации описываются структура, порядок использования и технические характеристики контроллера тестового порта, совместимого со стандартом IEEE 1149.1.</p>
+
+<!--
+TODO: add 1149 into list
+      <h2>Справочные материалы</h2>
+      <table cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0"> <th>Номер</th> <th>Наименование</th> </tr>
+         </thead>
+         <tbody>
+            <tr> <td>1</td> <td>IEEE 1149.1.</td> </tr>
+         </tbody>
+      </table>
+-->
+
+      <h3>Параметры</h3>
+	  <p><b>ehl_tap</b> может быть настроен под задачу пользователя. За настройку отвечают параметры, представленные в таблице.</p>
+      <table cellpadding="4" width="80%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Значение по умолчанию</th>
+               <th>Допустимые значения</th>
+               <th>Описание</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>IR_WIDTH</td>   <td>2</td> <td>2-16</td>         <td>Количество бит в регистре инстуркций.</td> </tr>
+            <tr> <td>IMPL_STATE</td> <td>0</td> <td>0, 1</td>
+			   <td>
+			      Логика кодирования состояний автомата TAP контроллера:<li>0 - двоичная;</li><li>1 - 1-hot.</li>
+				  <p>При кодировании 1-hot выводы <b>capture_dr</b> и <b>update_dr</b> могут использоваться для тактирования внешней логики. В режиме двоичного кодирования (<b>IMPL_STATE</b>=0) они управляются комбинаторной логикой и могут содержать просечки.</p>
+			   </td>
+			</tr>
+            <tr> <td>ID</td>         <td>0</td> <td>0-0xFFFFFFFF</td> <td>Регистр идентификатор (IDCODE). 1 в младшем разряде говорит о наличии регистра в контроллере.</td> </tr>
+         </tbody>
+      </table>
+<!--
+      <h3 class="title">Архитектура</h3>
+-->
+
+      <h2>Интерфейс</h2>
+      <pre class="small">    ______________________</pre>
+      <pre class="small">   |                      |</pre>
+      <pre class="small">---| tck                  |</pre>
+      <pre class="small">---| trst_n               |</pre>
+      <pre class="small">---| tdi              tdo |---</pre>
+      <pre class="small">---| tms           tdo_en |---</pre>
+      <pre class="small">   |             shift_dr |---</pre>
+      <pre class="small">   |           capture_dr |---</pre>
+      <pre class="small">   |            update_dr |---</pre>
+      <pre class="small">---| tdr_in   instruction |---</pre>
+      <pre class="small">   |______________________|</pre>
+
+      <table summary="axi_globals" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Количество</th>
+               <th>Тип</th>
+               <th>Назначение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>tck</td>         <td>1</td>        <td>I</td> <td>Синхросигнал</td> </tr>
+            <tr> <td>tdi</td>         <td>1</td>        <td>I</td> <td>Вход данных</td> </tr>
+            <tr> <td>tms</td>         <td>1</td>        <td>I</td> <td>Вход команд</td> </tr>
+            <tr> <td>trst_n</td>      <td>1</td>        <td>I</td> <td>Асинхронный сброс</td> </tr>
+            <tr> <td>tdo</td>         <td>1</td>        <td>O</td> <td>Выход данных</td> </tr>
+            <tr> <td>shift_dr</td>    <td>1</td>        <td>O</td> <td>Команда сдвига регистра данных</td> </tr>
+            <tr> <td>capture_dr</td>  <td>1</td>        <td>O</td> <td>Команда захвата регистра данных</td> </tr>
+            <tr> <td>update_dr</td>   <td>1</td>        <td>O</td> <td>Команда обновления регистра данных</td> </tr>
+            <tr> <td>tdo_en</td>      <td>1</td>        <td>O</td> <td>Разрешение передачи через двунаправленный вывод TDO (для обеспечения возможности мультиплексирования TDI и TDO на одной контактной площадке)</td> </tr>
+            <tr> <td>tdr_in</td>      <td>1</td>        <td>I</td> <td>Вход от тестового регистра</td> </tr>
+            <tr> <td>instruction</td> <td>IR_WIDTH</td> <td>O</td> <td>Значение регистра инструкций</td> </tr>
+         </tbody>
+      </table>
+
+   </body>
+</html>

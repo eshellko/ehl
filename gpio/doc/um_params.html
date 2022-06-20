@@ -1,0 +1,79 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Параметры</title>
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+      <h2>Параметры конфигурации</h2>
+      <p><b>ehl_gpio</b> имеет возможность быть настроенным под задачу пользователя. За настройку отвечают параметры, представленные далее. Для каждого из регистров может быть настроен тип доступа (чтение, запись, сброс/установка/инверсия отдельных бит) и начальное значение. Например, с целью сокращения площади для некоторых регистров может быть отключен интерфейс чтения.</p>
+      <p></p>
+      <table cellpadding="4" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Разрядность</th>
+               <th>Значение по умолчанию</th>
+               <th>Допустимые значения</th>
+               <th>Описание</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>WIDTH</td> <td>32</td> <td>32</td> <td>1-32</td> <td>Ширина интерфейсов generic и I/O.</td> </tr>
+            <tr> <td>META_ENA</td> <td>WIDTH</td><td>0xFFFFFFFF</td> <td>ANY</td> <td>Разрешение использования схемы защиты от метастабильности на каждом из разрядов gpio_in.</td> </tr>
+            <tr> <td>IFG_POLARITY</td> <td>1</td><td>1</td> <td>0-1</td> <td>Значение активного уровня прерывания.</td> </tr>
+            <tr bgcolor="#c0c000"> <td colspan="5">GPIO data output register</td> </tr>
+            <tr> <td>GDOR_ENA</td> <td>5</td><td>31</td> <td>0-31</td> <td>Разрешение команд доступа к регистру {SET, CLEAR, INVERT, READ, WRITE}</td> </tr>
+            <tr> <td>GDOR_INIT</td> <td>WIDTH</td><td>0</td> <td>ANY</td> <td>Значение регистра после сброса</td> </tr>
+            <tr bgcolor="#c0c000"> <td colspan="5">GPIO output enable register</td> </tr>
+            <tr> <td>GOER_ENA</td> <td>5</td><td>31</td> <td>0-31</td> <td>Разрешение команд доступа к регистру {SET, CLEAR, INVERT, READ, WRITE}</td> </tr>
+            <tr> <td>GOER_INIT</td> <td>WIDTH</td><td>0</td> <td>ANY</td> <td>Значение регистра после сброса</td> </tr>
+            <tr bgcolor="#c0c000"> <td colspan="5">GPIO function enable register</td> </tr>
+            <tr> <td>GAFR_ENA</td> <td>5</td><td>31</td> <td>0-31</td> <td>Разрешение команд доступа к регистру {SET, CLEAR, INVERT, READ, WRITE}</td> </tr>
+            <tr> <td>GAFR_INIT</td> <td>WIDTH</td><td>0</td> <td>ANY</td> <td>Значение регистра после сброса</td> </tr>
+            <tr bgcolor="#c0c000"> <td colspan="5">GPIO pull enable register</td> </tr>
+            <tr> <td>GPER_ENA</td> <td>5</td><td>31</td> <td>0-31</td> <td>Разрешение команд доступа к регистру {SET, CLEAR, INVERT, READ, WRITE}</td> </tr>
+            <tr> <td>GPER_INIT</td> <td>WIDTH</td><td>0</td> <td>ANY</td> <td>Значение регистра после сброса</td> </tr>
+            <tr bgcolor="#c0c000"> <td colspan="5">GPIO pull type register</td> </tr>
+            <tr> <td>GPTR_ENA</td> <td>5</td><td>31</td> <td>0-31</td> <td>Разрешение команд доступа к регистру {SET, CLEAR, INVERT, READ, WRITE}</td> </tr>
+            <tr> <td>GPTR_INIT</td> <td>WIDTH</td><td>0</td> <td>ANY</td> <td>Значение регистра после сброса</td> </tr>
+            <tr bgcolor="#c0c000"> <td colspan="5">GPIO interrupt enable register</td> </tr>
+            <tr> <td>GIER_ENA</td> <td>5</td><td>31</td> <td>0-31</td> <td>Разрешение команд доступа к регистру {SET, CLEAR, INVERT, READ, WRITE}</td> </tr>
+            <tr> <td>GIER_INIT</td> <td>WIDTH</td><td>0</td> <td>ANY</td> <td>Значение регистра после сброса</td> </tr>
+            <tr bgcolor="#c0c000"> <td colspan="5">GPIO interrupt source register</td> </tr>
+            <tr> <td>GISR_ENA</td> <td>5</td><td>31</td> <td>0-31</td> <td>Разрешение команд доступа к регистру {SET, CLEAR, INVERT, READ, WRITE}</td> </tr>
+            <tr> <td>GISR_INIT</td> <td>WIDTH</td><td>0</td> <td>ANY</td> <td>Значение регистра после сброса</td> </tr>
+            <tr bgcolor="#c0c000"> <td colspan="5">GPIO interrupt flag register</td> </tr>
+            <tr> <td>READ_GIFR_ENA</td> <td>1</td><td>1</td> <td>0-1</td> <td>Разрешение чтения регистра</td> </tr>
+            <tr> <td>CLR_GIFR_ENA</td> <td>1</td><td>1</td> <td>0-1</td> <td>Разрешение побитового сброса регистра GIFR</td> </tr>
+            <tr> <td>GIFR_INIT</td> <td>WIDTH</td><td>0</td> <td>ANY</td>  <td>Значение регистра после сброса</td> </tr>
+            <tr> <td>IFG_MODE</td> <td>1</td><td>0</td> <td>0, 1</td>  <td>Режим работы с флагами прерывания:<li>0 - флаги сбрасываются при чтении;</li><li>1 - флаги сбрасываются побитовым сбросом.</li></td> </tr>
+            <tr bgcolor="#c0c000"> <td colspan="5">GPIO data input register</td> </tr>
+            <tr> <td>READ_GDIR_ENA</td> <td>1</td><td>1</td> <td>0-1</td> <td>Разрешение чтения регистра</td> </tr>
+            <tr bgcolor="#c0c000"> <td colspan="5">GPIO capture mode register</td> </tr>
+            <tr> <td>GCMR_ENA</td> <td>5</td><td>31</td> <td>0-31</td> <td>Разрешение команд доступа к регистру {SET, CLEAR, INVERT, READ, WRITE}</td> </tr>
+            <tr> <td>GCMR_INIT</td> <td>WIDTH</td><td>0</td> <td>ANY</td> <td>Значение регистра после сброса</td> </tr>
+            <tr bgcolor="#c0c000"> <td colspan="5">GPIO filter mode register</td> </tr>
+            <tr> <td>GFMR_ENA</td> <td>5</td><td>31</td> <td>0-31</td> <td>Разрешение команд доступа к регистру {SET, CLEAR, INVERT, READ, WRITE}</td> </tr>
+            <tr> <td>GFMR_INIT</td> <td>WIDTH</td><td>0</td> <td>ANY</td> <td>Значение регистра после сброса</td> </tr>
+            <tr> <td>REGISTERED_OUTPUT</td> <td>1</td><td>0</td> <td>0-1</td> <td>Наличие регистров на data_out</td> </tr>
+         </tbody>
+      </table>
+      <p></p>
+
+      <p>Параметры <b>*_ENA[4]</b> (SET) определяют наличие интерфейса побитовой установки для регистров <b>GPIO</b>. Если параметр равен 0b1, то все биты соответствующего регистра доступны для побитовой установки.</p>
+      <p>Параметры <b>*_ENA[3]</b> (CLEAR) определяют наличие интерфейса побитового сброса для регистров <b>GPIO</b>. Если параметр равен 0b1, то все биты соответствующего регистра доступны для побитового сброса.</p>
+      <p>Параметры <b>*_ENA[2]</b> (INVERT) определяют наличие интерфейса побитовой инверсии для регистров <b>GPIO</b>. Если параметр равен 0b1, то все биты соответствующего регистра доступны для побитовой инверсии.</p>
+      <p>Параметры <b>*_ENA[1]</b> (и <b>READ_*_ENA</b>) (READ) определяют наличие интерфейса чтения для регистров <b>GPIO</b>. Если параметр установлен в 0b1 регистр доступен по чтению. Если равен 0b0, то при чтении регистра возвращается 0x0.</p>
+      <p>Параметры <b>*_ENA[0]</b> (WRITE) определяют наличие интерфейса параллельной записи регистра с шины <b>data_in</b>. Если параметр установлен в 0b1 регистр доступен по записи. Если равен 0b0, то регистр не доступен по записи.</p>
+      <p>Параметр <b>IFG_POLARITY</b> определяет значение, которое принимает <b>ifg</b> для сигнализации прерывания.</p>
+      <p>Параметр <b>IFG_MODE</b> определяет режим работы с флагами прерываний. Система может использовать программный сброс флагов при обработке, либо аппаратный сброс флагов при чтении с обработкой прочитанного значения.</p>
+      <p>Параметр <b>META_ENA</b> определяет наличие схемы защиты от метастабильности на соответствующем входе <b>gpio_in</b>. Фильтр представляет собой схему, состоящую из 3 последовательно включенных триггеров, тактируемых <b>clk</b>.</p>
+      <p>Параметр <b>*_INIT</b> определяет начальное значение регистра после сброса. Значение может выбираться исходя из задачи, поставленной перед <b>GPIO</b> в конкретной системе. Существуют некоторые рекомендации по выбору начального значения регистров:</p>
+      <li>Регистр <b>GOER</b> должен находиться в состоянии запрета выходных значений (равен 0x0), чтобы избежать возможного короткого замыкания с внешними источниками сигнала при подаче питания;</li>
+      <li>Регистры <b>GPTR</b> и <b>GPER</b> (равен 0b1 для каждого разряда) должны определять значение выводов, сконфигурированных на вход, если отсутствует внешний источник сигнала;</li>
+      <li>Регистр <b>GIER</b> должен запрещать генерацию прерываний в момент сброса (равен 0x0), чтобы избежать ложной генерации прерывания.</li>
+      <p>Параметр <b>REGISTERED_OUTPUT</b> разрешает использование регистров на выходе <b>data_out</b>. Если параметр равен 0, то данные на <b>data_out</b> появляются на том же такте, на котором был установлен <b>rd</b>. Если параметр равен 1, то данные на <b>data_out</b> появляются на следующем такте после установке <b>rd</b>.</p>
+
+   </body>
+</html>

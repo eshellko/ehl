@@ -1,0 +1,945 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Описание регистров ehl_1553</title>
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+      <h2 class="title" style="clear: both"><a name="sectionStart"></a>Описание регистров ehl_m1553</h2>
+      <hr>
+
+      <p><a name="Config"></a><span class="bold" style="color: #0000CC"><b>Config [0x0]: </b></span>Регистр настройки</p>
+      <table summary="Fields for Register: cfg" cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31</td>
+               <td>BC_ENA</td>
+               <td>Значение параметра <b>BC_ENA</b>.</td>
+               <td>R</td>
+               <td>x<sup>*</sup></td>
+            </tr>
+            <tr>
+               <td>30</td>
+               <td>RT_ENA</td>
+               <td>Значение параметра <b>RT_ENA</b>.</td>
+               <td>R</td>
+               <td>x<sup>*</sup></td>
+            </tr>
+            <tr>
+               <td>29</td>
+               <td>BM_ENA</td>
+               <td>Значение параметра <b>BM_ENA</b>.</td>
+               <td>R</td>
+               <td>x<sup>*</sup></td>
+            </tr>
+            <tr>
+               <td>28:5</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>4</td>
+               <td>DB</td>
+               <td>
+                  <b>Disable Broadcast</b>. Отключение приема широковещательных сообщений для ОУ:
+                  <li>0 - прием разрешен;</li>
+                  <li>1 - прием выключен.</li>
+                  Позволяет отключать широковещательные сообщения для применений, в которых они нежелательны [9 50.5.7.1.b].
+				  <p>
+				     Глобальная маска приводит к игнорированию команд на шине - статус не обновляется.
+				     В случае с маскированием для выбранного Subaddress с помощью <b>Config.BCRXEN</b> статус обновляется.
+				  </p>
+               </td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>3</td>
+               <td>ECO</td>
+               <td>
+                  <b>Echo Check Off</b>. Отключение режима проверки принятых данных при передаче:
+                  <li>0 - проверка осуществляется;</li>
+                  <li>1 - проверка выключена.</li>
+                  В случае несовпадения переданных и принятых данных генерируется статус ECHO_LOOP_ERROR - ошибка в петле обратной связи в дескрипторе КШ / ОУ.
+               </td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>2</td>
+               <td>MS</td>
+               <td>
+                  <b>Mode Select</b>. Режим работы контроллера:
+                  <li>0 - Remote Terminal;</li>
+                  <li>1 - Bus Controller.</li>
+                  <b style="color: #FF0000"> Замечание</b>. Подконтроллеры BС и RT находятся под сбросом и с отключенным синхросигналом, если не активированы с помощью бит <b>MS</b> и <b>BE</b>. После включения соответствующего режима, следует выдерживать задержку перед обращением к блоку из расчета 16 тактов частоты APB + 16 тактов частоты ядра (20 МГц).
+               </td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>1</td>
+               <td>BE</td>
+               <td><b>Bus Enable</b>. Разрешение работы с шиной. Режим работы определяется битом <b>MS</b>: <li>0 - запрещено;</li> <li>1 - разрешено.</li></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>0</td>
+               <td>BME</td>
+               <td><b>Bus Monitor Enable</b>. Разрешение работы в режиме Bus Monitor: <li>0 - запрещено;</li> <li>1 - разрешено.</li></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <p><a name="BC_ADDR"></a><span class="bold" style="color: #0000CC"><b>BC_ADDR [0x4]: </b></span>Регистр начального адреса очереди заданий КШ (по записи). При чтении отображает адрес текущего обрабатываемого задания, либо последнее обработанное задание (<b>Control.TS</b>=0).</p>
+      <table summary="Fields for Register: bc_addr" cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:4</td>
+               <td>ADDR</td>
+               <td>Адрес в памяти, по которому расположен список заданий для КШ. Выровнен до границы 16 байт.
+При чтении отображает адрес текущего обрабатываемого задания.
+                  Старшие 12 бит используются в качестве базового адреса. Изменения младших 16 бит происходит в пределах базового адреса.</td>
+               <td>R/W</td>
+               <td>x</td>
+            </tr>
+            <tr>
+               <td>3:0</td>
+               <td>-</td>
+               <td><b>Резерв.</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <p><a name="Control"></a><span class="bold" style="color: #0000CC"><b>Control [0x8]: </b></span>Регистр управления</p>
+      <table summary="Fields for Register: ctrl" cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:3</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>2</td>
+               <td>TS</td>
+               <td><b>Task State</b>. Состояние обработки задания: <li>0 - свободен;</li> <li>1 - занят.</li></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>1</td>
+               <td>STOP</td>
+               <td>Остановка задания. Запись 1 приводит к остановки выполнения задания, текущее сообщение будет завершено. Сбрасывается вместе с <b>TS</b>.</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>0</td>
+               <td>RUN</td>
+               <td>Запись 1 приводит к запуску обработки задания. Адрес задания в <b>BC_ADDR</b>. Бит сбрасывается автоматически (по чтению всегда равен 0). Установка приводит к сбросу <b>TS</b>. Не допускается запись 1 в регистр при установленном <b>TS</b>.</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <p><a name="Timer"></a><span class="bold" style="color: #0000CC"><b>Timer [0xC]: </b></span>Регистр настройки таймера позволяет сконфигурировать временные параметры работы шины, отличные от стандартных значений.</p>
+      <table summary="Fields for Register: timer" cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:29</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>28:20</td>
+               <td>IWGmin</td>
+               <td><b>Inter Word Gap (min)</b>. Минимальный интервал между приемом слова и началом передачи (от 4 мкс до 12 мкс по спецификации).</td>
+               <td>R/W</td>
+               <td>80</td>
+            </tr>
+            <tr>
+               <td>19</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>18:10</td>
+               <td>IWGmax</td>
+               <td><b>Inter Word Gap (max)</b>. Максимальный интервал ожидания между окончанием передачи и началом приема для определения отсутствия отклика (14 мкс по спецификации).</td>
+               <td>R/W</td>
+               <td>280</td>
+            </tr>
+            <tr>
+               <td>9</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>8:0</td>
+               <td>IMG</td>
+               <td>
+                  <b>Inter Message Gap</b>. Интервал между передачей сообщений в тактах опорной частоты 20 МГц.
+                  Значение по умолчанию соответствует 4 мкс. Интервал используется КШ для разделения сообщений во времени.
+               </td>
+               <td>R/W</td>
+               <td>80</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <p><a name="LStatus"></a><span class="bold" style="color: #0000CC"><b>LSTAT [0x10]: </b></span>Регистр статуса последнего завершенного сообщения содержит копию <b>Result</b> дескриптора КШ.
+      В случае ошибки DMA, контроллер не пишет результат в AHB и результат доступен в регистрах контроллера.</p>
+
+      <p><a name="BM_ADDR_INIT"></a><span class="bold" style="color: #0000CC"><b>BM_ADDR_INIT [0x14]: </b></span>Начальный адрес буфера МШ. В конфигурации <b>BM_ENA</b>=0 регистр доступен только по чтению 0.</p>
+      <table summary="Fields for Register: rev" cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:3</td>
+               <td>ADDR</td>
+               <td>
+                  Адрес, с которого контроллер начинает работает в режиме МШ. Загружается в контроллер при установке бита <b>Config.BME</b>. <b style="color: #FF0000">Не допускается менять содержимое регистра при включенном МШ (<b>Config.BME</b> = 1)</b>.
+<!--                     Старшие 13 бит используются в качестве базового адреса. Изменения младших 16 бит происходит в пределах базового адреса.-->
+               </td>
+               <td>R/W</td>
+               <td>x</td>
+            </tr>
+            <tr>
+               <td>2:0</td>
+               <td>-</td>
+               <td>Резерв</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+      <p><a name="BM_ADDR_LAST"></a><span class="bold" style="color: #0000CC"><b>BM_ADDR_LAST [0x18]: </b></span>Конечный адрес буфера МШ. При достижении границы МШ переходит к адресу <b>BM_ADDR_INIT</b>. Старшие 12 бит не доступны пользователю и равны старшим 12 битам <b>BM_ADDR_INIT</b>, т.е. размер буфера ограничен 1 МБ. В конфигурации <b>BM_ENA</b>=0 регистр доступен только по чтению 0.</p>
+      <table summary="Fields for Register: rev" cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:20</td>
+               <td>-</td>
+<!--                  <td>Отражает соответствующие биты регистра <b>BM_ADDR_INIT.ADDR</b>.</td> -->
+               <td>Резерв</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>19:3</td>
+               <td>ADDR</td>
+               <td>Конечный адрес буфера МШ.</td>
+               <td>R/W</td>
+               <td>x</td>
+            </tr>
+            <tr>
+               <td>2:0</td>
+               <td>-</td>
+               <td>Резерв</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+      <p><a name="BM_ADDR_IRQ"></a><span class="bold" style="color: #0000CC"><b>BM_ADDR_IRQ [0x1C]: </b></span>Адрес генерации прерывания МШ. Прерывание генерируется при записи по адресу, указанному в <b>BM_ADDR_IRQ</b>. В конфигурации <b>BM_ENA</b>=0 регистр доступен только по чтению 0.</p>
+      <p><a name="BM_ADDR_CUR"></a><span class="bold" style="color: #0000CC"><b>BM_ADDR_CUR [0x20]: </b></span>Адрес следующей ячейки, записываемой МШ. В конфигурации <b>BM_ENA</b>=0 регистр доступен только по чтению 0.</p>
+
+
+<!--      <p>-->
+<!--         <a name="RT_MCCTRL"></a><span class="bold" style="color: #0000CC"><b>RT_MCCTRL [0x28]: </b></span>Регистр настройки Mode Codes ОУ содержит настройку поддеживаемых устройством комманд.-->
+<!--         Выборочно можно отключать прием отдельных видов команд, включая индивидуальные/широковещательные запросы.-->
+<!--, генерацию прерываний по их получению -->
+<!--      </p>-->
+<!--
+      <table summary="Fields for Register: rt_mcctrl" cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:30</td>
+               <td>-</td>
+               <td><b></b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>29:26</td>
+               <td>-</td>
+               <td><b>Reset Remote Terminal (01000)</b></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>25:22</td>
+               <td>-</td>
+               <td><b>Inhibit Terminal Flag (00110) / Override Inhibit Terminal Flag (00111)</b></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>21:18</td>
+               <td>-</td>
+               <td><b>Initiate Self Test (00011)</b></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>17:16</td>
+               <td>-</td>
+               <td><b>Dynamic Bus Control (00000)</b></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>15:14</td>
+               <td>-</td>
+               <td><b>Transmit BIT Word(10011)</b></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>13:12</td>
+               <td>-</td>
+               <td><b>Transmit Vecotr Word (10000)</b></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>11:8</td>
+               <td>-</td>
+               <td><b>Transmitter Shutdown (00100) / Override Transmitter Shutdown (00101)</b></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>7:4</td>
+               <td>-</td>
+               <td><b>Synchronize with Data Word (10001)</b></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>3:0</td>
+               <td>-</td>
+               <td><b>Synchronize (00001)</b></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+-->
+      <p><a name="BM_TIMER"></a><span class="bold" style="color: #0000CC"><b>BM_TIMER [0x24]: </b></span>Регистр таймера МШ. В конфигурации <b>BM_ENA</b>=0 регистр доступен только по чтению 0.</p>
+      <table summary="Fields for Register: bm_timer" cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:27</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>26</td>
+               <td>UPD</td>
+               <td>Сбрасывается при установке <b>CPT</b>. Устанавливается после обновления <b>TMR</b>.</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>25</td>
+               <td>CPT</td>
+               <td>Запись 1 приводит к загрузке значения таймера МШ в <b>TMR</b>. Сбрасывается аппаратно.</td>
+               <td>R/W/SC</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>24</td>
+               <td>LOAD</td>
+               <td>Запись 1 приводит к загрузке значения <b>TMR</b> в таймер МШ. Сбрасывается аппаратно.</td>
+               <td>R/W/SC</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>23:0</td>
+               <td>TMR</td>
+               <td>Таймер МШ. Значение, записанное в регистр, перезаписывается в таймер МШ при установке <b>LOAD</b>.
+                  Значение таймера МШ загружается в <b>TMR</b> при установке <b>CPT</b>.
+               </td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <p><a name="RT_MCC"></a><span class="bold" style="color: #0000CC"><b>RT_MCC [0x28]: </b></span>Регистр маскирования команд удаленному темминалу
+         позволяет отключить прием отдельных Mode Code, не предназначенных для использования в выбранном применении.
+<!-- TODO: implement this functionality -->
+         Если установлен соответствующий бит регистра, то принятая команда получает статус ILLEGAL.
+         Для нее устанавливается бит MESSAGE_ERROR в стаутусном слове и статусное слово передается в ответ на команду (если команда не BROADCAST).
+         Передача данных для ILLEGAL команд не производится.
+      </p>
+      <p>
+         Минимальный набор поддерживаемых команд задается в [6 30.4.2.1] [9 50.5.7.2.c]: TRANSMIT STATUS WORD, TRANSMITTER SHUTDOWN, OVERRIDE TRANMITTER SHUTDOWN, RESET REMOTE TERMINAL.
+         Согласно [9 50.5.5.c] RESET REMOTE TERMINAL и INITIATE SELF TEST могут быть отключены для некоторых режимов работы.
+         <b>ehl_m1553</b> не позволяет отключить прием команд TRANSMIT LAST COMMAND и TRANSMIT STATUS WORD. Все остальные команды могут быть отключены - переведены в ILLEGAL.
+      </p>
+      <p>
+         Для команд имеющих инверсные команды (Override) отключение производится одним битом на обе команды.
+      </p>
+      <p>
+         В конфигурации <b>RT_ENA</b>=0 регистр доступен только по чтению 0.</p>
+      </p>
+
+      <table summary="Fields for Register: rt_mcc" cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>31:22</td> <td>-</td> <td><b>Резерв</b></td>                                                                                                      <td>R</td>   <td>0b1111111111</td> </tr>
+            <tr> <td>21</td>    <td>-</td> <td><b>Резерв</b></td>                                                                                                      <td>R</td>   <td>0</td> </tr>
+            <tr> <td>20</td>    <td>-</td> <td><b>[Override] Selected Transmitter Shutdown</b>: 0 - прием разрешен. Поддерживаются только Dual-redundant системы.</td> <td>R/W</td> <td>0</td> </tr>
+            <tr> <td>19</td>    <td>-</td> <td><b>Transmit BIT Word</b>: 0 - прием разрешен, 1 - принятая команда игнорируется.</td>                                   <td>R/W</td> <td>0</td> </tr>
+            <tr> <td>18</td>    <td>-</td> <td><b>Transmit Last Command</b>: 0 - прием разрешен.</td>                                                                  <td>R</td>   <td>0</td> </tr>
+            <tr> <td>17</td>    <td>-</td> <td><b>Synchronize with data word</b>: 0 - прием разрешен, 1 - принятая команда игнорируется.</td>                          <td>R/W</td> <td>0</td> </tr>
+            <tr> <td>16</td>    <td>-</td> <td><b>Transmit Vector Word</b>: 0 - прием разрешен, 1 - принятая команда игнорируется.</td>                                <td>R/W</td> <td>0</td> </tr>
+            <tr> <td>15:9</td>  <td>-</td> <td><b>Резерв.</b></td>                                                                                                     <td>R</td>   <td>0b1111111</td> </tr>
+            <tr> <td>8</td>     <td>-</td> <td><b>Reset Remote Terminal</b>: 0 - прием разрешен, 1 - принятая команда игнорируется.</td>                               <td>R/W</td> <td>0</td> </tr>
+            <tr> <td>7</td>     <td>-</td> <td><b>Резерв</b></td>                                                                                                      <td>R</td>   <td>0</td> </tr>
+            <tr> <td>6</td>     <td>-</td> <td><b>[Override] Inhibit Terminal Flag</b>: 0 - прием разрешен, 1 - принятая команда игнорируется.</td>                    <td>R/W</td> <td>0</td> </tr>
+            <tr> <td>5</td>     <td>-</td> <td><b>Резерв</b></td>                                                                                                      <td>R</td>   <td>0</td> </tr>
+            <tr> <td>4</td>     <td>-</td> <td><b>[Override] Transmitter Shutdown</b>: 0 - прием разрешен, 1 - принятая команда игнорируется.</td>                     <td>R/W</td> <td>0</td> </tr>
+            <tr> <td>3</td>     <td>-</td> <td><b>Initiate self test</b>: 0 - прием разрешен, 1 - принятая команда игнорируется.</td>                                  <td>R/W</td> <td>0</td> </tr>
+            <tr> <td>2</td>     <td>-</td> <td><b>Transmit Status Word</b>: 0 - прием разрешен.</td>                                                                   <td>R</td>   <td>0</td> </tr>
+            <tr> <td>1</td>     <td>-</td> <td><b>Synchronize</b>: 0 - прием разрешен, 1 - принятая команда игнорируется.</td>                                         <td>R/W</td> <td>0</td> </tr>
+            <tr> <td>0</td>     <td>-</td> <td><b>Dynamic Bus Control</b>: 0 - прием разрешен, 1 - принятая команда игнорируется.</td>                                 <td>R/W</td> <td>0</td> </tr>
+         </tbody>
+      </table>
+
+      <p><a name="RT_CFG"></a><span class="bold" style="color: #0000CC"><b>RT_CFG [0x2C]: </b></span>Регистр настройки удаленного терминала. В конфигурации <b>RT_ENA</b>=0 регистр доступен только по чтению 0.</p></p>
+      <table summary="Fields for Register: rt_cfg" cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:16</td>
+               <td>SW</td>
+               <td><b>Synchronization Word</b>. Содержимое поля данных, полученное с командой SYNCHRONIZE с данными. При получении команды SYNCHRONIZE без данных записывается 0.</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>15:10</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>9</td>
+               <td>EDBC</td>
+               <td><b>Enable Dynamic Bus Control</b>. Значение бита <b>Dynamic Bus Control Acceptance</b> в статусном слове в ответ на команду Dynamic Bus Control. Если равен 1, то прерывание <b>IRQ_DBC</b> может быть сгенерировано.</p></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>8:6</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>5</td>
+               <td>RTACT</td>
+               <td><b>Remote Terminal Active</b>. Сброшен, если ОУ находится в состоянии IDLE. Формируется с учетом задержки на пересинхронизацию между доменами APB и ядра контроллера.</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>4:0</td>
+               <td>RTA</td>
+               <td><b>Remote Terminal Address</b>. Адрес устройства в режиме удаленного терминала.</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <p><a name="RT_ADDR"></a><span class="bold" style="color: #0000CC"><b>RT_ADDR [0x30]: </b></span>Регистр настройки адреса дескрипторов ОУ. В конфигурации <b>RT_ENA</b>=0 регистр доступен только по чтению 0.</p></p>
+      <table summary="Fields for Register: rt_addr" cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:4</td>
+               <td>ADDR</td>
+               <td>
+                  Адрес в памяти, по которому расположены дескрипторы субадресов ОУ контроллера. Выровнен до границы 16 байт. <!-- TODO: check alignment -->
+                  Таблица дескрипторов содержит информацию о допустимых действиях при обращении к выбранному субадресу ОУ.
+                  Старшие 12 бит используются в качестве базового адреса. Изменения младших 16 бит происходит в пределах базового адреса.
+               </td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>3:0</td>
+               <td>-</td>
+               <td><b>Резерв.</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <p><a name="IRQ_ena"></a><span class="bold" style="color: #0000CC"><b>IRQ_ENA [0x34]: </b></span>Регистр разрешения прерываний</p>
+      <table summary="Fields for Register: irq_ena" cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:18</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>17</td>
+               <td>BMED</td>
+               <td><b>Bus Monitor Enable IRQ DMA</b>. Разрешение прерывания от Bus Monitor при ошибке AHB DMA. <li>0 - запрещено;</li> <li>1 - разрешено.</li></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>16</td>
+               <td>BMEBA</td>
+               <td><b>Bus Monitor Enable IRQ on Buffer Access</b>. Разрешение прерывания от Bus Monitor при пересечении адреса <b>BM_ADDR_IRQ</b>. <li>0 - запрещено;</li> <li>1 - разрешено.</li></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>15:12</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>11</td>
+               <td>RTED</td>
+               <td><b>Remote Terminal Enable IRQ DMA</b>. Разрешение прерывания от Remote Terminal при ошибке AHB DMA. <li>0 - запрещено;</li> <li>1 - разрешено.</li></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>10</td>
+               <td>RTSYN</td>
+               <td><b>Remote Terminal Enable IRQ Synchronize</b>. Разрешение прерывания от Remote Terminal при получении валидной команды Synchronize. <li>0 - запрещено;</li> <li>1 - разрешено.</li></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>9</td>
+               <td>RTERRT</td>
+               <td><b>Remote Terminal Enable IRQ Reset Remote Terminal</b>. Разрешение прерывания от Remote Terminal при получении валидной команды Reset Remote Terminal. <li>0 - запрещено;</li> <li>1 - разрешено.</li></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>8</td>
+               <td>RTEDBC</td>
+               <td><b>Remote Terminal Enable IRQ Dynamic Bus Control</b>. Разрешение прерывания от Remote Terminal при получении валидной команды Dynamic Bus Control. <li>0 - запрещено;</li> <li>1 - разрешено.</li></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>7:3</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>2</td>
+               <td>BCED</td>
+               <td><b>Bus Controller Enable IRQ DMA</b>. Разрешение прерывания от Bus Controller при ошибке AHB DMA. <li>0 - запрещено;</li> <li>1 - разрешено.</li></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>1</td>
+               <td>BCER</td>
+               <td><b>Bus Controller Enable IRQ Error</b>. Разрешение прерывания от Bus Controller при неудачном завершении задания. <li>0 - запрещено;</li> <li>1 - разрешено.</li></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>0</td>
+               <td>BCOC</td>
+               <td><b>Bus Controller Enable IRQ Completion</b>. Разрешение прерывания от Bus Controller при завершении задания. <li>0 - запрещено;</li> <li>1 - разрешено.</li></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+<!--
+      <p><a name="IRQ_clr"></a><span class="bold" style="color: #0000CC"><b>IRQ_CLR [0x38]: </b></span>Регистр сброса флагов прерываний</p>
+      <table summary="Fields for Register: irq_clr" cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:18</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>17</td>
+               <td>BMDM</td>
+               <td><b>Bus Monitor IRQ DMA</b>. Запись 1 приводит к сбросу флага прерывания <b>BMDM</b>. Бит сбрасывается автоматически.</td>
+               <td>R0/W/SC</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>16</td>
+               <td>BMBA</td>
+               <td><b>Bus Monitor IRQ DMA</b>. Запись 1 приводит к сбросу флага прерывания <b>BMBA</b>. Бит сбрасывается автоматически.</td>
+               <td>R0/W/SC</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>15:12</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>11</td>
+               <td>RTDM</td>
+               <td><b>Remote Terminal IRQ DMA</b>. Запись 1 приводит к сбросу флага прерывания <b>RTID</b>. Бит сбрасывается автоматически.</td>
+               <td>R0/W/SC</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>10</td>
+               <td>RTSYN</td>
+               <td><b>Remote Terminal IRQ Synchronize</b>. Запись 1 приводит к сбросу флага прерывания <b>RTSYN</b>. Бит сбрасывается автоматически.</td>
+               <td>R0/W/SC</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>9</td>
+               <td>RTRRT</td>
+               <td><b>Remote Terminal IRQ Reset Remote Terminal</b>. Запись 1 приводит к сбросу флага прерывания <b>RTRRT</b>. Бит сбрасывается автоматически.</td>
+               <td>R0/W/SC</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>8</td>
+               <td>RTDBC</td>
+               <td><b>Remote Termional IRQ Dynamic Bus Control</b>. Запись 1 приводит к сбросу флага прерывания <b>RTDBC</b>. Бит сбрасывается автоматически.</td>
+               <td>R0/W/SC</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>7:3</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>2</td>
+               <td>BCDM</td>
+               <td><b>Bus Controller IRQ DMA</b>. Запись 1 приводит к сбросу флага прерывания <b>BCID</b>. Бит сбрасывается автоматически.</td>
+               <td>R0/W/SC</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>1</td>
+               <td>BCER</td>
+               <td><b>Bus Controller IRQ Error</b>. Запись 1 приводит к сбросу флага прерывания <b>BCIE</b>. Бит сбрасывается автоматически.</td>
+               <td>R0/W1/SC</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>0</td>
+               <td>BCOC</td>
+               <td><b>Bus Controller IRQ Completion</b>. Запись 1 приводит к сбросу флага прерывания <b>BCIC</b>. Бит сбрасывается автоматически.</td>
+               <td>R0/W/SC</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+-->
+      <p><a name="IRQ_flag"></a><span class="bold" style="color: #0000CC"><b>IRQ_FLAG [0x38]: </b></span>Регистр флагов прерываний. Запись1  в любой из бит регистра приводит к сбросу флага.</p>
+      <table summary="Fields for Register: irq_flag" cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:18</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>17</td>
+               <td>BMID</td>
+               <td><b>Bus Monitor IRQ DMA</b>. Флаг прерывания от Bus Monitor при ошибке AHB DMA.</td>
+               <td>R/W1C</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>16</td>
+               <td>BMID</td>
+               <td><b>Bus Monitor IRQ DMA</b>. Флаг прерывания от Bus Monitor при пересечении адреса <b>BM_ADDR_IRQ</b>.</td>
+               <td>R/W1C</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>15:14</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>13</td>
+               <td>RTIRX</td>
+               <td><b>Remote Terminal Receive IRQ</b>. Флаг прерывания от Remote Terminal при окончании приема (обновлении дескриптора), если разрешено в <b>Config.RXIRQ</b>.</td>
+               <td>R/W1C</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>12</td>
+               <td>RTITX</td>
+               <td><b>Remote Terminal Transmit IRQ</b>. Флаг прерывания от Remote Terminal при окончании передачи (обновлении дескриптора), если разрешено в <b>Config.TXIRQ</b>.</td>
+               <td>R/W1C</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>11</td>
+               <td>RTID</td>
+               <td><b>Remote Terminal IRQ DMA</b>. Флаг прерывания от Remote Terminal при ошибке AHB DMA.</td>
+               <td>R/W1C</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>10</td>
+               <td>RTSYN</td>
+               <td><b>Remote Terminal IRQ Synchronize</b>. Флаг прерывания от Remote Terminal при приеме валидной команды Synchronize.</td>
+               <td>R/W1C</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>9</td>
+               <td>RTRRT</td>
+               <td><b>Remote Terminal IRQ Reset Remote Terminal</b>. Флаг прерывания от Remote Terminal при приеме валидной команды Reset Remote Terminal.</td>
+               <td>R/W1C</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>8</td>
+               <td>RTDBC</td>
+               <td><b>Remote Terminal IRQ Dynamic Bus Control</b>. Флаг прерывания от Remote Terminal при приеме валидной команды Dynamic Bus Control.</td>
+               <td>R/W1C</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>7:3</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>2</td>
+               <td>BCID</td>
+               <td><b>Bus Controller IRQ DMA</b>. Флаг прерывания от Bus Controller при ошибке AHB DMA.</td>
+               <td>R/W1C</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>1</td>
+               <td>BCIE</td>
+               <td><b>Bus Controller IRQ Error</b>. Флаг прерывания от Bus Controller при неудачном завершении задания.</td>
+               <td>R/W1C</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>0</td>
+               <td>BCIC</td>
+               <td><b>Bus Controller IRQ Completion</b>. Флаг прерывания от Bus Controller при выполнении задания.</td>
+               <td>R/W1C</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+     <p><a name="REV"></a><span class="bold" style="color: #0000CC"><b>REVISION [0x3C]: </b></span>Регистр версии контроллера</p>
+      <table summary="Fields for Register: rev" cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:0</td>
+               <td>VER</td>
+               <td>Версия контроллера</td>
+               <td>R</td>
+               <td>0x20220223</td>
+            </tr>
+         </tbody>
+      </table>
+
+<br class="table-break"></body></html>

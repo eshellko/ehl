@@ -1,0 +1,100 @@
+<html>
+   <style> pre.small {line-height: 0.5; font-weight:bold; }</style>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Архитектура</title>
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+      <h2>Архитектура</h2>
+      <p><b>EHL_M1553</b> является контроллером шинного интерфейса по стандарту Mil-Std 1553B / ГОСТ-Р 52070-2003.</p>
+
+      <p>Контроллер имеет следующий интерфейс:</p>
+      <ul>
+      <p>1. AMBA APB Slave для управления устройством.</p>
+      <p>2. AMBA AHB Master для доступа к данным и дескрипторам.</p>
+      <p>3. 2 канала Mil-Std 1553.</p>
+      <p>4. Прерывание.</p>
+      <p>5. Опорная частота 20 МГц.</p>
+      </ul>
+      <p>Интерфейсы APB и AHB имеют общую тактовую частоту и сигнал асинхронного сброса.</p>
+
+      <img src="um_arch.png" width="50%">
+      <h3>Перечень выводов</h3>
+      <pre class="small">    _____________________________</pre>
+      <pre class="small">   |                             |</pre>
+      <pre class="small">---| ref_clk                     |</pre>
+      <pre class="small">---| pclk                 pready |---</pre>
+      <pre class="small">---| presetn             pslverr |---</pre>
+      <pre class="small">---| paddr                prdata |---</pre>
+      <pre class="small">---| pwrite                      |</pre>
+      <pre class="small">---| psel                        |</pre>
+      <pre class="small">---| penable                     |</pre>
+      <pre class="small">---| pwdata                      |</pre>
+      <pre class="small">---| hrdata                haddr |---</pre>
+      <pre class="small">---| hready               htrans |---</pre>
+      <pre class="small">---| hresp                hwrite |---</pre>
+      <pre class="small">   |                       hsize |---</pre>
+      <pre class="small">   |                      hburst |---</pre>
+      <pre class="small">   |                       hprot |---</pre>
+      <pre class="small">   |                      hwdata |---</pre>
+      <pre class="small">---| a_rx_p               a_tx_p |---</pre>
+      <pre class="small">---| a_rx_n               a_tx_n |---</pre>
+      <pre class="small">   |                    a_tx_inh |---</pre>
+      <pre class="small">   |                     a_rx_en |---</pre>
+      <pre class="small">---| b_rx_p               b_tx_p |---</pre>
+      <pre class="small">---| b_rx_n               b_tx_n |---</pre>
+      <pre class="small">   |                    b_tx_inh |---</pre>
+      <pre class="small">   |                     b_rx_en |---</pre>
+      <pre class="small">   |                         irq |---</pre>
+      <pre class="small">   |_____________________________|</pre>
+
+      <table summary="io" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Количество</th>
+               <th>Тип</th>
+               <th>Назначение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>ref_clk</td>  <td>1</td>  <td>I</td> <td>Рабочая частота контроллера. 20 МГц.</td> </tr>
+            <tr> <td>pclk</td>     <td>1</td>  <td>I</td> <td>Тактовая частоты шин AHB и APB.</td> </tr>
+            <tr> <td>presetn</td>  <td>1</td>  <td>I</td> <td>Асинхронный сигнал сброса контроллера.</td> </tr>
+            <tr> <td>paddr</td>    <td>32</td> <td>I</td> <td>Стандартный сигнал шины APB.</td> </tr>
+            <tr> <td>pwrite</td>   <td>1</td>  <td>I</td> <td>Стандартный сигнал шины APB.</td> </tr>
+            <tr> <td>psel</td>     <td>1</td>  <td>I</td> <td>Стандартный сигнал шины APB.</td> </tr>
+            <tr> <td>penable</td>  <td>1</td>  <td>I</td> <td>Стандартный сигнал шины APB.</td> </tr>
+            <tr> <td>pwdata</td>   <td>32</td> <td>I</td> <td>Стандартный сигнал шины APB.</td> </tr>
+            <tr> <td>pready</td>   <td>1</td>  <td>O</td> <td>Стандартный сигнал шины APB.</td> </tr>
+            <tr> <td>pslverr</td>  <td>1</td>  <td>O</td> <td>Стандартный сигнал шины APB.</td> </tr>
+            <tr> <td>prdata</td>   <td>32</td> <td>O</td> <td>Стандартный сигнал шины APB.</td> </tr>
+            <tr> <td>haddr</td>    <td>32</td> <td>O</td> <td>Стандартный сигнал шины AHB.</td> </tr>
+            <tr> <td>htrans</td>   <td>2</td>  <td>O</td> <td>Стандартный сигнал шины AHB.</td> </tr>
+            <tr> <td>hwrite</td>   <td>1</td>  <td>O</td> <td>Стандартный сигнал шины AHB.</td> </tr>
+            <tr> <td>hsize</td>    <td>3</td>  <td>O</td> <td>Стандартный сигнал шины AHB.</td> </tr>
+            <tr> <td>hburst</td>   <td>3</td>  <td>O</td> <td>Стандартный сигнал шины AHB.</td> </tr>
+            <tr> <td>hprot</td>    <td>4</td>  <td>O</td> <td>Стандартный сигнал шины AHB.</td> </tr>
+            <tr> <td>hwdata</td>   <td>32</td> <td>O</td> <td>Стандартный сигнал шины AHB.</td> </tr>
+            <tr> <td>hrdata</td>   <td>32</td> <td>I</td> <td>Стандартный сигнал шины AHB.</td> </tr>
+            <tr> <td>hready</td>   <td>1</td>  <td>I</td> <td>Стандартный сигнал шины AHB.</td> </tr>
+            <tr> <td>hresp</td>    <td>2</td>  <td>I</td> <td>Стандартный сигнал шины AHB.</td> </tr>
+            <tr> <td>a_tx_p</td>   <td>1</td>  <td>O</td> <td>Выход шины A положительной полярности.</td> </tr>
+            <tr> <td>a_tx_n</td>   <td>1</td>  <td>O</td> <td>Выход шины A отрицательной полярности.</td> </tr>
+            <tr> <td>a_tx_inh</td> <td>1</td>  <td>O</td> <td>Запрет работы передатчика шины A.</td> </tr>
+            <tr> <td>a_rx_en</td>  <td>1</td>  <td>O</td> <td>Разрешение работы приемника шины A.</td> </tr>
+            <tr> <td>a_rx_p</td>   <td>1</td>  <td>I</td> <td>Вход шины A положительной полярности.</td> </tr>
+            <tr> <td>a_rx_n</td>   <td>1</td>  <td>I</td> <td>Вход шины A отрицательной полярности.</td> </tr>
+            <tr> <td>b_tx_p</td>   <td>1</td>  <td>O</td> <td>Выход шины B положительной полярности.</td> </tr>
+            <tr> <td>b_tx_n</td>   <td>1</td>  <td>O</td> <td>Выход шины B отрицательной полярности.</td> </tr>
+            <tr> <td>b_tx_inh</td> <td>1</td>  <td>O</td> <td>Запрет работы передатчика шины B.</td> </tr>
+            <tr> <td>b_rx_en</td>  <td>1</td>  <td>O</td> <td>Разрешение работы приемника шины B.</td> </tr>
+            <tr> <td>b_rx_p</td>   <td>1</td>  <td>I</td> <td>Вход шины B положительной полярности.</td> </tr>
+            <tr> <td>b_rx_n</td>   <td>1</td>  <td>I</td> <td>Вход шины B отрицательной полярности.</td> </tr>
+            <tr> <td>irq</td>      <td>1</td>  <td>O</td> <td>Прерывание. Активный уровень 1.</td> </tr>
+         </tbody>
+      </table>
+
+   </body>
+</html>

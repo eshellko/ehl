@@ -1,0 +1,111 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Применение</title>
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+      <div class="article">
+         <div class="titlepage">
+            <h2 class="title">Применение</h2>
+         </div>
+      </div>
+      <h3>Общие сведения о применении</h3>
+      <p>Типичным применением <b>ehl_fifo</b> является использование его в качестве буфера приемо-передатчика. Например, в контроллере интерфейса SPI. Со стороны CPU данные в <b>fifo_tx</b> записываются по AMBA APB, а читаются передатчиком <b>spi_tx</b>. Данные в <b>fifo_rx</b> записываются со стороны приемника <b>spi_rx</b>, а читаются CPU через AMBA APB.</p>
+      <p>Использование fifo в приемо-передатчике spi.</p>
+      <img src="um_fifo_appl.png">
+      <h3>Семейства ПЛИС</h3>
+      <p>Для использования <b>ehl_fifo</b> в ПЛИС требуется обеспечить модуль источниками тактовых сигналов. После этого схема готова к использованию. В таблице представлены результаты синтеза схемы для различных семейств ПЛИС.</p>
+
+      <table summary="fpga" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col></colgroup>
+         <tbody>
+            <tr bgcolor="#C0C0C0"> <td></td> <td colspan="3"><b>Quartus II (10.0)</b></td> <td colspan="3"><b>Ise 12.3</b></td> </tr>
+            <tr bgcolor="#C0C0C0"> <td></td> <td colspan="3"><b>Stratix II - EP2S60F672C5ES</b></td> <td colspan="3"><b>Virtex 5 - XC5VLX30-3FF324-3</b></td> </tr>
+            <tr> <td>FF</td> <td>90</td> <td>289</td> <td>546</td> <td>26</td> <td>32</td> <td>34</td> </tr>
+            <tr> <td>LUT</td> <td>43</td> <td>135</td> <td>218</td> <td>35</td> <td>49</td> <td>65</td> </tr>
+            <tr> <td>Memory bits</td> <td>-</td> <td>-</td> <td>-</td> <td>64</td> <td>256</td> <td>512</td> </tr>
+            <tr> <td>Fmax wclk</td> <td>98</td> <td>92</td> <td>91</td> <td>418</td> <td>404</td> <td>400</td> </tr>
+            <tr> <td>Fmax rclk</td> <td>90</td> <td>80</td> <td>76</td> <td>420</td> <td>460</td> <td>417</td> </tr>
+            <tr> <td>WIDTH_DIN</td>  <td>8</td> <td>16</td> <td>32</td> <td>8</td> <td>16</td> <td>32</td> </tr>
+            <tr> <td>WIDTH_DOUT</td> <td>8</td> <td>16</td> <td>8</td> <td>8</td> <td>16</td> <td>8</td> </tr>
+            <tr> <td>DEPTH</td>      <td>8</td> <td>16</td> <td>16</td> <td>8</td> <td>16</td> <td>16</td> </tr>
+            <tr> <td>SYNC_STAGE</td> <td colspan="6">2</td> </tr>
+         </tbody>
+      </table>
+
+      <h3>СБИС и СнК</h3>
+      <p>Логический синтез <b>ehl_fifo</b> на библиотеке Artisan 90 нм в типичных условиях с реализацией памяти на триггерах дает следующие результаты.</p>
+      <table summary="asic" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Тип</th>
+               <th colspan="3">Значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>Триггеры</td> <td>90</td> <td>28</td> <td>546</td> </tr>
+            <tr> <td>Инверторы</td> <td>13</td> <td>18</td> <td>28</td> </tr>
+            <tr> <td>Логический вентили</td> <td>103</td> <td>258</td> <td>492</td> </tr>
+            <tr> <td>Тактовая частоты, МГц</td> <td>314</td> <td>271</td> <td>247</td> </tr>
+
+            <tr> <td>WIDTH_DIN</td>  <td>8</td> <td>16</td> <td>32</td> </tr>
+            <tr> <td>WIDTH_DOUT</td> <td>8</td> <td>16</td> <td>8</td> </tr>
+            <tr> <td>DEPTH</td>      <td>8</td> <td>16</td> <td>16</td> </tr>
+            <tr> <td>SYNC_STAGE</td> <td>2</td> <td>2</td> <td>2</td> </tr>
+         </tbody>
+      </table>
+
+      <p>Схема синхронна и соответствует требованиям DFT. Процент тестового покрытия дефектов типа Stuck-at составляет 100% для указанных в таблице 6 модификаций.</p>
+      <p>Временные ограничения на каждую частоту задаются в зависимости от применения схемы. Переход между тактовыми частотами внутри схемы может быть ограничен параметром максимальной задержки. Исправление setup/hold между доменами не требуется, т.к. реализована схема защиты от метастабильности.</p>
+      <p>Входные и выходные задержки должны выбираться из применения схемы. Рекомендуется использовать значение 40% от периода синхросигнала.</p>
+
+      <h3>Функциональная верификация</h3>
+      <p>Верификация <b>ehl_fifo</b> проводится с помощью тестового модуля <b>fifo_tb</b>. В процессе теста проверяются следующие утверждения::</p>
+      <li> выходы блока принимают корректные начальные значения;</li>
+      <li> корректность непрерывной записи в буфер / непрерывного чтения из буфера;</li>
+      <li> корректность одновременного чтения/записи в буфер;</li>
+      <li> корректность одиночной записи в буфер / разового чтения;</li>
+      <li> корректность выставления и сброса флагов <b>w_overflow</b> / <b>r_underflow</b>.</li>
+      <p> Тест проводится для максимального набора допустимых параметров и для различных соотношений частота <b>wclk</b> и <b>rclk</b>.</p>
+
+      <p><b>fifo_tb</b> показывает следующие результаты по покрытию кода:</p>
+      <table summary="coverage" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Тип покрытия</th>
+               <th colspan="3">Количество проверок</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>Block</td> <td>47/47 (100%)</td> <td>47/47 (100%)</td> <td>61/61 (100%)</td> </tr>
+            <tr> <td>Expression</td> <td>108/108 (100%)</td> <td>108/108 (100%)</td> <td>124/124 (100%)</td> </tr>
+            <tr> <td>Toggle</td> <td>186/190 (98%)</td> <td>260/264 (98%)</td> <td>375/377 (99%)</td> </tr>
+            <tr>
+               <td></td>
+               <td>
+                  <p>WIDTH_DIN=8</p>
+                  <p>WIDTH_DOUT=8</p>
+                  <p>DEPTH=8</p>
+                  <p>SYNC_STAGE=2</p>
+               </td>
+               <td>
+                  <p>WIDTH_DIN=16</p>
+                  <p>WIDTH_DOUT=16</p>
+                  <p>DEPTH=16</p>
+                  <p>SYNC_STAGE=2</p>
+               </td>
+               <td>
+                  <p>WIDTH_DIN=32</p>
+                  <p>WIDTH_DOUT=8</p>
+                  <p>DEPTH=16</p>
+                  <p>SYNC_STAGE=2</p>
+               </td>
+            </tr>
+
+         </tbody>
+      </table>
+
+   </body>
+</html>

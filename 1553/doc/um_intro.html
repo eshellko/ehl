@@ -1,0 +1,103 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Введение</title>
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+      <table summary="Reference" cellpadding="4" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col></colgroup>
+         <tbody>
+            <tr> <td bgcolor="#C0C0C0">Версия</td>      <td>1.0</td> </tr>
+            <tr> <td bgcolor="#C0C0C0">Дата</td>        <td>2021.02.12</td> </tr>
+            <tr> <td bgcolor="#C0C0C0">Разработчик</td> <td>А.В. Корнюхин (kornukhin@mail.ru)</td> </tr>
+         </tbody>
+      </table>
+      <h2>Введение</h2>
+
+      <p>
+	     В данном документе приводятся технические характеристики, функционал и инструкции по применению блока <b>ehl_m1553</b>, имеющего следующие основные зхарактеристики:
+      </p>
+	  <ul>
+      <li>работа в режиме Контроллера Шины (КШ) / Bus Controller (BC);</li>
+      <li>работа в режиме Оконечное Устройство (ОУ) / Remote Terminal (RT);</li>
+      <li>работа в режиме Монитор Шины (МШ) / Bus Monitor (BM);</li>
+      <li>поддержка резервной магистральной шины;</li>
+      <li>поддерживаемые типы передач (включая широковещательные): BC->RT, RT->BC, RT->RT;</li>
+      <li>поддержка до 31 RT;</li>
+      <li>проверка соответствия протоколу;</li>
+      <li>сохранение статистики шины.</li>
+	  </ul>
+
+      <h2 class="title">История изменений</h2>
+      <p></p>
+      <table summary="Registers for Address Block: ehl_ddr" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Версия</th>
+               <th>Дата</th>
+               <th>Разработчик</th>
+               <th>Описание</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>1.0</td>
+               <td>2021.02.12</td>
+               <td>Корнюхин А.В.</td>
+               <td>Первая публикация документа</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <h2 class="title">Справочные материалы</h2>
+      <table summary="Reference" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0"> <th>Номер</th> <th>Наименование</th> </tr>
+         </thead>
+         <tbody>
+            <tr> <td>1</td> <td>AMBA Specification Rev. 2.0. ARM IHI 0011A</td> </tr>
+            <tr> <td>2</td> <td>AMBA 3 APB Protocol. v1.0 Specification. ARM IHI 0024B</td> </tr>
+<!-- Reference: http://everyspec.com/MIL-STD/MIL-STD-1500-1599/?page=6 -->
+            <tr> <td>3</td> <td>MIL-STD-1553B 21 September 1978. Military Standard. Aircraft Internal Time Division Command/Response Multiplex Data Bus.</td> </tr>
+            <tr> <td>4</td> <td>ГОСТ-Р 52070-2003.</td> </tr>
+            <tr> <td>5</td> <td>Mil-Std-1553B Notice 1.</td> </tr>
+            <tr> <td>6</td> <td>Mil-Std-1553B Notice 2.</td> </tr>
+            <tr> <td>7</td> <td>Mil-Std-1553B Notice 3.</td> </tr>
+            <tr> <td>8</td> <td>Mil-Std-1553B Notice 4.</td> </tr>
+            <tr> <td>9</td> <td>Mil-Hdbk-1553A 1 November 1988.</td> </tr>
+            <tr> <td>10</td> <td>ГОСТ-Р 52074-2003.</td> </tr>
+         </tbody>
+      </table>
+
+      <h2 class="title">Условные обозначения и сокращения</h2>
+      <table summary="abbreviations" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0"> <th>Сокращение</th> <th>Расшифровка</th> </tr>
+         </thead>
+         <tbody>
+            <tr> <td>AHB</td>  <td>Advanced High-performance Bus</td> </tr>
+            <tr> <td>APB</td>  <td>Advanced Peripheral Bus</td> </tr>
+            <tr> <td>ATPG</td> <td>Automatic Test Pattern Generation</td> </tr>
+            <tr> <td>BC</td>   <td>Bus Controller / Контроллер Шины (КШ)</td> </tr>
+            <tr> <td>BM</td>   <td>Bus Monitor / Монитор Шины (МШ)</td> </tr>
+            <tr> <td>CDC</td>  <td>Clock Domain Crossing</td> </tr>
+            <tr> <td>CW</td>   <td>Command Word / Командное Слово (КС)</td> </tr>
+            <tr> <td>DFT</td>  <td>Design For Testability</td> </tr>
+            <tr> <td>DMA</td>  <td>Direct Memory Access</td> </tr>
+            <tr> <td>DW</td>   <td>Data Word / Слово Данных (СД)</td> </tr>
+            <tr> <td>I/O</td>  <td>Input / Output (блоки ввода / вывода)</td> </tr>
+            <tr> <td>RAM</td>  <td>Random Access Memory</td> </tr>
+            <tr> <td>RT</td>   <td>Remote Terminal / Оконечное Устройство (ОУ)</td> </tr>
+            <tr> <td>SDC</td>  <td>Synopsys Design Constraints</td> </tr>
+            <tr> <td>SW</td>   <td>Status Word / Ответное Слово (ОС)</td> </tr>
+            <tr> <td>СнК</td>  <td>Система на кристалле</td> </tr>
+            <tr> <td>0x</td>   <td>префикс шестнадцатеричных значений (например, 0xA7F5)</td> </tr>
+            <tr> <td>0b</td>   <td>префикс двоичных значений (например, 0b0101)</td> </tr>
+         </tbody>
+      </table>
+
+   </body>
+</html>
