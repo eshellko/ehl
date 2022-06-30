@@ -1,0 +1,1325 @@
+/*
+   Design:           Open Source Standard Cell Library for Generic Synthesis
+   Revision:         1.0
+   Date:             2016-12-20
+   Company:          Eshell
+   Designer:         A.Kornukhin (asic.eshell@gmail.com)
+   Last modified by: 1.0 2016-12-20 A.Kornukhin: initial release
+*/
+library(ehl) {
+   technology(cmos);
+   delay_model : table_lookup;
+   time_unit : "1ns";
+   voltage_unit : "1V";
+   current_unit : "1mA";
+   pulling_resistance_unit : "1kohm";
+   leakage_power_unit : "1pW";
+   capacitive_load_unit (1.0,pf);
+/*
+   nom_process     : 1;
+   nom_temperature : 25;
+   nom_voltage     : 1.8;
+*/
+   operating_conditions(typical) {
+      process     : 1;
+      temperature : 25;
+      voltage     : 1.8;
+      tree_type   : balanced_tree
+   }
+   default_operating_conditions : typical;
+
+   slew_lower_threshold_pct_fall : 30.0;
+   slew_upper_threshold_pct_fall : 70.0;
+   slew_lower_threshold_pct_rise : 30.0;
+   slew_upper_threshold_pct_rise : 70.0;
+   input_threshold_pct_fall      : 50.0;
+   input_threshold_pct_rise      : 50.0;
+   output_threshold_pct_fall     : 50.0;
+   output_threshold_pct_rise     : 50.0;
+   slew_derate_from_library      : 0.5;
+
+   default_leakage_power_density : 0.0;
+   default_cell_leakage_power    : 0.0;
+   default_fanout_load           : 1.0;
+   default_output_pin_cap        : 0.0;
+   default_inout_pin_cap         : 0.001165;
+   default_input_pin_cap         : 0.001165;
+   default_max_transition        : 1.0;
+
+   k_process_cell_leakage_power   : 0;
+   k_temp_cell_leakage_power      : 0;
+   k_volt_cell_leakage_power      : 0;
+   k_process_internal_power       : 0;
+   k_temp_internal_power          : 0;
+   k_volt_internal_power          : 0;
+   k_process_rise_transition      : 1;
+   k_temp_rise_transition         : 0;
+   k_volt_rise_transition         : 0;
+   k_process_fall_transition      : 1;
+   k_temp_fall_transition         : 0;
+   k_volt_fall_transition         : 0;
+   k_process_setup_rise           : 1;
+   k_temp_setup_rise              : 0;
+   k_volt_setup_rise              : 0;
+   k_process_setup_fall           : 1;
+   k_temp_setup_fall              : 0;
+   k_volt_setup_fall              : 0;
+   k_process_hold_rise            : 1;
+   k_temp_hold_rise               : 0;
+   k_volt_hold_rise               : 0;
+   k_process_hold_fall            : 1;
+   k_temp_hold_fall               : 0;
+   k_volt_hold_fall               : 0;
+   k_process_min_pulse_width_high : 1;
+   k_temp_min_pulse_width_high    : 0;
+   k_volt_min_pulse_width_high    : 0;
+   k_process_min_pulse_width_low  : 1;
+   k_temp_min_pulse_width_low     : 0;
+   k_volt_min_pulse_width_low     : 0;
+   k_process_recovery_rise        : 1;
+   k_temp_recovery_rise           : 0;
+   k_volt_recovery_rise           : 0;
+   k_process_recovery_fall        : 1;
+   k_temp_recovery_fall           : 0;
+   k_volt_recovery_fall           : 0;
+   k_process_cell_rise            : 1;
+   k_temp_cell_rise               : 0;
+   k_volt_cell_rise               : 0;
+   k_process_cell_fall            : 1;
+   k_temp_cell_fall               : 0;
+   k_volt_cell_fall               : 0;
+   k_process_wire_cap             : 0;
+
+   wire_load("ehl90") {
+      resistance  : 0;
+      capacitance : 1;
+      area        : 1;
+      slope       : 1;
+      fanout_length(1,0);
+      fanout_length(10,0);
+   }
+/* TODO: LU_TEMPLATES with and without ',' */
+   cell (AND2) { 
+      area : 25.0;
+      pin(A) {
+         direction : input;
+         capacitance : 0.005;
+      }
+      pin(B) {
+         direction : input;
+         capacitance : 0.005;
+      }
+      pin(Q) {
+         direction : output;
+         capacitance     : 0.0;
+         function        : "A & B";
+         max_capacitance : 0.1;
+         timing () {
+            related_pin : "A";
+            timing_sense : non_unate;
+            cell_rise(scalar) {
+               values("0.1" );
+            };
+            cell_fall(scalar) {
+               values("0.1" );
+            };
+            rise_transition(scalar) {
+               values("0.1" );
+            };
+            fall_transition(scalar) {
+               values("0.0" );
+            };
+         }
+         timing () {
+            related_pin : "B";
+            timing_sense : non_unate;
+            cell_rise(scalar) {
+               values("0.1" );
+            };
+            cell_fall(scalar) {
+               values("0.1" );
+            };
+            rise_transition(scalar) {
+               values("0.1" );
+            };
+            fall_transition(scalar) {
+               values("0.0" );
+            };
+         }
+      }
+      cell_leakage_power : 1.0;
+   }
+
+   cell (OR2) { 
+      area : 25.0;
+      pin(A) {
+         direction   : input;
+         capacitance : 0.005;
+      }
+      pin(B) {
+         direction   : input;
+         capacitance : 0.005;
+      }
+      pin(Q) {
+         direction       : output;
+         capacitance     : 0.0;
+         function        : "A | B";
+         max_capacitance : 0.1;
+         timing () {
+            related_pin  : "A";
+            timing_sense : non_unate;
+            cell_rise(scalar) {
+               values("0.1" );
+            };
+            cell_fall(scalar) {
+               values("0.1" );
+            };
+            rise_transition(scalar) {
+               values("0.1" );
+            };
+            fall_transition(scalar) {
+               values("0.0" );
+            };
+         }
+         timing () {
+            related_pin  : "B";
+            timing_sense : non_unate;
+            cell_rise(scalar) {
+               values("0.1" );
+            };
+            cell_fall(scalar) {
+               values("0.1" );
+            };
+            rise_transition(scalar) {
+               values("0.1" );
+            };
+            fall_transition(scalar) {
+               values("0.0" );
+            };
+         }
+      }
+      cell_leakage_power : 1.0;
+   }
+
+   cell (XOR2) { 
+      area : 35.0;
+      pin(A) {
+         direction   : input;
+         capacitance : 0.005;
+      }
+      pin(B) {
+         direction   : input;
+         capacitance : 0.005;
+      }
+      pin(Q) {
+         direction       : output;
+         capacitance     : 0.0;
+         function        : "A ^ B";
+         max_capacitance : 0.1;
+         timing () {
+            related_pin  : "A";
+            timing_sense : negative_unate;
+            cell_rise(scalar) {
+               values("0.1" );
+            };
+            cell_fall(scalar) {
+               values("0.1" );
+            };
+            rise_transition(scalar) {
+               values("0.1" );
+            };
+            fall_transition(scalar) {
+               values("0.0" );
+            };
+         }
+         timing () {
+            related_pin  : "B";
+            timing_sense : negative_unate;
+            cell_rise(scalar) {
+               values("0.1" );
+            };
+            cell_fall(scalar) {
+               values("0.1" );
+            };
+            rise_transition(scalar) {
+               values("0.1" );
+            };
+            fall_transition(scalar) {
+               values("0.0" );
+            };
+         }
+      }
+      cell_leakage_power : 1.0;
+   }
+
+   cell (MUX2) { 
+      area : 60.0;
+      pin(S) {
+         direction   : input;
+         capacitance : 0.005;
+      }
+      pin(A0) {
+         direction   : input;
+         capacitance : 0.005;
+      }
+      pin(A1) {
+         direction   : input;
+         capacitance : 0.005;
+      }
+      pin(Q) {
+         direction       : output;
+         capacitance     : 0.0;
+         function        : "((S A1) | ((!S) A0))";
+         max_capacitance : 0.1;
+         timing () {
+            related_pin : "A0";
+            cell_rise(scalar) {
+               values("0.1" );
+            };
+            cell_fall(scalar) {
+               values("0.1" );
+            };
+            rise_transition(scalar) {
+               values("0.1" );
+            };
+            fall_transition(scalar) {
+               values("0.0" );
+            };
+         }
+         timing () {
+            related_pin : "A1";
+            cell_rise(scalar) {
+               values("0.1" );
+            };
+            cell_fall(scalar) {
+               values("0.1" );
+            };
+            rise_transition(scalar) {
+               values("0.1" );
+            };
+            fall_transition(scalar) {
+               values("0.0" );
+            };
+         }
+         timing () {
+            related_pin : "S";
+            cell_rise(scalar) {
+               values("0.1" );
+            };
+            cell_fall(scalar) {
+               values("0.1" );
+            };
+            rise_transition(scalar) {
+               values("0.1" );
+            };
+            fall_transition(scalar) {
+               values("0.0" );
+            };
+         }
+      }
+      cell_leakage_power : 3.0;
+   }
+
+   cell (BUF) { 
+      area : 15.0;
+      pin(A) {
+         direction   : input;
+         capacitance : 0.005;
+      }
+      pin(Q) {
+         direction       : output;
+         capacitance     : 0.0;
+         function        : "A";
+         max_capacitance : 0.1;
+         timing () {
+            related_pin  : "A";
+            timing_sense : positive_unate;
+            cell_rise(scalar) {
+               values("0.1" );
+            };
+            cell_fall(scalar) {
+               values("0.1" );
+            };
+            rise_transition(scalar) {
+               values("0.1" );
+            };
+            fall_transition(scalar) {
+               values("0.0" );
+            };
+         }
+      }
+      cell_leakage_power : 1.0;
+   }
+
+   cell (INV) { 
+      area : 10.0;
+      pin(A) {
+         direction : input;
+         capacitance : 0.005;
+      }
+      pin(Q) {
+         direction       : output;
+         capacitance     : 0.0;
+         function        : "!A";
+         max_capacitance : 0.1;
+         timing () {
+            related_pin  : "A";
+            timing_sense : negative_unate;
+            cell_rise(scalar) {
+               values("0.1" );
+            };
+            cell_fall(scalar) {
+               values("0.1" );
+            };
+            rise_transition(scalar) {
+               values("0.1" );
+            };
+            fall_transition(scalar) {
+               values("0.0" );
+            };
+         }
+      }
+      cell_leakage_power : 1.0;
+   }
+
+   cell (TSBUF) { 
+      area : 15.0;
+      pin(A) {
+         direction   : input;
+         capacitance : 0.005;
+      }
+      pin(OE) {
+         direction   : input;
+         capacitance : 0.005;
+      }
+      pin(Q) {
+         direction       : output;
+         capacitance     : 0.0;
+         function        : "A";
+         three_state     : "(!OE)";
+         max_capacitance : 0.1;
+         timing () {
+            related_pin  : "A";
+            timing_sense : positive_unate;
+            cell_rise(scalar) {
+               values("0.1" );
+            };
+            cell_fall(scalar) {
+               values("0.1" );
+            };
+            rise_transition(scalar) {
+               values("0.1" );
+            };
+            fall_transition(scalar) {
+               values("0.0" );
+            };
+         }
+         timing () {
+            related_pin  : "OE";
+            timing_sense : positive_unate;
+            timing_type : "three_state_enable";
+            cell_rise(scalar) {
+               values("0.1" );
+            };
+            cell_fall(scalar) {
+               values("0.1" );
+            };
+            rise_transition(scalar) {
+               values("0.1" );
+            };
+            fall_transition(scalar) {
+               values("0.0" );
+            };
+         }
+         timing () {
+            related_pin  : "OE";
+            timing_sense : negative_unate;
+            timing_type : "three_state_disable";
+            cell_rise(scalar) {
+               values("0.1" );
+            };
+            cell_fall(scalar) {
+               values("0.1" );
+            };
+            rise_transition(scalar) {
+               values("0.1" );
+            };
+            fall_transition(scalar) {
+               values("0.0" );
+            };
+         }
+      }
+      cell_leakage_power : 1.0;
+   }
+
+   cell (DLAT) { 
+      area : 40.0;
+      pin(D) {
+         direction   : input;
+/*nextstate_type : "data";*/
+         capacitance : 0.001;
+         timing () {
+            related_pin : "CK";
+            timing_type : "hold_falling";
+            rise_constraint ("scalar") {
+               values("0.008");
+            }
+            fall_constraint ("scalar") {
+               values("0.008");
+            }
+         }
+         timing () {
+            related_pin : "CK";
+            timing_type : "setup_falling";
+            rise_constraint ("scalar") {
+               values("0.101");
+            }
+            fall_constraint ("scalar") {
+               values("0.101");
+            }
+         }
+      }
+      pin(CK) {
+         direction      : input;
+         clock          : true;
+         capacitance    : 0.001;
+         /*max_transition : 0.5;*/
+      }
+      latch(IQ,IQN) {
+         enable : "CK";
+         data_in : "D";
+      }
+      pin(Q) {
+         direction       : output;
+         capacitance     : 0.0;
+         function        : "IQ";
+         max_capacitance : 0.05;
+         timing () {
+            related_pin  : "CK";
+            timing_type  : rising_edge;
+            timing_sense : non_unate;
+            cell_rise(scalar) {
+               values("0.1" );
+            };
+            cell_fall(scalar) {
+               values("0.1" );
+            };
+            rise_transition(scalar) {
+               values("0.1" );
+            };
+            fall_transition(scalar) {
+               values("0.0" );
+            };
+         }
+      }
+      cell_leakage_power : 4.0;
+   }
+
+   cell (DLATN) { 
+      area : 40.0;
+      pin(D) {
+         direction   : input;
+/*nextstate_type : "data";*/
+         capacitance : 0.001;
+         timing () {
+            related_pin : "CK";
+            timing_type : "hold_rising";
+            rise_constraint ("scalar") {
+               values("0.008");
+            }
+            fall_constraint ("scalar") {
+               values("0.008");
+            }
+         }
+         timing () {
+            related_pin : "CK";
+            timing_type : "setup_rising";
+            rise_constraint ("scalar") {
+               values("0.101");
+            }
+            fall_constraint ("scalar") {
+               values("0.101");
+            }
+         }
+      }
+      pin(CK) {
+         direction      : input;
+         clock          : true;
+         capacitance    : 0.001;
+         /*max_transition : 0.5;*/
+      }
+      latch(IQ,IQN) {
+         enable : "!CK";
+         data_in : "D";
+      }
+      pin(Q) {
+         direction       : output;
+         capacitance     : 0.0;
+         function        : "IQ";
+         max_capacitance : 0.05;
+         timing () {
+            related_pin  : "CK";
+            timing_type  : falling_edge;
+            timing_sense : non_unate;
+            cell_rise(scalar) {
+               values("0.1" );
+            };
+            cell_fall(scalar) {
+               values("0.1" );
+            };
+            rise_transition(scalar) {
+               values("0.1" );
+            };
+            fall_transition(scalar) {
+               values("0.0" );
+            };
+         }
+      }
+      cell_leakage_power : 4.0;
+   }
+/*
+   cell (ICG) { 
+      area : 48.0;
+      clock_gating_integrated_cell : latch_posedge;
+      pin(EN) {
+         direction             : input;
+         clock_gate_enable_pin : true;
+         capacitance           : 0.001;
+      }
+      pin(CK) {
+         direction            : input;
+         clock_gate_clock_pin : true;
+         clock                : true;
+         capacitance          : 0.001;
+      }
+      pin(Q) {
+         clock_gate_out_pin : true;
+         direction          : output;
+         capacitance        : 0.0;
+         function           : "CK * IQ";
+         max_capacitance    : 0.05;
+      }
+      cell_leakage_power : 4.0;
+
+      latch(IQ,IQN) {
+         enable  : "!CK";
+         data_in : "EN";
+      }
+      cell_leakage_power : 4.0;
+   }
+*/
+   cell (DFF) { 
+      area : 50.0;
+      pin(D) {
+         direction   : input;
+         nextstate_type : "data";
+         capacitance : 0.001;
+         timing () {
+            related_pin : "CK";
+            timing_type : "hold_rising";
+            rise_constraint ("scalar") {
+               values("0.008");
+            }
+            fall_constraint ("scalar") {
+               values("0.008");
+            }
+         }
+         timing () {
+            related_pin : "CK";
+            timing_type : "setup_rising";
+            rise_constraint ("scalar") {
+               values("0.101");
+            }
+            fall_constraint ("scalar") {
+               values("0.101");
+            }
+         }
+      }
+      pin(CK) {
+         direction      : input;
+         clock          : true;
+         capacitance    : 0.001;
+         max_transition : 0.5;
+      }
+      ff(IQ,IQN) {
+         clocked_on : "CK";
+         next_state : "D";
+      }
+      pin(Q) {
+         direction       : output;
+         capacitance     : 0.0;
+         function        : "IQ";
+         max_capacitance : 0.05;
+         timing () {
+            related_pin  : "CK";
+            timing_type  : rising_edge;
+            timing_sense : non_unate;
+            cell_rise(scalar) {
+               values("0.1" );
+            };
+            cell_fall(scalar) {
+               values("0.1" );
+            };
+            rise_transition(scalar) {
+               values("0.1" );
+            };
+            fall_transition(scalar) {
+               values("0.0" );
+            };
+         }
+      }
+      cell_leakage_power : 8.0;
+   }
+
+   cell (DFFR) { 
+      area : 55.0;
+      pin(D) {
+         direction   : input;
+         nextstate_type : "data";
+         capacitance : 0.001;
+         timing () {
+            related_pin : "CK";
+            timing_type : "hold_rising";
+            rise_constraint ("scalar") {
+               values("0.008");
+            }
+            fall_constraint ("scalar") {
+               values("0.008");
+            }
+         }
+         timing () {
+            related_pin : "CK";
+            timing_type : "setup_rising";
+            rise_constraint ("scalar") {
+               values("0.101");
+            }
+            fall_constraint ("scalar") {
+               values("0.101");
+            }
+         }
+      }
+      pin(CK) {
+         direction      : input;
+         clock          : true;
+         capacitance    : 0.001;
+         max_transition : 0.5;
+      }
+      pin(RN) {
+         direction   : input;
+         capacitance : 0.002;
+      }
+      ff(IQ,IQN) {
+         clocked_on : "CK";
+         next_state : "D";
+         clear      : "!RN";
+      }
+      pin(Q) {
+         direction       : output;
+         capacitance     : 0.0;
+         function        : "IQ";
+         max_capacitance : 0.05;
+         timing () {
+            related_pin  : "CK";
+            timing_type  : rising_edge;
+            timing_sense : non_unate;
+            cell_rise(scalar) {
+               values("0.1" );
+            };
+            cell_fall(scalar) {
+               values("0.1" );
+            };
+            rise_transition(scalar) {
+               values("0.1" );
+            };
+            fall_transition(scalar) {
+               values("0.0" );
+            };
+         }
+         timing () {
+            related_pin  : "RN";
+            timing_type  : clear;
+            timing_sense : negative_unate;
+            cell_rise(scalar) {
+               values("0.1" );
+            };
+            cell_fall(scalar) {
+               values("0.1" );
+            };
+            rise_transition(scalar) {
+               values("0.1" );
+            };
+            fall_transition(scalar) {
+               values("0.0" );
+            };
+         }
+      }
+      cell_leakage_power : 8.0;
+   }
+
+   cell (DFFS) { 
+      area : 55.0;
+      pin(D) {
+         direction   : input;
+         nextstate_type : "data";
+         capacitance : 0.001;
+         timing () {
+            related_pin : "CK";
+            timing_type : "hold_rising";
+            rise_constraint ("scalar") {
+               values("0.008");
+            }
+            fall_constraint ("scalar") {
+               values("0.008");
+            }
+         }
+         timing () {
+            related_pin : "CK";
+            timing_type : "setup_rising";
+            rise_constraint ("scalar") {
+               values("0.101");
+            }
+            fall_constraint ("scalar") {
+               values("0.101");
+            }
+         }
+      }
+      pin(CK) {
+         direction      : input;
+         clock          : true;
+         capacitance    : 0.001;
+         max_transition : 0.5;
+      }
+      pin(SN) {
+         direction   : input;
+         capacitance : 0.001;
+      }
+      ff(IQ,IQN) {
+         clocked_on : "CK";
+         next_state : "D";
+         preset     : "!SN";
+      }
+      pin(Q) {
+         direction       : output;
+         capacitance     : 0.0;
+         function        : "IQ";
+         max_capacitance : 0.05;
+         timing () {
+            related_pin  : "CK";
+            timing_type  : rising_edge;
+            timing_sense : non_unate;
+            cell_rise(scalar) {
+               values("0.1" );
+            };
+            cell_fall(scalar) {
+               values("0.1" );
+            };
+            rise_transition(scalar) {
+               values("0.1" );
+            };
+            fall_transition(scalar) {
+               values("0.0" );
+            };
+         }
+         timing () {
+            related_pin  : "SN";
+            timing_type  : preset;
+            timing_sense : negative_unate;
+            cell_rise(scalar) {
+               values("0.1" );
+            };
+            cell_fall(scalar) {
+               values("0.1" );
+            };
+            rise_transition(scalar) {
+               values("0.1" );
+            };
+            fall_transition(scalar) {
+               values("0.0" );
+            };
+         }
+      }
+      cell_leakage_power : 8.0;
+   }
+
+   cell (SDFF) { 
+      area : 70.0;
+      pin(D) {
+         direction   : input;
+         nextstate_type : "data";
+         capacitance : 0.001;
+         timing () {
+            related_pin : "CK";
+            timing_type : "hold_rising";
+            rise_constraint ("scalar") {
+               values("0.008");
+            }
+            fall_constraint ("scalar") {
+               values("0.008");
+            }
+         }
+         timing () {
+            related_pin : "CK";
+            timing_type : "setup_rising";
+            rise_constraint ("scalar") {
+               values("0.101");
+            }
+            fall_constraint ("scalar") {
+               values("0.101");
+            }
+         }
+      }
+      pin(SI) {
+         direction   : input;
+         nextstate_type : "data";
+         capacitance : 0.001;
+         timing () {
+            related_pin : "CK";
+            timing_type : "hold_rising";
+            rise_constraint ("scalar") {
+               values("0.008");
+            }
+            fall_constraint ("scalar") {
+               values("0.008");
+            }
+         }
+         timing () {
+            related_pin : "CK";
+            timing_type : "setup_rising";
+            rise_constraint ("scalar") {
+               values("0.101");
+            }
+            fall_constraint ("scalar") {
+               values("0.101");
+            }
+         }
+      }
+      pin(SE) {
+         direction   : input;
+         nextstate_type : scan_enable;
+         capacitance : 0.001;
+         timing () {
+            related_pin : "CK";
+            timing_type : "hold_rising";
+            rise_constraint ("scalar") {
+               values("0.008");
+            }
+            fall_constraint ("scalar") {
+               values("0.008");
+            }
+         }
+         timing () {
+            related_pin : "CK";
+            timing_type : "setup_rising";
+            rise_constraint ("scalar") {
+               values("0.101");
+            }
+            fall_constraint ("scalar") {
+               values("0.101");
+            }
+         }
+      }
+      pin(CK) {
+         direction      : input;
+         clock          : true;
+         capacitance    : 0.001;
+         max_transition : 0.5;
+      }
+      ff(IQ,IQN) {
+         clocked_on : "CK";
+         next_state : "(SE SI) + (SE' D)";
+      }
+      pin(Q) {
+         direction       : output;
+         capacitance     : 0.0;
+         function        : "IQ";
+         max_capacitance : 0.05;
+         timing () {
+            related_pin  : "CK";
+            timing_type  : rising_edge;
+            timing_sense : non_unate;
+            cell_rise(scalar) {
+               values("0.1" );
+            };
+            cell_fall(scalar) {
+               values("0.1" );
+            };
+            rise_transition(scalar) {
+               values("0.1" );
+            };
+            fall_transition(scalar) {
+               values("0.0" );
+            };
+         }
+      }
+      test_cell () {
+         pin (D) {
+            direction : input ;
+         }
+         pin (CK) {
+            direction : input ;
+         }
+         pin (SI) {
+            direction : input ;
+            signal_type : test_scan_in ;
+         }
+         pin (SE) {
+            direction : input ;
+            signal_type : test_scan_enable ;
+         }
+         pin (Q) {
+            direction : output ;
+            function : "IQ";
+            signal_type : "test_scan_out" ;
+         }
+         ff ( "IQ","IQN") {
+            next_state : "D";
+            clocked_on : "CK";
+         }
+      }
+      cell_leakage_power : 8.0;
+   }
+
+   cell (SDFFR) { 
+      area : 75.0;
+      pin(D) {
+         direction   : input;
+         nextstate_type : "data";
+         capacitance : 0.001;
+         timing () {
+            related_pin : "CK";
+            timing_type : "hold_rising";
+            rise_constraint ("scalar") {
+               values("0.008");
+            }
+            fall_constraint ("scalar") {
+               values("0.008");
+            }
+         }
+         timing () {
+            related_pin : "CK";
+            timing_type : "setup_rising";
+            rise_constraint ("scalar") {
+               values("0.101");
+            }
+            fall_constraint ("scalar") {
+               values("0.101");
+            }
+         }
+      }
+      pin(SI) {
+         direction   : input;
+         nextstate_type : "data";
+         capacitance : 0.001;
+         timing () {
+            related_pin : "CK";
+            timing_type : "hold_rising";
+            rise_constraint ("scalar") {
+               values("0.008");
+            }
+            fall_constraint ("scalar") {
+               values("0.008");
+            }
+         }
+         timing () {
+            related_pin : "CK";
+            timing_type : "setup_rising";
+            rise_constraint ("scalar") {
+               values("0.101");
+            }
+            fall_constraint ("scalar") {
+               values("0.101");
+            }
+         }
+      }
+      pin(SE) {
+         direction   : input;
+         nextstate_type : scan_enable;
+         capacitance : 0.001;
+         timing () {
+            related_pin : "CK";
+            timing_type : "hold_rising";
+            rise_constraint ("scalar") {
+               values("0.008");
+            }
+            fall_constraint ("scalar") {
+               values("0.008");
+            }
+         }
+         timing () {
+            related_pin : "CK";
+            timing_type : "setup_rising";
+            rise_constraint ("scalar") {
+               values("0.101");
+            }
+            fall_constraint ("scalar") {
+               values("0.101");
+            }
+         }
+      }
+      pin(CK) {
+         direction      : input;
+         clock          : true;
+         capacitance    : 0.001;
+         max_transition : 0.5;
+      }
+      pin(RN) {
+         direction   : input;
+         capacitance : 0.002;
+      }
+      ff(IQ,IQN) {
+         clocked_on : "CK";
+         next_state : "(SE SI) + (SE' D)";
+         clear      : "!RN";
+      }
+      pin(Q) {
+         direction       : output;
+         capacitance     : 0.0;
+         function        : "IQ";
+         max_capacitance : 0.05;
+         timing () {
+            related_pin  : "CK";
+            timing_type  : rising_edge;
+            timing_sense : non_unate;
+            cell_rise(scalar) {
+               values("0.1" );
+            };
+            cell_fall(scalar) {
+               values("0.1" );
+            };
+            rise_transition(scalar) {
+               values("0.1" );
+            };
+            fall_transition(scalar) {
+               values("0.0" );
+            };
+         }
+         timing () {
+            related_pin  : "RN";
+            timing_type  : clear;
+            timing_sense : negative_unate;
+            cell_rise(scalar) {
+               values("0.1" );
+            };
+            cell_fall(scalar) {
+               values("0.1" );
+            };
+            rise_transition(scalar) {
+               values("0.1" );
+            };
+            fall_transition(scalar) {
+               values("0.0" );
+            };
+         }
+      }
+      test_cell () {
+         pin (D) {
+            direction : input ;
+         }
+         pin (CK) {
+            direction : input ;
+         }
+         pin (RN) {
+            direction : input ;
+         }
+         pin (SI) {
+            direction : input ;
+            signal_type : test_scan_in ;
+         }
+         pin (SE) {
+            direction : input ;
+            signal_type : test_scan_enable ;
+         }
+         pin (Q) {
+            direction : output ;
+            function : "IQ";
+            signal_type : "test_scan_out" ;
+         }
+         ff ( "IQ","IQN") {
+            next_state : "D";
+            clocked_on : "CK";
+	    clear : "RN'";
+         }
+      }
+      cell_leakage_power : 8.0;
+   }
+
+   cell (SDFFS) { 
+      area : 75.0;
+      pin(D) {
+         direction   : input;
+         nextstate_type : "data";
+         capacitance : 0.001;
+         timing () {
+            related_pin : "CK";
+            timing_type : "hold_rising";
+            rise_constraint ("scalar") {
+               values("0.008");
+            }
+            fall_constraint ("scalar") {
+               values("0.008");
+            }
+         }
+         timing () {
+            related_pin : "CK";
+            timing_type : "setup_rising";
+            rise_constraint ("scalar") {
+               values("0.101");
+            }
+            fall_constraint ("scalar") {
+               values("0.101");
+            }
+         }
+      }
+      pin(SI) {
+         direction   : input;
+         nextstate_type : "data";
+         capacitance : 0.001;
+         timing () {
+            related_pin : "CK";
+            timing_type : "hold_rising";
+            rise_constraint ("scalar") {
+               values("0.008");
+            }
+            fall_constraint ("scalar") {
+               values("0.008");
+            }
+         }
+         timing () {
+            related_pin : "CK";
+            timing_type : "setup_rising";
+            rise_constraint ("scalar") {
+               values("0.101");
+            }
+            fall_constraint ("scalar") {
+               values("0.101");
+            }
+         }
+      }
+      pin(SE) {
+         direction   : input;
+         nextstate_type : scan_enable;
+         capacitance : 0.001;
+         timing () {
+            related_pin : "CK";
+            timing_type : "hold_rising";
+            rise_constraint ("scalar") {
+               values("0.008");
+            }
+            fall_constraint ("scalar") {
+               values("0.008");
+            }
+         }
+         timing () {
+            related_pin : "CK";
+            timing_type : "setup_rising";
+            rise_constraint ("scalar") {
+               values("0.101");
+            }
+            fall_constraint ("scalar") {
+               values("0.101");
+            }
+         }
+      }
+      pin(CK) {
+         direction      : input;
+         clock          : true;
+         capacitance    : 0.001;
+         max_transition : 0.5;
+      }
+      pin(SN) {
+         direction   : input;
+         capacitance : 0.001;
+      }
+      ff(IQ,IQN) {
+         clocked_on : "CK";
+         next_state : "(SE SI) + (SE' D)";
+         preset     : "!SN";
+      }
+      pin(Q) {
+         direction       : output;
+         capacitance     : 0.0;
+         function        : "IQ";
+         max_capacitance : 0.05;
+         timing () {
+            related_pin  : "CK";
+            timing_type  : rising_edge;
+            timing_sense : non_unate;
+            cell_rise(scalar) {
+               values("0.1" );
+            };
+            cell_fall(scalar) {
+               values("0.1" );
+            };
+            rise_transition(scalar) {
+               values("0.1" );
+            };
+            fall_transition(scalar) {
+               values("0.0" );
+            };
+         }
+         timing () {
+            related_pin  : "SN";
+            timing_type  : preset;
+            timing_sense : negative_unate;
+            cell_rise(scalar) {
+               values("0.1" );
+            };
+            cell_fall(scalar) {
+               values("0.1" );
+            };
+            rise_transition(scalar) {
+               values("0.1" );
+            };
+            fall_transition(scalar) {
+               values("0.0" );
+            };
+         }
+      }
+      test_cell () {
+         pin (D) {
+            direction : input ;
+         }
+         pin (CK) {
+            direction : input ;
+         }
+         pin (SN) {
+            direction : input ;
+         }
+         pin (SI) {
+            direction : input ;
+            signal_type : test_scan_in ;
+         }
+         pin (SE) {
+            direction : input ;
+            signal_type : test_scan_enable ;
+         }
+         pin (Q) {
+            direction : output ;
+            function : "IQ";
+            signal_type : "test_scan_out" ;
+         }
+         ff ( "IQ","IQN") {
+            next_state : "D";
+            clocked_on : "CK";
+	    preset : "SN'";
+         }
+      }
+      cell_leakage_power : 8.0;
+   }
+
+   cell (TIEL) {
+      area : 12.0 ;
+      pin (Q) {
+         direction : output; 
+         function : "0";
+      }
+   }
+
+   cell (TIEH) {
+      area : 12.0 ;
+      pin (Q) {
+         direction : output; 
+         function : "1";
+      }
+   }
+}
