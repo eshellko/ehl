@@ -13,6 +13,12 @@
       <pre class="small">   timer  - индекс таймера (0..3, максимальное значение задается параметром NTIMERS)</pre>
       <pre class="small">   value  - значение периода счета (+1) в тактах частоты таймера поделенной в регистре TMRx_PRE (максимальное значение задается TIMER_WIDTH)</pre>
 	  <hr>
+      <p><b>API_TIMER_SET_DEADTIME</b>: записывает значение периода счета для выбранного таймера.</p>
+      <pre class="small">void API_TIMER_SET_DEADTIME(struct EHL_TIMER* dev_id, int timer, int value);</pre>
+      <pre class="small">   dev_id - указатель на структуру таймера</pre>
+      <pre class="small">   timer  - индекс таймера (0..3, максимальное значение задается параметром NTIMERS)</pre>
+      <pre class="small">   value  - значение dead timer ШИМ в тактах частоты таймера поделенной в регистре TMRx_PRE (максимальное значение задается TIMER_WIDTH)</pre>
+	  <hr>
       <p><b>API_TIMER_SET_COMPARE_A_T0</b>: записывает значение регистра сравнения/ШИМ TMRx_CMPA_T0 для выбранного таймера.</p>
       <p><b>API_TIMER_SET_COMPARE_A_T1</b>: записывает значение регистра сравнения/ШИМ TMRx_CMPA_T1 для выбранного таймера.</p>
       <p><b>API_TIMER_SET_COMPARE_B_T0</b>: записывает значение регистра сравнения/ШИМ TMRx_CMPB_T0 для выбранного таймера.</p>
@@ -31,6 +37,16 @@
 	  <hr>
       <p><b>API_TIMER_SET_CYCLIC</b>: включает режим циклического счета - сбрасывает TMRx_CFG.ONESHOT без изменения остальных бит регистра TMRx_CFG</p>
       <pre class="small">void API_TIMER_SET_CYCLIC(struct EHL_TIMER* dev_id, int timer);</pre>
+      <pre class="small">   dev_id - указатель на структуру таймера</pre>
+      <pre class="small">   timer  - индекс таймера (0..3, максимальное значение задается параметром NTIMERS)</pre>
+	  <hr>
+      <p><b>API_TIMER_PWM_COMP_ENA</b>: разрешает генерацию ШИМ сигнала на комплиментарных выводах</p>
+      <pre class="small">void API_TIMER_PWM_COMP_ENA(struct EHL_TIMER* dev_id, int timer);</pre>
+      <pre class="small">   dev_id - указатель на структуру таймера</pre>
+      <pre class="small">   timer  - индекс таймера (0..3, максимальное значение задается параметром NTIMERS)</pre>
+	  <hr>
+      <p><b>API_TIMER_PWM_COMP_DISA</b>: запрещает генерацию ШИМ сигнала на комплиментарных выводах</p>
+      <pre class="small">void API_TIMER_PWM_COMP_DISA(struct EHL_TIMER* dev_id, int timer);</pre>
       <pre class="small">   dev_id - указатель на структуру таймера</pre>
       <pre class="small">   timer  - индекс таймера (0..3, максимальное значение задается параметром NTIMERS)</pre>
 	  <hr>

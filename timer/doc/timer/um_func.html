@@ -32,7 +32,7 @@
             <tr> <td><a href="reg_desc.html#CFG"      class="olink">TMRx_CFG</a></td>     <td>0x00</td> <td>0x40</td> <td>0x80</td> <td>0xC0</td> <td>Регистр настройки</td> </tr>
             <tr> <td><a href="reg_desc.html#CTRL"     class="olink">TMRx_CTRL</a></td>    <td>0x04</td> <td>0x44</td> <td>0x84</td> <td>0xC4</td> <td>Регистр управления</td> </tr>
 <!--            <tr> <td><a href="reg_desc.html#TMR0_r2"  class="olink">TMRx_r2</a></td>      <td>0x08</td> <td>0x48</td> <td>0x88</td> <td>0xC8</td> <td>Регистр </td> </tr>-->
-<!--            <tr> <td><a href="reg_desc.html#TMR0_r3"  class="olink">TMRx_r3</a></td>      <td>0x0C</td> <td>0x4C</td> <td>0x8C</td> <td>0xCC</td> <td>Регистр </td> </tr>-->
+            <tr> <td><a href="reg_desc.html#DEAD"     class="olink">TMRx_DEAD</a></td>    <td>0x0C</td> <td>0x4C</td> <td>0x8C</td> <td>0xCC</td> <td>Регистр DEAD TIME ШИМ</td> </tr>
             <tr> <td><a href="reg_desc.html#LOAD"     class="olink">TMRx_LOAD</a></td>    <td>0x10</td> <td>0x50</td> <td>0x90</td> <td>0xD0</td> <td>Регистр загрузки</td> </tr>
             <tr> <td><a href="reg_desc.html#PRE"      class="olink">TMRx_PRE</a></td>     <td>0x14</td> <td>0x54</td> <td>0x94</td> <td>0xD4</td> <td>Регистр делителя частоты</td> </tr>
             <tr> <td><a href="reg_desc.html#VALUE"    class="olink">TMRx_VALUE</a></td>   <td>0x18</td> <td>0x58</td> <td>0x98</td> <td>0xD8</td> <td>Регистр значения счетчика</td> </tr>
@@ -83,9 +83,12 @@
       <p>
          Неиспользуемые выводы <b>cmp_out</b> (в соответствии с <b>TMRx_CFG.CMP_EN</b>) равны 0 в режиме ШИМ.
 		 Вывод <b>cmp_out</b> хранит последнее записанное в него значение, пока таймер находится в режимах "сравнения" или "ШИМ" (в соответствии с <b>TMRx_CFG.MODE</b>), в противном случае вывод равен 0.
+		 Вывод <b>cmp_out_n</b> хранит последнее записанное в него значение, пока таймер находится в режиме "ШИМ" (в соответствии с <b>TMRx_CFG.MODE</b>), в противном случае вывод равен 0.
       </p>
       <pre class="smal2">                   _______               _______               _______               _______               </pre>
       <pre class="smal2"> CMP_OUT   _______|       |_____________|       |_____________|       |_____________|       |______________</pre>
+      <pre class="smal2">                   _______               _______               _______               _______               </pre>
+      <pre class="smal2"> CMP_OUT_N _______|       |_____________|       |_____________|       |_____________|       |______________</pre>
       <pre class="small">                  .       .             .       .             .       .             .       .              </pre>
       <pre class="small"> TMRx_LOAD - _ - -.- - - -.- - - - _ - -.- - - -.- - - - _ - -.- - - -.- - - - _ - -.- - - -.- - - - - - - </pre>
       <pre class="small">            | |_  .       .       | |_  .       .       | |_  .       .       | |_  .       .              </pre>
@@ -98,6 +101,29 @@
       <pre class="small">            |               |_    |               |_    |               |_    |               |_           </pre>
       <pre class="small">            |                 |_  |                 |_  |                 |_  |                 |_         </pre>
       <pre class="small">           _|                   |_|                   |_|                   |_|                   |________</pre>
+      <p>
+	     Для каждого из каналов может быть включен режим генерации комплиментарного сигнала с неактивным интервалом (регистр <b>TMRx_DEAD</b>).
+		 Значение регистра <b>TMRx_DEAD</b> вычитается из регистров <b>TMRx_CMPz_T0</b> и добавляется к регистру <b>TMRx_CMPz_T1</b>.
+		 Далее вывод <b>CMP_OUT_N</b> устанавливается, если выполняется любое из соотношений <b>TMRx_CMPz_T1 + TMRx_DEAD</b> &lt; <b>TMRx_VALUE</b> и <b>TMRx_VALUE</b> &lt; <b>TMRx_CMPz_T0 - TMRx_DEAD</b>.
+	  </p>
+      <pre class="small">                   Комплиментарный ШИМ с DEAD = 0</pre>
+      <pre class="smal2">                         _______               _______               _</pre>
+      <pre class="smal2">       CMP_OUT   _______|       |_____________|       |_____________| </pre>
+      <pre class="smal2">                 _______         _____________         _____________  </pre>
+      <pre class="smal2">       CMP_OUT_N        |_______|             |_______|             |_</pre>
+      <p>
+         Регистр <b>TMRx_DEAD</b> задает временной интервал в тактах поделенной частоты таймера до установки активного значения на <b>CMP_OUT_N</b>.
+         Регистр <b>TMRx_DEAD</b> не влияет на диаграмму <b>CMP_OUT</b>.
+      </p>
+      <pre class="small">                   Комплиментарный ШИМ с DEAD = 2</pre>
+      <pre class="smal2">                         _______               _______               _</pre>
+      <pre class="smal2">       CMP_OUT   _______|       |_____________|       |_____________| </pre>
+      <pre class="smal2">                 _____  .       .  _________  .       .  _________  . </pre>
+      <pre class="smal2">       CMP_OUT_N      |___________|         |___________|         |___</pre>
+	  <p>
+	     Следует иметь в виду, что при переполнении таймера может не формироваться интервал <b>TMRx_DEAD</b>, если на границах не выполняются соотношения для <b>CMP_OUT_N</b>.
+		 Т.е. регистры <b>TMRx_CMPz_T0</b>, <b>TMRx_CMPz_T1</b> и <b>TMRx_VALUE</b> должны быть больше <b>TMRx_DEAD</b> для формирования корректной диаграммы комплиментарных ШИМ сигналов на выходе.
+	  </p>
 
       <h3 style="color: #0000CC">Режим захвата</h3>
       <p>

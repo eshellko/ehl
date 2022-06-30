@@ -13,7 +13,8 @@
             </tr>
          </thead>
          <tbody>
-            <tr> <td>31:18</td> <td>-</td>         <td><b>Резерв</b></td> <td>R</td> <td>0</td> </tr>
+            <tr> <td>31:19</td> <td>-</td>         <td><b>Резерв</b></td> <td>R</td> <td>0</td> </tr>
+            <tr> <td>18</td>    <td>PWM_COMP</td>  <td>Разрешение работы комплиментарных выводов ШИМ (<b>cmp_out_n</b>):<li>0 - запрещено;</li><li>1 - разрешено.</li></td> <td>R/W</td> <td>0</td> </tr>
             <tr> <td>17</td>    <td>ONESHOT</td>   <td>Режим счета таймера:<li>0 - периодический;</li><li>1 - однократный.</li>По окончании счета в однократном режиме таймер останавливается.</td> <td>R/W</td> <td>0</td> </tr>
             <tr> <td>16</td>    <td>DIR</td>       <td>Направление счета таймера:<li>0 - декремент;</li><li>1 - инкремент.</li></td> <td>R/W</td> <td>0</td> </tr>
             <tr> <td>15</td> <td>-</td>            <td><b>Резерв</b></td> <td>R</td> <td>0</td> </tr>
@@ -21,7 +22,7 @@
             <tr> <td>12:11</td> <td>CPT_START</td> <td>Тип события запуска таймера в режиме захвата:<li>00 - запуск при записи <b>TMRx_CTRL.ENA</b>;</li><li>01 - нарастающий фронт входного сигнала;</li><li>10 - падающий фронт входного сигнала;</li><li>11 - любой фронт входного сигнала.</li> </td> <td>R/W</td> <td>0</td> </tr>
             <tr> <td>10:9</td>  <td>CPT_TYPE</td>  <td>Тип события для захвата:<li>00 - нарастающий фронт входного сигнала;</li><li>01 - падающий фронт входного сигнала;</li><li>10 - каждый 4-ый нарастающий фронт входного сигнала;</li><li>11 - любой фронт входного сигнала.</li><!--Если захват/сравнение для таймера запрещен (<b>CCP_ENA</b> = 0), то регистр доступен только по чтению.--></td> <td>R/W</td> <td>0</td> </tr>
             <tr> <td>8</td>     <td>CPT_SEL</td>   <td>Выбор канала захвата:<li>0 - cpt_in[0];</li><li>1 - cpt_in[1].</li></td> <td>R/W</td> <td>0</td> </tr>
-            <tr> <td>7:6</td>   <td>CMP_TYPE</td>  <td>Тип события на выводе <b>cmp_out</b> в режиме сравнения:<li>00 - переключение в 1;</li><li>01 - переключение в 0;</li><li>1x - инверсия;</li><!--<li>11 - импульс.</li>--><!--Если захват/сравнение для таймера запрещен (<b>CCP_ENA</b> = 0), то регистр доступен только по чтению.--></td> <td>R/W</td> <td>0</td> </tr>
+            <tr> <td>7:6</td>   <td>CMP_TYPE</td>  <td>Тип события на выводе <b>cmp_out</b> в режиме сравнения:<li>00 - переключение в 1;</li><li>01 - переключение в 0;</li><li>1x - инверсия.</li><!--<li>11 - импульс.</li>--><!--Если захват/сравнение для таймера запрещен (<b>CCP_ENA</b> = 0), то регистр доступен только по чтению.--></td> <td>R/W</td> <td>0</td> </tr>
             <tr> <td>5:3</td>   <td>CMP_EN</td>    <td>Разрешение генерации ШИМ сигнала / сигнала сравнения на выходе <b>cmp_out</b> [2:0] таймера:<li>0 - запрещено, выход хранит предыдущее значение;</li><li>1 - разрешено.</li></td> <td>R/W</td> <td>0</td> </tr>
             <tr> <td>2:0</td>   <td>MODE</td>      <td>Режим работы таймера:
 			      <li>0 - таймер;</li>
@@ -64,7 +65,25 @@
          </tbody>
       </table>
 
-      <p><a name="LOAD"></a><span class="bold" style="color: #0000CC"><b>TMRx_LOAD [0x10 / x050 / 0x90 / 0xD0]: </b></span>Регистр загрузки содержит регистр, определяющий интервал счета таймеров. Разрядность определяется параметром <b>TIMER_WIDTH</b>.</p>
+      <p><a name="DEAD"></a><span class="bold" style="color: #0000CC"><b>TMRx_DEAD [0x0C / 0x4C / 0x8C / 0xCC]: </b></span>Регистр DEAD TIME ШИМ, определяет интервал между активными значениями на прямом и комплиментарном выводах ШИМ.</p>
+      <table cellpadding="1" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>31:<b>TIMER_WIDTH</b></td>  <td>-</td> <td><b>Резерв</b></td> <td>R</td> <td>0</td> </tr>
+            <tr> <td><b>TIMER_WIDTH</b>-1:0</td> <td>-</td> <td>Значение DEAD TIME.</td> <td>R/W</td> <td>x</td> </tr>
+         </tbody>
+      </table>
+
+      <p><a name="LOAD"></a><span class="bold" style="color: #0000CC"><b>TMRx_LOAD [0x10 / 0x50 / 0x90 / 0xD0]: </b></span>Регистр загрузки содержит регистр, определяющий интервал счета таймеров. Разрядность определяется параметром <b>TIMER_WIDTH</b>.</p>
       <table cellpadding="1" border="1" cellspacing="0" rules="all">
          <colgroup><col><col><col><col><col></colgroup>
          <thead>
@@ -195,7 +214,7 @@
          </thead>
          <tbody>
             <tr> <td>31:<b>TIMER_WIDTH</b></td>  <td>-</td> <td><b>Резерв</b></td> <td>R</td> <td>0</td> </tr>
-            <tr> <td><b>TIMER_WIDTH</b>-1:0</td> <td>-</td> <td>Значение счетчика.</td> <td>R/W</td> <td>x</td> </tr>
+            <tr> <td><b>TIMER_WIDTH</b>-1:0</td> <td>-</td> <td>Значение регистра.</td> <td>R/W</td> <td>x</td> </tr>
          </tbody>
       </table>
 
