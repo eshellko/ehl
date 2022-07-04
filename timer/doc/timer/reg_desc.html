@@ -65,6 +65,38 @@
          </tbody>
       </table>
 
+      <p><a name="CTRL_ALL"></a><span class="bold" style="color: #0000CC"><b>CTRL_ALL [0x08]: </b></span>
+         Регистр управления таймерами позволяет запустить, остановить или сбросить все таймеры одновременно.
+         В отличие от <b>TMRx_CTRL</b> он модифицирует биты <b>PAUSE</b> и <b>ENA</b> всех <b>NTIMERS</b> за одну команду записи.
+         По чтению равен 0.
+      </p>
+<!--
+Q: for part of the timers!??
+-->
+      <table cellpadding="1" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>31:8</td> <td>-</td>       <td><b>Резерв</b></td> <td>R</td> <td>0</td> </tr>
+            <tr> <td>7</td>    <td>PAUSE_3</td> <td>Доступ к <b>TMR3_CTRL.PAUSE</b>.</td>  <td>W/R0</td> <td>0</td> </tr>
+            <tr> <td>6</td>    <td>ENA_3</td>   <td>Доступ к <b>TMR3_CTRL.ENA</b>.</td>    <td>W/R0</td> <td>0</td> </tr>
+            <tr> <td>5</td>    <td>PAUSE_2</td> <td>Доступ к <b>TMR2_CTRL.PAUSE</b>.</td>  <td>W/R0</td> <td>0</td> </tr>
+            <tr> <td>4</td>    <td>ENA_2</td>   <td>Доступ к <b>TMR2_CTRL.ENA</b>.</td>    <td>W/R0</td> <td>0</td> </tr>
+            <tr> <td>3</td>    <td>PAUSE_1</td> <td>Доступ к <b>TMR1_CTRL.PAUSE</b>.</td>  <td>W/R0</td> <td>0</td> </tr>
+            <tr> <td>2</td>    <td>ENA_1</td>   <td>Доступ к <b>TMR1_CTRL.ENA</b>.</td>    <td>W/R0</td> <td>0</td> </tr>
+            <tr> <td>1</td>    <td>PAUSE_0</td> <td>Доступ к <b>TMR0_CTRL.PAUSE</b>.</td>  <td>W/R0</td> <td>0</td> </tr>
+            <tr> <td>0</td>    <td>ENA_0</td>   <td>Доступ к <b>TMR0_CTRL.ENA</b>.</td>    <td>W/R0</td> <td>0</td> </tr>
+         </tbody>
+      </table>
+
       <p><a name="DEAD"></a><span class="bold" style="color: #0000CC"><b>TMRx_DEAD [0x0C / 0x4C / 0x8C / 0xCC]: </b></span>Регистр DEAD TIME ШИМ, определяет интервал между активными значениями на прямом и комплиментарном выводах ШИМ.</p>
       <table cellpadding="1" border="1" cellspacing="0" rules="all">
          <colgroup><col><col><col><col><col></colgroup>

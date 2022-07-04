@@ -1,0 +1,71 @@
+<html>
+   <style> pre.small {line-height: 0.5; font-weight:bold; color: #0000FF; }</style>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>API</title>
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+      <h3>Базовые функции</h3>
+      <hr>
+      <p><b>API_GPIO_INIT</b>: инициализация GPIO</p>
+      <pre class="small">void API_GPIO_INIT(struct EHL_GPIO* dev_id, int direction, int pull_up, int pull_down, int filter, int int_rise, int int_any, int altf, int value_init);</pre>
+      <pre class="small">   dev_id     - указатель на структуру GPIO</pre>
+      <pre class="small">   direction  - направление выводов (1 - выход; 0 - вход)</pre>
+      <pre class="small">   pull_up    - 1 в разряде разрешает притяжку к 1</pre>
+      <pre class="small">   pull_down  - 1 в разряде разрешает притяжку к 0. Если одновременно установлен бит в pull_up, то он имеет более высокий приоритет</pre>
+      <pre class="small">   filter     - режим фильтрации (1 - фильтр включен; 0 - выключен)</pre>
+      <pre class="small">   int_rise   - 1 задает прерывание по нарастающему фронту, 0 - по падающему</pre>
+      <pre class="small">   int_any    - 1 в разряде задает режим прерывания по любому изменению вывода. 0 - по изменению, заданному int_rise</pre>
+      <pre class="small">   altf       - 1 разрешает альтернативную функцию в выбранном разряде</pre>
+      <pre class="small">   value_init - начальное значение регистра данных</pre>
+      <hr>
+      <p><b>API_GPIO_WRITE</b>: запись значения порта</p>
+      <pre class="small">void API_GPIO_WRITE(struct EHL_GPIO* dev_id, int value);</pre>
+      <pre class="small">   dev_id - указатель на структуру GPIO</pre>
+      <pre class="small">   value  - значение порта</pre>
+      <hr>
+      <p><b>API_GPIO_READ_BIT</b>: возвращает значение выбранного бита GPIO</p>
+      <pre class="small">void API_GPIO_READ_BIT(struct EHL_GPIO* dev_id, int idx);</pre>
+      <pre class="small">   dev_id - указатель на структуру GPIO</pre>
+      <pre class="small">   idx    - номер бита</pre>
+      <hr>
+      <p><b>API_GPIO_WRITE_BIT</b>: запись значения в выбранный бит GPIO</p>
+      <pre class="small">void API_GPIO_WRITE_BIT(struct EHL_GPIO* dev_id, int idx, int value);</pre>
+      <pre class="small">   dev_id - указатель на структуру GPIO</pre>
+      <pre class="small">   idx    - номер бита</pre>
+      <pre class="small">   value  - записываемое значение (младший бит переменной)</pre>
+      <hr>
+      <p><b>API_GPIO_SET_BIT</b>: запись 1 в выбранный бит GPIO</p>
+      <pre class="small">void API_GPIO_SET_BIT(struct EHL_GPIO* dev_id, int idx);</pre>
+      <pre class="small">   dev_id - указатель на структуру GPIO</pre>
+      <pre class="small">   idx    - номер бита</pre>
+      <hr>
+      <p><b>API_GPIO_CLEAR_BIT</b>: запись 0 в выбранный бит GPIO</p>
+      <pre class="small">void API_GPIO_CLEAR_BIT(struct EHL_GPIO* dev_id, int idx);</pre>
+      <pre class="small">   dev_id - указатель на структуру GPIO</pre>
+      <pre class="small">   idx    - номер бита</pre>
+      <hr>
+      <p><b>API_GPIO_TOGGLE_BIT</b>: инвертирует текущее значение выбранного бита GPIO</p>
+      <pre class="small">void API_GPIO_TOGGLE_BIT(struct EHL_GPIO* dev_id, int idx);</pre>
+      <pre class="small">   dev_id - указатель на структуру GPIO</pre>
+      <pre class="small">   idx    - номер бита</pre>
+      <hr>
+      <p><b>API_GPIO_DISABLE_IRQ</b>: запрещает прерывания записью 0 в GIER</p>
+      <pre class="small">void API_GPIO_DISABLE_IRQ(struct EHL_GPIO* dev_id);</pre>
+      <pre class="small">   dev_id - указатель на структуру GPIO</pre>
+      <hr>
+      <p><b>API_GPIO_ENABLE_IRQ</b>: разрешает выбранные прерывания записью в GIER</p>
+      <pre class="small">void API_GPIO_ENABLE_IRQ(struct EHL_GPIO* dev_id, int value);</pre>
+      <pre class="small">   dev_id - указатель на структуру GPIO</pre>
+      <pre class="small">   value  - разрешенные прерывания, записываемые в GIER</pre>
+      <hr>
+      <p><b>API_GPIO_CLEAR_IRQ</b>: сбрасывает выбранные флаги прерываний в GIFR</p>
+      <pre class="small">void API_GPIO_CLEAR_IRQ(struct EHL_GPIO* dev_id, int value);</pre>
+      <pre class="small">   dev_id - указатель на структуру GPIO</pre>
+      <pre class="small">   value  - сбрасываемые прерывания</pre>
+      <hr>
+      <p><b>API_GPIO_GET_IRQ</b>: возвращает текущие флаги прерываний - значение регистра GIFR</p>
+      <pre class="small">unsigned int API_GPIO_GET_IRQ(struct EHL_GPIO* dev_id);</pre>
+      <pre class="small">   dev_id - указатель на структуру GPIO</pre>
+   </body>
+</html>

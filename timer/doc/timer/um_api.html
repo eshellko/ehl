@@ -116,7 +116,7 @@
       <pre class="small">   timer  - индекс таймера (0..3, максимальное значение задается параметром NTIMERS)</pre>
 	  <hr>
       <p><b>API_TIMER_START</b>: запускает таймер установкой TMRx_CTRL.ENA.</p>
-      <pre class="small">void API_TIMER_START(struct EHL_TIMER* dev_id, struct EHL_TIMER* dev_id, int timer);</pre>
+      <pre class="small">void API_TIMER_START(struct EHL_TIMER* dev_id, int timer);</pre>
       <pre class="small">   dev_id - указатель на структуру таймера</pre>
       <pre class="small">   timer  - индекс таймера (0..3, максимальное значение задается параметром NTIMERS)</pre>
 	  <hr>
@@ -129,6 +129,11 @@
       <pre class="small">void API_TIMER_PAUSE(struct EHL_TIMER* dev_id, int timer);</pre>
       <pre class="small">   dev_id - указатель на структуру таймера</pre>
       <pre class="small">   timer  - индекс таймера (0..3, максимальное значение задается параметром NTIMERS)</pre>
+	  <hr>
+      <p><b>API_TIMER_CTRL_ALL</b>: синхронно запускает/останавливает/сбрасывает таймеры одной командой.</p>
+      <pre class="small">void API_TIMER_CTRL_ALL(struct EHL_TIMER* dev_id, int value);</pre>
+      <pre class="small">   dev_id - указатель на структуру таймера</pre>
+      <pre class="small">   value  - значение, записываемое в регистр <b>CTRL_ALL</b></pre>
 	  <hr>
       <p><b>API_TIMER_DISABLE_IRQ</b>: запрещает прерывания записью 0 в IRQ_CTRL</p>
       <pre class="small">void API_TIMER_DISABLE_IRQ(struct EHL_TIMER* dev_id);</pre>
