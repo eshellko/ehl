@@ -113,7 +113,8 @@ void API_GPIO_ENABLE_IRQ(struct EHL_GPIO* dev_id, int value)
 }
 void API_GPIO_CLEAR_IRQ(struct EHL_GPIO* dev_id, int value)
 {
-   dev_id->GIFR.REG = value;
+// Note: clear uses CLR and not REG
+   dev_id->GIFR.CLR = value;
 }
 unsigned int API_GPIO_GET_IRQ(struct EHL_GPIO* dev_id)
 {
