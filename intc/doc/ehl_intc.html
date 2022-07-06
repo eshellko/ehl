@@ -1,0 +1,333 @@
+<html>
+   <style> pre.small {line-height: 0.5; font-weight:bold; color: #0000FF; }</style>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>INTC</title>
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+      <h2>Interrupt Controller</h2>
+	  <hr>
+      <table cellpadding="4" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col></colgroup>
+         <tbody>
+            <tr> <td bgcolor="#C0C0C0">Версия</td>      <td>1.0</td> </tr>
+            <tr> <td bgcolor="#C0C0C0">Дата</td>        <td>2021.10.11</td> </tr>
+            <tr> <td bgcolor="#C0C0C0">Разработчик</td> <td>А.В. Корнюхин (kornukhin@mail.ru)</td> </tr>
+         </tbody>
+      </table>
+
+      <h3>Введение</h3>
+	  <p>В данной спецификации описываются структура, порядок использования и технические характеристики RISC-V совместимого контроллера прерываний.</p>
+
+      <h2>Справочные материалы</h2>
+      <table cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0"> <th>Номер</th> <th>Наименование</th> </tr>
+         </thead>
+         <tbody>
+            <tr> <td>1</td> <td>Platform Level Interrupt Controller(PLIC). User Manual. Version 0.2.</td> </tr>
+            <tr> <td>2</td> <td>The RISC-V Instruction Set Manual. Version 1.10.</td> </tr>
+         </tbody>
+      </table>
+
+      <h3>Параметры</h3>
+	  <p><b>ehl_intc</b> может быть настроен под задачу пользователя. За настройку отвечают параметры, представленные в таблице.</p>
+      <table cellpadding="4" width="80%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Значение по умолчанию</th>
+               <th>Допустимые значения</th>
+               <th>Описание</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>NUM_SRC</td>  <td>12</td> <td>2-16</td> <td>Количество источников прерывания.</td> </tr>
+            <tr> <td>MAX_PRIO</td> <td>3</td>  <td>1-7</td>  <td>Максимальный уровень приоритета для прерываний. Чем выше значение, тем больше уровней и сложнее логика контроллера (больше аппаратных ресурсов).</td> </tr>
+<!-- TODO: there is no differentce in this, as all IRQs detected until pending cleared!? -->
+            <tr> <td>LE</td>       <td>0</td> <td>2**<b>NUM_SRC</b>-1</td> <td>Тип прерывания на ассоциированном источнике (для каждого разряда):<li>1 - детектирует прерывание по перепаду;</li><li>0 - по уровню.</li></td> </tr>
+         </tbody>
+      </table>
+
+      <h2>Интерфейс</h2>
+      <pre class="small">    ________________________</pre>
+      <pre class="small">   |                        |</pre>
+      <pre class="small">---| clk                    |</pre>
+      <pre class="small">---| reset_n                |</pre>
+      <pre class="small">---| reg_we       reg_rdata |---</pre>
+      <pre class="small">---| reg_re                 |</pre>
+      <pre class="small">---| reg_addr               |</pre>
+      <pre class="small">---| reg_wdata              |</pre>
+      <pre class="small">---| intr_src_i       irq_o |---</pre>
+      <pre class="small">---|               irq_id_o |---</pre>
+      <pre class="small">   |________________________|</pre>
+
+      <table summary="io" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Количество</th>
+               <th>Тип</th>
+               <th>Назначение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>clk</td>        <td>1</td>             <td>I</td> <td>Синхросигнал контроллера, все триггеры в контроллере тактируются нарастающим фронтом синхросигнала.</td> </tr>
+            <tr> <td>reset_n</td>    <td>1</td>             <td>I</td> <td>Активный 0 асинхронный сброс контроллера.</td> </tr>
+            <tr> <td>reg_we</td>     <td>1</td>             <td>I</td> <td>Строб записи шинного интерфейса.</td> </tr>
+            <tr> <td>reg_re</td>     <td>1</td>             <td>I</td> <td>Строб чтения шинного интерфейса.</td> </tr>
+            <tr> <td>reg_addr</td>   <td>8</td>             <td>I</td> <td>Адрес шинного интерфейса.</td> </tr>
+            <tr> <td>reg_wdata</td>  <td>32</td>            <td>I</td> <td>Входные данные шинного интерфейса.</td> </tr>
+            <tr> <td>reg_rdata</td>  <td>32</td>            <td>O</td> <td>Выходные данные шинного интерфейса.</td> </tr>
+            <tr> <td>intr_src_i</td> <td>NUM_SRC</td>       <td>I</td> <td>Источники прерываний.</td> </tr>
+            <tr> <td>irq_o</td>      <td>1</td>             <td>O</td> <td>Выход прерывания контроллера.</td> </tr>
+            <tr> <td>irq_id_o</td>   <td>log2(NUM_SRC)</td> <td>O</td> <td>Индекс выходного прерывания.</td> </tr>
+         </tbody>
+      </table>
+
+      <p>
+	     Согласно спецификации RV PLIC [2 7.5] младший разряд прерываний зарезервирован и должен быть подключен к 0.
+		 Регистры, связанные с этим разрядом зарезервированы в контроллере.
+	  </p>
+
+      <h3>Регистрация прерываний</h3>
+      <p>Прерывания на входах регистрируются в регистре <b>CSR_IP</b> независимо от маски <b>CSR_IE</b> или приоритетов <b>CSR_PRIOx</b> и <b>CSR_THRESH</b>.</p>
+      <p>
+	     Для начала обработки прерывания следует прочитать регистр <b>CSR_CC</b>. Значение регистра указывает на текущее обрабатываемое прерывание.
+		 Чтение <b>CSR_CC</b> выдает 0, если прерывание запрещено в регистре <b>CSR_IE</b>.
+		 Для обработки запрещенного прерывания следует разрешить его и провести процедуру чтения и записи <b>CSR_CC</b>.
+		 В случае, если приоритет прерывания ниже <b>CSR_THRESH</b> прерывание на выходе из контроллера останется неактивным, но <b>CSR_CC</b> будет содержать номер обрабатываемого прерывания.
+	  </p>
+      <p>Для завершения обработки прерывания следует записать в регистр <b>CSR_CC</b> значение текущего прерывания (ранее прочитанное из <b>CSR_CC</b>).</p>
+      <p>Повторная регистрация прерывания возможно только после выполнения процедуры чтения и записи <b>CSR_CC</b>.</p>
+
+      <h3>Приоритет прерываний</h3>
+      <p>
+	     Прерывания обрабатываются в зависимости от приоритета.
+		 Прерывание с наиболее высоким индексом <b>CSR_PRIOx</b> является наиболее приоритетным (<b>MAX_PRIO</b> является наивысшим приоритетом).
+		 Обрабатывается наиболее приоритетное прерывание на момент чтения <b>CSR_CC</b> вне зависимости от порядка поступления.
+	  </p>
+      <p>Среди прерываний с одинаковым приоритетом первым обрабатывается прерывание с меньшим индексом.</p>
+
+      <p></p>
+
+      <h2><a name="REGS"></a>Регистры контроллера</h2>
+      <table summary="Registers for Address Block: ehl_intc" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Регистр</th>
+               <th>Адрес</th>
+               <th>Описание</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td><a href="ehl_intc.html#IP"     class="olink">CSR_IP</a></td>     <td>0x00</td> <td>Список активных прерываний (READ-ONLY).</td> </tr>
+            <tr> <td><a href="ehl_intc.html#PRIO"   class="olink">CSR_PRIO0</a></td>  <td>0x10</td> <td>Резерв.</td> </tr>
+            <tr> <td><a href="ehl_intc.html#PRIO"   class="olink">CSR_PRIO1</a></td>  <td>0x14</td> <td>Приоритет прерывания 1.</td> </tr>
+            <tr> <td><a href="ehl_intc.html#PRIO"   class="olink">CSR_PRIO2</a></td>  <td>0x18</td> <td>Приоритет прерывания 2.</td> </tr>
+            <tr> <td><a href="ehl_intc.html#PRIO"   class="olink">CSR_PRIO3</a></td>  <td>0x1C</td> <td>Приоритет прерывания 3.</td> </tr>
+            <tr> <td><a href="ehl_intc.html#PRIO"   class="olink">CSR_PRIO4</a></td>  <td>0x20</td> <td>Приоритет прерывания 4.</td> </tr>
+            <tr> <td><a href="ehl_intc.html#PRIO"   class="olink">CSR_PRIO5</a></td>  <td>0x24</td> <td>Приоритет прерывания 5.</td> </tr>
+            <tr> <td><a href="ehl_intc.html#PRIO"   class="olink">CSR_PRIO6</a></td>  <td>0x28</td> <td>Приоритет прерывания 6.</td> </tr>
+            <tr> <td><a href="ehl_intc.html#PRIO"   class="olink">CSR_PRIO7</a></td>  <td>0x2C</td> <td>Приоритет прерывания 7.</td> </tr>
+            <tr> <td><a href="ehl_intc.html#PRIO"   class="olink">CSR_PRIO8</a></td>  <td>0x30</td> <td>Приоритет прерывания 8.</td> </tr>
+            <tr> <td><a href="ehl_intc.html#PRIO"   class="olink">CSR_PRIO9</a></td>  <td>0x34</td> <td>Приоритет прерывания 9.</td> </tr>
+            <tr> <td><a href="ehl_intc.html#PRIO"   class="olink">CSR_PRIO10</a></td> <td>0x38</td> <td>Приоритет прерывания 10.</td> </tr>
+            <tr> <td><a href="ehl_intc.html#PRIO"   class="olink">CSR_PRIO11</a></td> <td>0x3C</td> <td>Приоритет прерывания 11.</td> </tr>
+            <tr> <td><a href="ehl_intc.html#PRIO"   class="olink">CSR_PRIO12</a></td> <td>0x40</td> <td>Приоритет прерывания 12.</td> </tr>
+            <tr> <td><a href="ehl_intc.html#PRIO"   class="olink">CSR_PRIO13</a></td> <td>0x44</td> <td>Приоритет прерывания 13.</td> </tr>
+            <tr> <td><a href="ehl_intc.html#PRIO"   class="olink">CSR_PRIO14</a></td> <td>0x48</td> <td>Приоритет прерывания 14.</td> </tr>
+            <tr> <td><a href="ehl_intc.html#PRIO"   class="olink">CSR_PRIO15</a></td> <td>0x4C</td> <td>Приоритет прерывания 15.</td> </tr>
+            <tr> <td><a href="ehl_intc.html#IE"     class="olink">CSR_IE</a></td>     <td>0x60</td> <td>Разрешение прерываний.</td> </tr>
+            <tr> <td><a href="ehl_intc.html#THRESH" class="olink">CSR_THRESH</a></td> <td>0x64</td> <td>Порог приоритета прерываний.</td> </tr>
+            <tr> <td><a href="ehl_intc.html#CC"     class="olink">CSR_CC</a></td>     <td>0x68</td> <td><p>Чтение: индекс активного прерывания;</p><p>Запись: окончание обработки прерывания.</p></td> </tr>
+         </tbody>
+      </table>
+
+      <p><a name="IP"></a><b style="color: #0000CC">CSR_IP [0x00] : </b>Регистр содержит список зафиксированных прерываний.</p>
+	  <p>
+	     При фиксации события прерывания устанавливается соответсвующий ему бит регистра <b>CSR_IP</b>.
+		 Прерывание фиксируется в соответсвии с параметром <b>LE</b>. По наличию 1, или по переходу из 0 в 1.
+	  </p>
+      <table cellpadding="1" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>31:NUM_SRC</td>  <td>-</td>  <td>Резерв</td> <td>R</td> <td>0</td> </tr>
+            <tr> <td>NUM_SRC-1:1</td> <td>IP</td> <td><b>Interrupt Pending</b>.
+			   Признак наличия зафиксированного прерывания от соответствующего устройства:
+			   <li>0 - прерывание отсутствует;</li>
+			   <li>1 - прерывание присутствует.</li>
+			   Устанавливается при регистрации прерывания.
+			   Сбрасывается при чтении индекса прерывания из <b>CSR_CC</b>.
+			   Не устанавливается в 1 заново до тех пор, пока обработка предыдущего прерывания не будет завершена записью индекса в <b>CSR_CC</b>.
+               До этого момента любые прерывания от данного источника игнорируются.
+			   В частности, это означает, что для сигналов прерываний по фронту после первого фронта (который приводит к выставлению бита в регистре <b>CSR_IP</b>) все последующие фронты будут проигнорированы.
+			   Подсчет проигнорированных фронтов (как описано в спецификации RISC-V) не поддерживается.
+			   </td> <td>R</td> <td>0</td> </tr>
+            <tr> <td>0</td>           <td>-</td>  <td>Резерв</td> <td>R</td> <td>0</td> </tr>
+         </tbody>
+      </table>
+
+      <p><a name="PRIO"></a><b style="color: #0000CC">CSR_PRIOx [0x10 - 0x4C] : </b>Регистры определяют приоритеты прерываний.</p>
+      <table cellpadding="1" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>31:3</td> <td>-</td>    <td>Резерв</td> <td>R</td> <td>0</td> </tr>
+            <tr> <td>2:0</td>  <td>PRIO</td> <td>Задает приоритет прерывания от 0 до 7.</td> <td>R/W</td> <td>0</td> </tr>
+         </tbody>
+      </table>
+
+      <p><a name="IE"></a><b style="color: #0000CC">CSR_IE [0x60] : </b>Регистр управляет разрешением генерации прерывания для выбранного источника.
+         Если прерывание от источника запрещено, прерывание от этого источника не вызовет выходного прерывания.
+	     При этом само прерывание все же будет фиксироваться в регистре <b>CSR_IP</b>.
+      </p>
+	  <p>
+         Если прерывание разрешено в регистре <b>CSR_IE</b>, то при его возникновении при чтении регистра <b>CSR_CC</b> будет выдан индекс этого прерывания (если нет других активных прерываний с более высоким приоритетом).
+		 Но это не обязательно означает, что возникновение этого прерывания вызовет выходное прерывание.
+		 Для того, чтобы прерывание вызвало выходное прерывание его приоритет должен быть выше текущего порога приоритета.
+	  </p>
+      <table cellpadding="1" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>31:NUM_SRC</td>  <td>-</td>  <td>Резерв</td> <td>R</td> <td>0</td> </tr>
+            <tr> <td>NUM_SRC-1:1</td> <td>IE</td> <td><b>Interrupt Enable</b>. Разрешение генерации прерывания от выбранного источника:<li>0 - прерывание запрещено;</li><li>1 - прерывание разрешено.</li></td> <td>R/W</td> <td>0</td> </tr>
+            <tr> <td>0</td>           <td>-</td>  <td>Резерв</td> <td>R</td> <td>0</td> </tr>
+         </tbody>
+      </table>
+
+      <p><a name="THRESH"></a><b style="color: #0000CC">CSR_THRESH [0x64] : </b>Регистр определяет текущий порог приоритета прерываний.
+	     Если приоритет прерывания ниже или равен значению <b>CSR_THRESH</b>, то это прерывание не вызовет генерацию выходного прерывания.
+	     Прерывание будет зарегистрировано в регистрах <b>CSR_IP</b> и <b>CSR_CC</b>, если оно разрешено в <b>CSR_IE</b>.
+      </p>
+	  <p>Прерывание с приоритетом 0 не вызывают выходного прерывания.</p>
+	  <p>При пороге прерывания, равном <b>MAX_PRIO</b>, ни один источник не вызовет генерацию выходного прерывания.</p>
+      <table cellpadding="1" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>31:3</td> <td>-</td>      <td>Резерв</td> <td>R</td> <td>0</td> </tr>
+            <tr> <td>2:0</td>  <td>THRESH</td> <td>Задает порог прерывания от 0 до 7.</td> <td>R/W</td> <td>0</td> </tr>
+         </tbody>
+      </table>
+
+      <p><a name="CC"></a><b style="color: #0000CC">CSR_CC [0x68] : </b>Регистр предоставляет механизм обработки прерываний.
+	     При чтении выдает индекс активного прерывания с самым высоким приоритетом.
+		 Чтение регистра служит подтверждением начала обработки прерывания, что приводит к сбросу соответсвующего бита в <b>CSR_IP</b>.
+		 Прочитанное значение 0 означает, что активные прерывания отсутсвуют.
+	  </p>
+	  <p>
+	     Запись индекса активного прерывания потверждает окончание его обработки. После этого контроллер может снова обрабатывать прерывания с тем же индексом.
+	  </p>
+<!--
+Подтверждение начала обработки прерывания
+Цель подтверждает начало обработки прерывания чтением регистра CC. У каждой цели свой регистр CC. Значение, которое возвращается при чтении этого регистра - это ID активного прерывания с наибольшим приоритетом. Если два активных прерывания имеют один и тот же приоритет, PLIC возвращает прерывание с наименьшим ID. Значение порога приоритета при этом не играет роли (порог влияет только на то, вызывает ли прерывание от данного источника прерывание цели), поэтому при чтении регистра CC могут быть прочитаны ID c приоритетом меньше THRESHOLD. Если активных прерываний нет, чтение регистра CC возвращает 0.
+
+Если один источник прерывания включен в регистрах IE сразу двух целей и приоритет этого источника выше THRESHOLD обеих целей, то сигнал прерывания будет послан обеим целям. В этом случае происходит «гонка» между двумя целями - первая цель, которая читает свой регистр CC, вычитает ID прерывания, а вторая вычитает 0, показывающий отсутствие прерываний. Не рекомендуется настраивать PLIC таким образом! Рекомендуется включать каждый источник прерывания только в одном из регистров IE.
+
+Подтверждение окончания обработки прерывания
+После того, как цель подтверждает начало обработки прерывания, соответствующий бит в регистре IP сбрасывается в 0, вне зависимости от значения на линии прерывания. До того момента, как цель подтвердит окончание обработки прерывания, бит в регистре IP не выставится в 1 снова. Цель подтверждает окончание обработки записью ID прерывания в регистр CC. При этом PLIC снова становится восприимчив к прерыванию от устройства с данным ID.
+-->
+      <table cellpadding="1" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>31:5</td> <td>-</td> <td>Резерв</td> <td>R</td> <td>0</td> </tr>
+            <tr> <td>4:0</td> <td>CC</td> <td>Индекс активного прерывания.</td> <td>R/W</td> <td>0</td> </tr>
+         </tbody>
+      </table>
+	  <hr>
+      <h3>Базовые функции</h3>
+	  <hr>
+      <p><b>API_INTC_INT_ENABLE</b>: разрешает регистрацию выбранного прерывания.</p>
+      <pre class="small">void API_INTC_INT_ENABLE(struct EHL_INTC* dev_id, int value);</pre>
+      <pre class="small">   dev_id - указатель на структуру контроллера прерываний</pre>
+      <pre class="small">   value  - позиции разрешаемых прерываний в векторе</pre>
+	  <hr>
+      <p><b>API_INTC_INT_DISABLE</b>: запрещает регистрацию выбранного прерывания.</p>
+      <pre class="small">void API_INTC_INT_DISABLE(struct EHL_INTC* dev_id, int value);</pre>
+      <pre class="small">   dev_id - указатель на структуру контроллера прерываний</pre>
+      <pre class="small">   value  - позиции запрещаемых прерываний в векторе</pre>
+	  <hr>
+      <p><b>API_INTC_PRIORITY_SET</b>: задает приоритет выбранного прерывания.</p>
+      <pre class="small">void API_INTC_PRIORITY_SET(struct EHL_INTC* dev_id, int idx, int value);</pre>
+      <pre class="small">   dev_id - указатель на структуру контроллера прерываний</pre>
+      <pre class="small">   idx    - индекс прерывания</pre>
+      <pre class="small">   value  - приоритет прерывания</pre>
+	  <hr>
+      <p><b>API_INTC_PRIORITY_GET</b>: возвращает приоритет выбранного прерывания - регистр <b>CSR_PRIOx</b>.</p>
+      <pre class="small">int API_INTC_PRIORITY_GET(struct EHL_INTC* dev_id, int idx);</pre>
+      <pre class="small">   dev_id - указатель на структуру контроллера прерываний</pre>
+      <pre class="small">   idx    - индекс прерывания</pre>
+      <pre class="small">   value  - приоритет прерывания</pre>
+	  <hr>
+      <p><b>API_INTC_THRESH_SET</b>: задает порог приоритетов для генерации прерываний.</p>
+      <pre class="small">void API_INTC_THRESH_SET(struct EHL_INTC* dev_id, int value);</pre>
+      <pre class="small">   dev_id - указатель на структуру контроллера прерываний</pre>
+      <pre class="small">   value  - значение порога прерывания</pre>
+	  <hr>
+      <p><b>API_INTC_THRESH_GET</b>: возвращает порог приоритетов генерации прерываний - регистр <b>CSR_THRESH</b>.</p>
+      <pre class="small">int API_INTC_THRESH_GET(struct EHL_INTC* dev_id);</pre>
+      <pre class="small">   dev_id - указатель на структуру контроллера прерываний</pre>
+	  <hr>
+      <p><b>API_INTC_INT_VECTOR_GET</b>: возвращает вектор прерываний - регистр <b>CSR_IP</b>.</p>
+      <pre class="small">int API_INTC_INT_VECTOR_GET(struct EHL_INTC* dev_id);</pre>
+      <pre class="small">   dev_id - указатель на структуру контроллера прерываний</pre>
+	  <hr>
+      <p><b>API_INTC_CLAIM</b>: сигнализирует начало обработки прерывания - возвращает значение регистра <b>CSR_CC</b>.</p>
+      <pre class="small">int API_INTC_CLAIM(struct EHL_INTC* dev_id);</pre>
+      <pre class="small">   dev_id - указатель на структуру контроллера прерываний</pre>
+	  <hr>
+      <p><b>API_INTC_COMPLETE</b>: сигнализирует завершение обработки прерывания.</p>
+      <pre class="small">void API_INTC_COMPLETE(struct EHL_INTC* dev_id, int value);</pre>
+      <pre class="small">   dev_id - указатель на структуру контроллера прерываний</pre>
+      <pre class="small">   value  - индекс прерывания</pre>
+
+   </body>
+</html>
