@@ -1,0 +1,41 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Параметры</title>
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+      <h2 class="title">Параметры</h2>
+      <p><b>ehl_emac</b> имеет возможность быть настроенным под задачу пользователя. За настройку отвечают параметры, представленные далее.</p>
+      <p></p>
+      <table summary="eth_cfg" cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Значение по умолчанию</th>
+               <th>Допустимые значения</th>
+               <th>Описание</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>CDC_SYNC_STAGE</td> <td>3</td> <td>0-3</td> <td>Количество триггеров в синхронизаторах контроллера.</td> </tr>
+            <tr> <td>DATA_WIDTH</td> <td>32</td> <td>16, 32, 64, 128, 256</td> <td>Ширина шины данных.</td> </tr>
+            <tr> <td>TX_DESCR_P0_COUNT</td> <td>8</td> <td>0-32</td> <td>Количество дескрипторов передатчика с приоритетом 0 (высший)</td> </tr>
+            <tr> <td>TX_DESCR_P1_COUNT</td> <td>8</td> <td>0-32</td> <td>Количество дескрипторов передатчика с приоритетом 1</td> </tr>
+            <tr> <td>TX_DESCR_P2_COUNT</td> <td>8</td> <td>0-32</td> <td>Количество дескрипторов передатчика с приоритетом 2</td> </tr>
+            <tr> <td>TX_DESCR_P3_COUNT</td> <td>8</td> <td>0-32</td> <td>Количество дескрипторов передатчика с приоритетом 3 (низший)</td> </tr>
+            <tr> <td>RX_DESCR_COUNT</td> <td>32</td> <td>2-32</td> <td>Количество дескрипторов приемника. Если <b>RX_ENA</b> равен 0, то значение этого параметра не важно.</td> </tr>
+            <tr> <td>TX_ENA</td> <td>1</td> <td>0, 1</td> <td>Наличие передатчика</td> </tr>
+            <tr> <td>TX_CPB_ENA</td> <td>1</td> <td>0, 1</td> <td>Наличие регистров CAPABILITY передатчика. Может быть равен 1 только если <b>TX_ENA</b> равен 1.</td> </tr>
+            <tr> <td>RX_ENA</td> <td>1</td> <td>0, 1</td> <td>Наличие приемника</td> </tr>
+            <tr> <td>RX_CPB_ENA</td> <td>1</td> <td>0, 1</td> <td>Наличие регистров CAPABILITY приемника. Может быть равен 1 только если <b>RX_ENA</b> равен 1.</td> </tr>
+            <tr> <td>MDIO_ENA</td> <td>1</td> <td>0, 1</td> <td>Наличие контроллера MIIM</td> </tr>
+            <tr> <td>FC_ENA</td> <td>1</td> <td>0, 1</td> <td>Наличие аппаратной поддержки Flow Control. Может быть равен 1 только если <b>RX_ENA</b> и <b>TX_ENA</b> оба равны 1.</td> </tr>
+            <tr> <td>SYNCHRONIZE_RESETS</td> <td>0</td> <td>0, 1</td> <td>Наличие внутренних синхронизаторов сброса.</td> </tr>
+            <tr> <td>DEFAULT_MAC</td> <td>0x000000000000</td> <td>Любое значение, бит 40 всегда равен 0.</td> <td>MAC адрес устройства по умолчанию.</td> </tr>
+<!-- todo: RAM_TECHNOLOGY -->
+         </tbody>
+      </table>
+      <p></p>
+   </body>
+</html>

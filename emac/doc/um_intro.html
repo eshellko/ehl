@@ -1,0 +1,140 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Введение</title>
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+      <table summary="Reference" cellpadding="4" width="50%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col></colgroup>
+         <tbody>
+            <tr> <td bgcolor="#C0C0C0">Версия</td> <td>1.0</td> </tr>
+            <tr> <td bgcolor="#C0C0C0">Дата</td> <td>2018.07.27</td> </tr>
+            <tr> <td bgcolor="#C0C0C0">Разработчик</td> <td>А.В. Корнюхин (kornukhin@mail.ru)</td> </tr>
+         </tbody>
+      </table>
+
+      <h2 class="title">Введение</h2>
+      <p>В данном документе приводятся технические характеристики, функционал и инструкции по применению блока <b>ehl_emac</b>.</p>
+
+      <h2 class="title">История изменений</h2>
+      <table summary="Registers for Address Block: ehl_ethernet" cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Версия</th>
+               <th>Дата</th>
+               <th>Разработчик</th>
+               <th>Описание</th>
+            </tr>
+         </thead>
+         <tbody>
+
+            <tr>
+               <td>1.0</td>
+               <td>2018.07.27</td>
+               <td>Корнюхин А.В.</td>
+               <td>Первая публикация документа</td>
+            </tr>
+
+         </tbody>
+      </table>
+
+      <h2 class="title">Справочные материалы</h2>
+      <table summary="Reference" cellpadding="4" width="100%" border="1" cellspacing="0" cellspacing="0" rules="all">
+         <colgroup><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0"> <th>Номер</th> <th>Наименование</th> </tr>
+         </thead>
+         <tbody>
+<!-- todo: add Ethernet related references -->
+            <tr> <td>1</td> <td>IEEE Std. 802.3-2005</td> </tr>
+<!--                <tr> <td>2</td> <td>DDR PHY Interface (DFI) Specification, Version 2.1</td> </tr> -->
+<!--                <tr> <td>3</td> <td>JESD8-15A. Stub Series Terminated Logic for 1.8 V (SSTL_18)</td> </tr> -->
+           <tr> <td>4</td> <td>AMBA Specification Rev. 2.0. ARM IHI 0011A</td> </tr>
+            <tr> <td>5</td> <td>AMBA AXI Protocol v1.0 Specification. ARM IHI 0022B</td> </tr>
+           <tr> <td>6</td> <td>IEEE Standard for Verilog Hardware Description Language 1364-2005</td> </tr>
+<!--                <tr> <td>7</td> <td>DDR2 PHY. Техническое задание</td> </tr> -->
+<!--                <tr> <td>8</td> <td>JESD79-3F. DDR3 SDRAM Specification</td> </tr> -->
+<!--                <tr> <td>9</td> <td>Functional Description - UniPHY. 2013.12.16.<b> (todo: get later version)</td> </tr> -->
+<!--                <tr> <td>10</td> <td>DesignWare Cores DDR SDRAM PHY Utility Block "Lite" (PUBL) Databook, Version PUBL 2.00c</td> </tr> -->
+         </tbody>
+      </table>
+
+      <h2 class="title">Условные обозначения и сокращения</h2>
+      <table summary="abbreviations" cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0"> <th>Сокращение</th> <th>Расшифровка</th> </tr>
+         </thead>
+         <tbody>
+            <tr> <td>AHB</td> <td>Advanced High-performance Bus</td> </tr>
+            <tr> <td>ATPG</td> <td>Automatic Test Pattern Generation</td> </tr>
+            <tr> <td>AXI</td> <td>Advanced eXtensible Interface</td> </tr>
+            <tr> <td>CDC</td> <td>Clock Domain Crossing</td> </tr>
+            <tr> <td>CRC</td> <td>Cyclic Redundancy Check</td> </tr>
+            <tr> <td>CSMA/CD</td> <td>Carrier Sense Multiple Access with Collision Detection</td> </tr>
+<!--                <tr> <td>DDR</td> <td>Double Data Rate</td> </tr> -->
+<!--                <tr> <td>DFI</td> <td>DDR PHY Interface</td> </tr> -->
+            <tr> <td>DFT</td> <td>Design For Testability</td> </tr>
+            <tr> <td>DMA</td> <td>Direct Memory Access</td> </tr>
+            <tr> <td>FCS</td> <td>Frame Check Sequence</td> </tr>
+            <tr> <td>FIFO</td> <td>First In First Out</td> </tr>
+            <tr> <td>GMII</td> <td>Gigabit Media Independent Interface</td> </tr>
+            <tr> <td>I/O</td> <td>Input / Output (блоки ввода / вывода)</td> </tr>
+            <tr> <td>MAC</td> <td>Media Access Control</td> </tr>
+            <tr> <td>MII</td> <td>Media Independent Interface</td> </tr>
+            <tr> <td>MIIM</td> <td>MII Management</td> </tr>
+            <tr> <td>PHY</td> <td>PHYsical (цифро-аналоговый модуль физического уровня)</td> </tr>
+            <tr> <td>RAM</td> <td>Random Access Memory</td> </tr>
+            <tr> <td>RTL</td> <td>Register Transfer Level</td> </tr>
+            <tr> <td>SDC</td> <td>Synopsys Design Constraints</td> </tr>
+<!--                <tr> <td>SDR</td> <td>Single Data Rate</td> </tr> -->
+<!--                <tr> <td>SDRAM</td> <td>Synchronous Dynamic RAM</td> </tr> -->
+            <tr> <td>SFD</td> <td>Start Frame Delimiter</td> </tr>
+            <tr> <td>VIP</td> <td>Verification Intellectual Property</td> </tr>
+            <tr> <td>СнК</td> <td>Система на кристалле</td> </tr>
+            <tr> <td>0x</td> <td>префикс шестнадцатеричных значений (например, 0xA7F5)</td> </tr>
+            <tr> <td>0b</td> <td>префикс двоичных значений (например, 0b0101)</td> </tr>
+         </tbody>
+      </table>
+
+      <h2>Основные возможности</h2>
+      <li>Поддержка интерфейса MII Ethernet 802.3 с устройствами PHY с тактовой частотой до 25 МГц;</li>
+      <li>Поддержка интерфейса GMII Ethernet 802.3 с устройствами PHY с тактовой частотой 125 МГц;</li>
+<!--      <li>Поддержка интерфейса XGMII...</li>-->
+      <li>Поддержка номинальных скоростей передачи 10 Мб/с, 100 Мб/с, 1 Гб/с, 10 Гб/с;</li>
+      <li>Генерация и удаление преамбулы/стартового байта;</li>
+      <li>Дополнение кадров до минимальной требуемой длины (padding);</li>
+      <li>Генерация CRC при передаче и проверка при приеме;</li>
+      <li>Проверка корректности длины кадра;</li>
+<!-- TODO: update
+      <li>Возможность передачи кадров размером до 16КБ;</li>
+-->
+      <li>Динамическая настройка режима передачи: Full Duplex / Half Duplex;</li>
+      <li>Обработка коллизий по алгоритму CSMA/CD в режиме Half Duplex;</li>
+      <li>Программируемый MAC адрес: опциональное добавление адреса при передаче; отклонение кадров с несовпадающим адресом назначения при приеме (в т.ч. широковещательных, групповых и управляющих PAUSE кадров);</li>
+<!--
+      <li>Программируемый режим Promiscuous, для отключения проверки адреса назначения;</li>
+-->
+      <li>Опциональная поддержка регистров CPB приемника и передатчика;</li>
+      <li>Опциональный интерфейс MIIM для конфигурирования устройств PHY;</li>
+      <li>Опциональная поддержка Flow Control;</li>
+<!--
+      <li>32-битный интерфейс Generic со стороны пользователя.</li>
+-->
+
+<!--
+      <h2>Неподдерживаемые свойства</h2>
+      <li>Jumbo кадры;</li>
+      <li>Автоматический Flow Control ;</li>
+      <li>VLAN  / Stacked VLAN кадры;</li>
+      <li>Режим передачи Burst для 1 Гбит/с.</li>
+-->
+
+      <h2>Области применения</h2>
+      <li>Построение локальных сетей;</li>
+      <li>Высокоскоростная проводная передача данных.</li>
+
+
+   </body>
+</html>

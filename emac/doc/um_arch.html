@@ -1,0 +1,97 @@
+<html>
+   <style> pre.small {line-height: 0.5; font-weight:bold; }</style>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Архитектура</title>
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+      <h2 class="title">Архитектура</h2>
+      <p><b>ehl_emac</b> является контроллером MAC уровня стандарта Ethernet [1]. Блок может быть параметризован под задачи пользователя для обеспечения оптимального использования ресурсов и достижения заданной тактовой частоты (раздел "<a href="um_params.html" class="olink">Параметры</a>"). Управление <b>ehl_emac</b> осуществляется с помощью порта AHB [4]. Обмен данными с помощью порта AXI (AXI3) [5]. Коммуникация с PHY с помощью портов MII/GMII[todo: ???] и MIIM. Структурная схема <b>ehl_emac</b> представлена на рисунке 1.</p>
+      <img src="um_arch.png"></a>
+      <p>Рисунок 1. Структурная схема ehl_emac <b>(todo: CSR is not APB-clocked, but design Rx/Tx clocked).</b></p>
+      <p>Все триггеры в схеме тактируются нарастающим фронтом соответствующих синхросигналов. Все тактовые домены синхронизированы между собой внутри <b>ehl_emac</b> (раздел "Система доменов синхросигналов"<b>todo:link</b>).</p>
+      <p>Далее представлено описание основных структурных модулей <b>ehl_emac</b>.</p>
+
+<!--
+Eth_mac состоит из 6 структурных частей (см. рисунок 1):
+•	регистров управления, состояния и статистики (Ethernet Control, Status & Statistics Registers, далее eth_ctrl),
+•	буфера передатчика (Tx Buffer),
+•	контроллера передачи (Tx MAC),
+•	контроллера интерфейса MIIM (MIIM),
+•	контроллера приема (Rx MAC),
+•	буфера приемника (Rx Buffer).
+Тактирование осуществляется синхросигналами, согласно рис. 1. Передача данных между доменами синхросигналов осуществляется с помощью схем синхронизации.
+
+Блок регистров управления и состояния eth_ctrl выполняет следующие функции:
+•	конфигурирование режимов обмена данными,
+•	отслеживание состояния приемо-передающих буферов и статуса интерфейса Ethernet,
+Буфер передатчика Tx Buffer выполняет следующие функции:
+•	хранение пользовательских данных для передачи через Ethernet;
+Контроллер передачи Tx MAC выполняет следующие функции:
+•	передача данных из Tx Buffer по Ethernet,
+•	управление состоянием буфера передатчика,
+Контроллер интерфейса MIIM выполняет следующие функции:
+•	управление интерфейсом MIIM,
+Контроллер приема Rx MAC выполняет следующие функции:
+•	Прием данных по Ethernet и передача их в Rx Buffer,
+Буфер приемника Rx Buffer выполняет следующие функции:
+•	Хранение данных, полученных через Ethernet. 
+-->
+
+      <h3>Перечень выводов</h3>
+      <pre class="small">    _____________________________</pre>
+      <pre class="small">   |                             |</pre>
+      <pre class="small">---| clk                   ready |---</pre>
+      <pre class="small">---| reset_n                 err |---</pre>
+      <pre class="small">---| addr                  rdata |---</pre>
+      <pre class="small">---| wr                      irq |---</pre>
+      <pre class="small">---| rd                          |</pre>
+      <pre class="small">---| wdata                       |</pre>
+      <pre class="small">   |.............................|</pre>
+      <pre class="small">---| w_clk                  w_rd |---</pre>
+      <pre class="small">---| w_reset_n            w_addr |---</pre>
+      <pre class="small">---| w_data                      |</pre>
+      <pre class="small">   |.............................|</pre>
+      <pre class="small">---| tx_clk                  txd |---</pre>
+      <pre class="small">---| tx_reset_n            tx_er |---</pre>
+      <pre class="small">---| col                   tx_en |---</pre>
+      <pre class="small">---| crs                         |</pre>
+      <pre class="small">   |.............................|</pre>
+      <pre class="small">---| rx_clk                      |</pre>
+      <pre class="small">---| rx_reset_n                  |</pre>
+      <pre class="small">---| rx_dv                       |</pre>
+      <pre class="small">---| rx_er                       |</pre>
+      <pre class="small">---| rxd                         |</pre>
+      <pre class="small">   |.............................|</pre>
+      <pre class="small">---| mdi                     mdo |---</pre>
+      <pre class="small">   |                      mdo_en |---</pre>
+      <pre class="small">   |                         mdc |---</pre>
+      <pre class="small">   |_____________________________|</pre>
+<!-- TODO: add IRQ -->
+
+      <table summary="io" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Количество</th>
+               <th>Тип</th>
+               <th>Назначение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>clk</td>     <td>1</td>  <td>I</td> <td>Тактовая частоты интерфейса конфигурирования.</td> </tr>
+            <tr> <td>reset_n</td> <td>1</td>  <td>I</td> <td>Асинхронный сигнал сброса контроллера.</td> </tr>
+            <tr> <td>addr</td>    <td>32</td> <td>I</td> <td></td> </tr>
+            <tr> <td>wr</td>      <td>1</td>  <td>I</td> <td></td> </tr>
+            <tr> <td>rd</td>      <td>1</td>  <td>I</td> <td></td> </tr>
+            <tr> <td>wdata</td>   <td>32</td> <td>I</td> <td></td> </tr>
+            <tr> <td>ready</td>   <td>1</td>  <td>O</td> <td></td> </tr>
+            <tr> <td>err</td>     <td>1</td>  <td>O</td> <td></td> </tr>
+            <tr> <td>rdata</td>   <td>32</td> <td>O</td> <td></td> </tr>
+            <tr> <td>irq</td>     <td>1</td>  <td>O</td> <td>Прерывание. Активный уровень 1.</td> </tr>
+         </tbody>
+      </table>
+
+   </body>
+</html>
