@@ -12,6 +12,41 @@
 struct EHL_EMAC
 {
    volatile unsigned int TX_CTRL;
+   volatile unsigned int FCVR;
+
+   volatile unsigned int TX_STAT_TFTO;
+   volatile unsigned int TX_STAT_TSCF;
+   volatile unsigned int TX_STAT_TMCF;
+   volatile unsigned int TX_STAT_TOTO0;
+   volatile unsigned int TX_STAT_TOTO1;
+   volatile unsigned int TX_STAT_TFWDX;
+   volatile unsigned int TX_STAT_TLC;
+   volatile unsigned int TX_STAT_TFADTXS;
+   volatile unsigned int TX_STAT_TFLDTMXE;
+   volatile unsigned int TX_STAT_TCSE;
+   volatile unsigned int TX_STAT_TMFXO;
+   volatile unsigned int TX_STAT_TBFXO;
+   volatile unsigned int TX_STAT_TFWED;
+   volatile unsigned int TX_STAT_TCF[31];
+
+   volatile unsigned int RX_CTRL;
+   volatile unsigned int FCLR;
+
+   volatile unsigned int RX_STAT_RFTLE;
+   volatile unsigned int RX_STAT_RORO0;
+   volatile unsigned int RX_STAT_RORO1;
+   volatile unsigned int RX_STAT_RFRO;
+   volatile unsigned int RX_STAT_RFCSE;
+   volatile unsigned int RX_STAT_RMFRO;
+   volatile unsigned int RX_STAT_RBFRO;
+   volatile unsigned int RX_STAT_ROORLF;
+   volatile unsigned int RX_STAT_RIRLE;
+   volatile unsigned int RX_STAT_RAE;
+   volatile unsigned int RX_STAT_RFLDTIMRE;
+
+   volatile unsigned int MAC[2];
+
+   volatile unsigned int MINMAX;
 
    volatile unsigned int MCR;
    volatile unsigned int MDR;

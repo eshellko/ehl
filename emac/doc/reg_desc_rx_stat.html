@@ -1,0 +1,241 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Регистры статистики приемника</title>
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+      <h2 class="title" style="clear: both"><a name="sectionStart"></a>Регистры статистики приемника</h2>
+      <hr>
+
+      <p><a name="RX_STAT_RFTLE"></a><span class="bold" style="color: #0000CC"><b>RX_STAT_RFTLE [0x108]: </b></span>Счетчик принятых кадров, размер которых превышает заданный регистром MaxLR.</p>
+      <table cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:0</td>
+               <td>-</td>
+               <td>Счетчик принятых кадров, размер которых превышает заданный регистром MAXMIN.maxlr.</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <p><a name="RX_STAT_RORO0"></a><span class="bold" style="color: #0000CC"><b>RX_STAT_RORO0 [0x10C]: </b></span>Счетчик байт данных (включая пад) в успешно принятых кадрах. Счетчик не инкрементируется, если кадр содержит ошибки размера, контрольной суммы, смещения или переполнения буфера. Младшие 32 бита.</p>
+      <p><a name="RX_STAT_RORO1"></a><span class="bold" style="color: #0000CC"><b>RX_STAT_RORO1 [0x110]: </b></span>Старшие 32 бита.</p>
+      <table cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>63:0</td>
+               <td>-</td>
+               <td>Счетчик байт данных (включая пад) в успешно принятых кадрах. Счетчик не инкрементируется, если кадр содержит ошибки размера, контрольной суммы, смещения или переполнения буфера.</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <p><a name="RX_STAT_RFRO"></a><span class="bold" style="color: #0000CC"><b>RX_STAT_RFRO [0x114]: </b></span>Счетчик успешно принятых кадров.</p>
+      <table cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:0</td>
+               <td>-</td>
+               <td>Счетчик успешно принятых кадров.</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <p><a name="RX_STAT_RFCSE"></a><span class="bold" style="color: #0000CC"><b>RX_STAT_RFCSE [0x118]: </b></span>Счетчик принятых кадров, имеющих целое количество байт и ошибку контрольной суммы.</p>
+      <table cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:0</td>
+               <td>-</td>
+               <td>Счетчик принятых кадров, имеющих целое количество байт и ошибку контрольной суммы.</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <p><a name="RX_STAT_RMFRO"></a><span class="bold" style="color: #0000CC"><b>RX_STAT_RMFRO [0x11C]: </b></span>Счетчик принятых кадров, имеющих в поле адреса места назначения групповой адрес (регистр Multicast Address или 0x0180C2000001). Если кадр содержит ошибки, счетчик не инкрементируется.</p>
+      <table cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:0</td>
+               <td>-</td>
+               <td>Счетчик принятых кадров, имеющих в поле адреса места назначения групповой адрес (регистр MULT или 0x0180C2000001). Если кадр содержит ошибки, счетчик не инкрементируется.</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <p><a name="RX_STAT_RBFRO"></a><span class="bold" style="color: #0000CC"><b>RX_STAT_RBFRO [0x120]: </b></span>Счетчик принятых кадров, имеющих 0xFFFFFFFFFFFF в поле адреса места назначения. Если кадр содержит ошибки, счетчик не инкрементируется.</p>
+      <table cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:0</td>
+               <td>-</td>
+               <td>Счетчик принятых кадров, имеющих 0xFFFFFFFFFFFF в поле адреса места назначения. Если кадр содержит ошибки, счетчик не инкрементируется.</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <p><a name="RX_STAT_ROORLF"></a><span class="bold" style="color: #0000CC"><b>RX_STAT_ROORLF [0x124]: </b></span>Счетчик принятых кадров со значением в поле Length/Type, превышающем 0x5DC, но менее 0x600.</p>
+      <table cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:0</td>
+               <td>-</td>
+               <td>Счетчик принятых кадров со значением в поле Length/Type, превышающем 0x5DC, но менее 0x600.</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <p><a name="RX_STAT_RIRLE"></a><span class="bold" style="color: #0000CC"><b>RX_STAT_RIRLE [0x128]: </b></span>Счетчик кадров со значением в поле Length/Type, меньшим либо равным 0x5DC, но не соответствующем количеству принятых байт. Данный счетчик учитывает кадры, дополненные полем PAD.</p>
+      <table cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:0</td>
+               <td>-</td>
+               <td>Счетчик кадров со значением в поле Length/Type, меньшим либо равным 0x5DC, но не соответствующем количеству принятых байт. Данный счетчик учитывает кадры, дополненные полем PAD.</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <p><a name="RX_STAT_RAE"></a><span class="bold" style="color: #0000CC"><b>RX_STAT_RAE [0x12C]: </b></span>Счетчик кадров, состоящих из нецелого числа байт и имеющих ошибку контрольной суммы.</p>
+      <table cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:0</td>
+               <td>-</td>
+               <td>Счетчик кадров, состоящих из нецелого числа байт и имеющих ошибку контрольной суммы.</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <p><a name="RX_STAT_RFLDTIMRE"></a><span class="bold" style="color: #0000CC"><b>RX_STAT_RFLDTIMRE [0x130]: </b></span>Счетчик кадров, не принятых из-за внутренних ошибок приемника (переполнение буфера приемника). Счетчик инкрементируется, если кадр не содержит других ошибок.</p>
+      <table cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:0</td>
+               <td>-</td>
+               <td>Счетчик кадров, не принятых из-за внутренних ошибок приемника (переполнение буфера приемника). Счетчик инкрементируется, если кадр не содержит других ошибок.</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+<br class="table-break"></body></html>

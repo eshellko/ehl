@@ -17,17 +17,12 @@
 //       7. PCS(GMII->TBI), PMA!?
 //       8. external FIFO interface for emergency transfers
 // Q: external FIFO ... sent data to that FIFO, and this FIFO can resend data according to specified queue descriptors...
-//       9. capability registers
 
 // TODO: add register that defines width of output interface, i.e. 4, 8, 32/64
 //       so setting this register will allow to support GMII, RGMII=MII modes
 
-
 // todo: so far only 10M/100M and 1G configurations are supported; 10G configuration will be in development after earlier will be completed
 // todo: generate APB error if aligned transfer, i.e. paddr[1:0]!=0
-
-// Note: define to use Dual-Port RAM inside Transmit FIFO
-//`define __use_dpram__
 
 module ehl_emac
 #(
@@ -36,9 +31,9 @@ module ehl_emac
    TX_DESCR_COUNT = 32,                 // number of Transmit Descriptors
    RX_DESCR_COUNT = 32,                 // number of receive descriptors (4, 8, 16, 32...)
    parameter [0:0] TX_ENA = 1,          // enable transmitter
-   TX_CPB_ENA = 1,                      // enable transmitter capabilities registers
+   TX_STAT_ENA = 1,                     // enable transmitter statistics registers
    RX_ENA = 1,                          // enable receiver
-   RX_CPB_ENA = 1,                      // enable receiver capabilities registers
+   RX_STAT_ENA = 1,                     // enable receiver statistics registers
    MDIO_ENA = 1,                        // enable MIIM core
    FC_ENA = 1,                          // enable Flow Control
    SYNCHRONIZE_RESETS = 0,              // enable reset synchronizers
@@ -300,7 +295,7 @@ module ehl_emac
    else
    begin : no_mdio
       assign mdr = 16'h0;
-      assign mcr = 28'h7fe_0000;
+      assign mcr = 28'hffe_0000;
       assign mdo = 1'b1;
       assign mdo_en = 1'b0;
       assign mdc = 1'b0;
@@ -318,7 +313,7 @@ module ehl_emac
       #(
          .CDC_SYNC_STAGE ( CDC_SYNC_STAGE ),
          .DATA_WIDTH     ( DATA_WIDTH     ),
-         .RX_CPB_ENA     ( RX_CPB_ENA     ),
+         .RX_STAT_ENA    ( RX_STAT_ENA    ),
          .RX_DESCR_COUNT ( RX_DESCR_COUNT )
       ) rx_inst
       (
@@ -378,7 +373,7 @@ module ehl_emac
          .CDC_SYNC_STAGE ( CDC_SYNC_STAGE ),
          .DATA_WIDTH     ( DATA_WIDTH     ),
          .TX_DESCR_COUNT ( TX_DESCR_COUNT ),
-         .TX_CPB_ENA     ( TX_CPB_ENA     )
+         .TX_STAT_ENA    ( TX_STAT_ENA    )
       ) tx_inst
       (
 // APB
@@ -460,7 +455,7 @@ module ehl_emac
          .tx_reset_n       ( tx_reset_n_sync  ),
          .fc_transmit      ( fc_transmit      ),
          .fc_tx_value      ( fc_tx_value      ),
-         .fcvr             ( fcvr             ), // Q: what for this register made? for Upper bound only? as lower should be 0-fied automatically
+         .fcvr             ( fcvr             ), // Q: what for this register made? for Upper bound only? as lower should be 0-filled automatically
          .tx_inhibit       ( tx_inhibit       ),
          .tx_req_pulse     ( tx_req_pulse     ),
          .tx_req_pulse0    ( tx_req_pulse0    ),
