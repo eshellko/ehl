@@ -1,0 +1,192 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>DDR PHY</title>
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+      <h2 class="title">Руководство пользователя ehl_ddr_phy</h2>
+      <table summary="Reference" cellpadding="4" width="50%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col></colgroup>
+         <tbody>
+            <tr> <td bgcolor="#C0C0C0">Версия</td> <td>1.0</td> </tr>
+            <tr> <td bgcolor="#C0C0C0">Дата</td> <td>2020.01.16</td> </tr>
+            <tr> <td bgcolor="#C0C0C0">Разработчик</td> <td>А.В. Корнюхин (kornukhin@mail.ru)</td> </tr>
+         </tbody>
+      </table>
+
+<!-- TODO: keep link to this register, also refer it in initialization procedure and datasheet / API / tests -->
+      <p><a name="ehl-PHY_DLL_CTRL"></a><b style="color: #0000CC">PHY_DLL_CTRL [0x80] : </b>DLL Control Register</p>
+      <a name="fieldtable-PHY_DLL_CTRL"></a>
+      <table summary="Fields for Register: PHY_DLL_CTRL" cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:12</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>11</td>
+               <td>HF</td>
+               <td>
+                  <p><b>Диапазон опорных частот PHY</b>.</p>
+                  <p>0 - [100 - 200] МГц</p>
+                  <p>1 - (200 - 400] МГц</p>
+               </td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>10</td>
+               <td>DB</td>
+               <td>
+                  <p><b>DLL Bypass. </b>Перевод DLL в режим bypass.</p>
+                  <p>0 - рабочий режим</p>
+                  <p>1 - режим bypass</p>
+               </td>
+               <td>R/W</td>
+               <td>1</td>
+            </tr>
+            <tr>
+               <td>9:0</td>
+               <td>DL</td>
+               <td>
+                  <p><b>DLL Locked. </b>Устанавливается в 1 при переходе DLL в рабочий режим.</p>
+                  <p>Бит 0 соответствует DLL в составе PHYC.</p>
+                  <p>Биты 9:1 соответствуют DLL в составе PHYD байт 8:0. Байт ECC соответствует старшему из присутствующих в конфигурации бит.</p>
+               </td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <p><a name="ehl-PHY_IO_CTRL"></a><b style="color: #0000CC">PHY_IO_CTRL [0x84] : </b>IO Control Register</p>
+      <a name="fieldtable-PHY_IO_CTRL"></a>
+      <table summary="Fields for Register: PHY_IO_CTRL" cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:6</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>5</td>
+               <td>W1CK</td>
+               <td><b>DDR4 Write 1CK Preamble</b>. Управление активацией режима записи в память DDR4 с преамбулой 1CK.</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>4:3</td>
+               <td>ODT</td>
+               <td>
+                  <p><b>Управление входным импедансом контактных площадок.</b></p>
+                  <p>00 - бесконечное сопротивление</p>
+                  <p>01 - 75 Ом</p>
+                  <p>10 - 150 Ом</p>
+                  <p>11 - 50 Ом</p>
+               </td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>2</td>
+               <td>EDQS</td>
+               <td><b>Enable DQS.</b> Разрешение использования дифференциальных стробов. Соответствует регистру MR1[10] в DDR2.</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>1</td>
+               <td>TOID</td>
+               <td><b>Turn Off Inactive Driver</b>. Если установлен, позволяет переводить драйверы контактных площадок (WE_N, RAS_N, CAS_N, ADDR, BA) в третье состояние, если они не содержат валидную команду. Поскольку рабочее напряжение SSTL составляет VDD/2, это позволяет сократить потребляемую мощность.</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>0</td>
+               <td>PWD</td>
+               <td>
+                  <b>SSTL PWD. </b>Управление режимом пониженного энергопотребления SSTL контактных площадок. Установка в 1 приводит к переводу площадок в режим пониженного энергопотребления.
+               </td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <p><a name="ehl-PHY_MODE"></a><b style="color: #0000CC">PHY_MODE [0x9C] : </b>Mode Register</p>
+      <a name="fieldtable-PHY_MODE"></a>
+      <table summary="Fields for Register: PHY_MODE" cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:3</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>2</td>
+               <td>D2M</td>
+               <td>
+                  <b>DDR2 Mode</b>. Перевести PHY в режим DDR2.
+               </td>
+               <td>R/W</td>
+               <td>1</td>
+            </tr>
+            <tr>
+               <td>1</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>0</td>
+               <td>D4M</td>
+               <td>
+                  <b>DDR4 Mode</b>. Перевести PHY в режим DDR4.
+               </td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+   </body>
+</html>
