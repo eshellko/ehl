@@ -7,8 +7,8 @@
       <h2 class="title" style="clear: both"><a name="sectionStart"></a>Регистры статистики передатчика</h2>
       <hr>
 
-      <p><a name="TX_STAT_TFTO"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TFTO [0x010]: </b></span>Счетчик успешно переданных кадров.</p>
-      <table cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+      <p><a name="TX_STAT_TFTO"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TFTO</b></span></p>
+      <table cellpadding="1" border="1" cellspacing="0" rules="all">
          <colgroup><col><col><col><col><col></colgroup>
          <thead>
             <tr bgcolor="#C0C0C0">
@@ -25,13 +25,13 @@
                <td>-</td>
                <td>Содержит количество удачно переданных кадров.</td>
                <td>R</td>
-               <td>0</td>
+               <td>x</td>
             </tr>
          </tbody>
       </table>
 
-      <p><a name="TX_STAT_TSCF"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TSCF [0x014]: </b></span>Счетчик кадров, в процессе передачи которых возникла 1 коллизия, и переданных со второй попытки.</p>
-      <table cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+      <p><a name="TX_STAT_TSCF"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TSCF</b></span></p>
+      <table cellpadding="1" border="1" cellspacing="0" rules="all">
          <colgroup><col><col><col><col><col></colgroup>
          <thead>
             <tr bgcolor="#C0C0C0">
@@ -48,13 +48,13 @@
                <td>-</td>
                <td>Содержит количество удачно переданных кадров, при передаче которых возникла ровно 1 коллизия и переданных со второй попытки.</td>
                <td>R</td>
-               <td>0</td>
+               <td>x</td>
             </tr>
          </tbody>
       </table>
 
-      <p><a name="TX_STAT_TMCF"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TMCF [0x018]: </b></span>Счетчик кадров, в процессе передачи которых возникло больше 1 коллизии, и переданных успешно.</p>
-      <table cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+      <p><a name="TX_STAT_TMCF"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TMCF</b></span></p>
+      <table cellpadding="1" border="1" cellspacing="0" rules="all">
          <colgroup><col><col><col><col><col></colgroup>
          <thead>
             <tr bgcolor="#C0C0C0">
@@ -71,14 +71,14 @@
                <td>-</td>
                <td>Счетчик кадров, в процессе передачи которых возникло больше 1 коллизии, и переданных успешно.</td>
                <td>R</td>
-               <td>0</td>
+               <td>x</td>
             </tr>
          </tbody>
       </table>
 
-      <p><a name="TX_STAT_TOTO0"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TOTO0 [0x01C]: </b></span>Счетчик байт данных и падов в успешно переданных кадрах.</p>
-      <p><a name="TX_STAT_TOTO1"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TOTO1 [0x020]: </b></span>Старшие 32 бита.</p>
-      <table cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+      <p><a name="TX_STAT_TOTO0"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TOTO0: </b></span>Младшие 32 бита.</p>
+      <p><a name="TX_STAT_TOTO1"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TOTO1: </b></span>Старшие 32 бита.</p>
+      <table cellpadding="1" border="1" cellspacing="0" rules="all">
          <colgroup><col><col><col><col><col></colgroup>
          <thead>
             <tr bgcolor="#C0C0C0">
@@ -95,13 +95,13 @@
                <td>-</td>
                <td>Счетчик байт данных и PAD в успешно переданных кадрах. Регистр CPB_TOTO0 содержит младшие 32 бита, CPB_TOTO1 — старшие 32 бита.</td>
                <td>R</td>
-               <td>0</td>
+               <td>x</td>
             </tr>
          </tbody>
       </table>
 
-      <p><a name="TX_STAT_TFWDX"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TFWDX [0x024]: </b></span>Счетчик кадров, передача которых была отложена при первой попытке из-за того, что среда передачи была занята. Не учитываются кадры, при передаче которых возникла хотя бы одна коллизия.</p>
-      <table cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+      <p><a name="TX_STAT_TFWDX"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TFWDX</b></span></p>
+      <table cellpadding="1" border="1" cellspacing="0" rules="all">
          <colgroup><col><col><col><col><col></colgroup>
          <thead>
             <tr bgcolor="#C0C0C0">
@@ -118,13 +118,13 @@
                <td>-</td>
                <td>Счетчик кадров, передача которых была отложена при первой попытке из-за того, что среда передачи была занята. Не учитываются кадры, при передаче которых возникла хотя бы одна коллизия.</td>
                <td>R</td>
-               <td>0</td>
+               <td>x</td>
             </tr>
          </tbody>
       </table>
 
-      <p><a name="TX_STAT_TLC"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TLC [0x028]: </b></span>Счетчик кадров, в процессе передачи которых возникала поздняя коллизия. Поздней считается коллизия, обнаруженная после передачи 512-го бита передаваемого кадра.</p>
-      <table cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+      <p><a name="TX_STAT_TLC"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TLC</b></span></p>
+      <table cellpadding="1" border="1" cellspacing="0" rules="all">
          <colgroup><col><col><col><col><col></colgroup>
          <thead>
             <tr bgcolor="#C0C0C0">
@@ -141,13 +141,13 @@
                <td>-</td>
                <td>Счетчик кадров, в процессе передачи которых возникала поздняя коллизия. Поздней считается коллизия, обнаруженная после передачи 512-го бита передаваемого кадра.</td>
                <td>R</td>
-               <td>0</td>
+               <td>x</td>
             </tr>
          </tbody>
       </table>
 
-      <p><a name="TX_STAT_TFADTXS"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TFADTXS [0x02C]: </b></span>Счетчик кадров, передача которых прекращена из-за превышения числа коллизий.</p>
-      <table cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+      <p><a name="TX_STAT_TFADTXS"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TFADTXS</b></span></p>
+      <table cellpadding="1" border="1" cellspacing="0" rules="all">
          <colgroup><col><col><col><col><col></colgroup>
          <thead>
             <tr bgcolor="#C0C0C0">
@@ -164,13 +164,13 @@
                <td>-</td>
                <td>Счетчик кадров, передача которых прекращена из-за превышения допустимого числа коллизий.</td>
                <td>R</td>
-               <td>0</td>
+               <td>x</td>
             </tr>
          </tbody>
       </table>
 
-      <p><a name="TX_STAT_TFLDTMXE"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TFLDTMXE [0x030]: </b></span>Счетчик кадров, не переданных из-за  внутренних ошибок контроллера.</p>
-      <table cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+      <p><a name="TX_STAT_TFLDTMXE"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TFLDTMXE</b></span></p>
+      <table cellpadding="1" border="1" cellspacing="0" rules="all">
          <colgroup><col><col><col><col><col></colgroup>
          <thead>
             <tr bgcolor="#C0C0C0">
@@ -187,13 +187,13 @@
                <td>-</td>
                <td>Счетчик кадров, не переданных из-за ошибок заполнения FIFO.</td>
                <td>R</td>
-               <td>0</td>
+               <td>x</td>
             </tr>
          </tbody>
       </table>
 
-      <p><a name="TX_STAT_TCSE"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCSE [0x034]: </b></span>Счетчик кадров при передаче которых не устанавливался сигнал CRS или CRS сбросился до окончания передачи. Этот счетчик инкрементируется только в режиме половинного дуплекса.</p>
-      <table cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+      <p><a name="TX_STAT_TCSE"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCSE</b></span></p>
+      <table cellpadding="1" border="1" cellspacing="0" rules="all">
          <colgroup><col><col><col><col><col></colgroup>
          <thead>
             <tr bgcolor="#C0C0C0">
@@ -210,13 +210,13 @@
                <td>-</td>
                <td>Счетчик кадров, при передаче которых не устанавливался сигнал CRS или CRS сбросился до окончания передачи. Этот счетчик инкрементируется только в режиме Half Duplex.</td>
                <td>R</td>
-               <td>0</td>
+               <td>x</td>
             </tr>
          </tbody>
       </table>
 
-      <p><a name="TX_STAT_TMFXO"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TMFXO [0x038]: </b></span>Счетчик успешно переданных кадров, в поле Destination Address которых находятся групповой не широковещательный адрес.</p>
-      <table cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+      <p><a name="TX_STAT_TMFXO"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TMFXO</b></span></p>
+      <table cellpadding="1" border="1" cellspacing="0" rules="all">
          <colgroup><col><col><col><col><col></colgroup>
          <thead>
             <tr bgcolor="#C0C0C0">
@@ -233,13 +233,13 @@
                <td>-</td>
                <td>Счетчик успешно переданных кадров, в поле Destination Address которых находятся групповой не широковещательный адрес.</td>
                <td>R</td>
-               <td>0</td>
+               <td>x</td>
             </tr>
          </tbody>
       </table>
 
-      <p><a name="TX_STAT_TBFXO"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TBFXO [0x03C]: </b></span>Счетчик успешно переданных кадров, в поле Destination Address которых находится широковещательный адрес.</p>
-      <table cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+      <p><a name="TX_STAT_TBFXO"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TBFXO</b></span></p>
+      <table cellpadding="1" border="1" cellspacing="0" rules="all">
          <colgroup><col><col><col><col><col></colgroup>
          <thead>
             <tr bgcolor="#C0C0C0">
@@ -256,13 +256,13 @@
                <td>-</td>
                <td>Счетчик успешно переданных кадров, в поле Destination Address которых находится широковещательный адрес.</td>
                <td>R</td>
-               <td>0</td>
+               <td>x</td>
             </tr>
          </tbody>
       </table>
 
-      <p><a name="TX_STAT_TFWED"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TFWED [0x040]: </b></span>Счетчик кадров, передача которых была отложена на длительный период времени (более 24288 битовых времен). Счетчик инкрементируется 1 раз для кадра, при передаче которого возникло длительное ожидание, независимо от количества попыток передать кадр и количества возникших задержек передачи.</p>
-      <table cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+      <p><a name="TX_STAT_TFWED"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TFWED</b></span></p>
+      <table cellpadding="1" border="1" cellspacing="0" rules="all">
          <colgroup><col><col><col><col><col></colgroup>
          <thead>
             <tr bgcolor="#C0C0C0">
@@ -279,43 +279,43 @@
                <td>-</td>
                <td>Счетчик кадров, передача которых была отложена на длительный период времени (более 24288 битовых времен). Счетчик инкрементируется 1 раз для кадра, при передаче которого возникло длительное ожидание, независимо от количества попыток передать кадр и количества возникших задержек передачи.</td>
                <td>R</td>
-               <td>0</td>
+               <td>x</td>
             </tr>
          </tbody>
       </table>
 
-      <p><a name="TX_STAT_TCF0"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF0 [0x044]: </b></span>Гистограмма активности коллизий. Индекс каждого регистра соответствует числу коллизий, произошедшее при передаче кадра. Каждый элемент массива содержит счетчик успешно переданных кадров, при передаче которых возникло соответствующее число коллизий. Счетчики инкрементируются только в режиме половинного дуплекса. Счетчик кадров без коллизий.</p>
-      <p><a name="TX_STAT_TCF1"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF1 [0x048]: </b></span>1 коллизия.</p>
-      <p><a name="TX_STAT_TCF2"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF2 [0x04C]: </b></span>2 коллизии.</p>
-      <p><a name="TX_STAT_TCF3"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF3 [0x050]: </b></span>3 коллизии.</p>
-      <p><a name="TX_STAT_TCF4"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF4 [0x054]: </b></span>4 коллизии.</p>
-      <p><a name="TX_STAT_TCF5"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF5 [0x058]: </b></span>5 коллизий.</p>
-      <p><a name="TX_STAT_TCF6"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF6 [0x05C]: </b></span>6 коллизий.</p>
-      <p><a name="TX_STAT_TCF7"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF7 [0x060]: </b></span>7 коллизий.</p>
-      <p><a name="TX_STAT_TCF8"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF8 [0x064]: </b></span>8 коллизий.</p>
-      <p><a name="TX_STAT_TCF9"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF9 [0x068]: </b></span>9 коллизий.</p>
-      <p><a name="TX_STAT_TCF10"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF10 [0x06C]: </b></span>10 коллизий.</p>
-      <p><a name="TX_STAT_TCF11"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF11 [0x070]: </b></span>11 коллизий.</p>
-      <p><a name="TX_STAT_TCF12"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF12 [0x074]: </b></span>12 коллизий.</p>
-      <p><a name="TX_STAT_TCF13"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF13 [0x078]: </b></span>13 коллизий.</p>
-      <p><a name="TX_STAT_TCF14"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF14 [0x07C]: </b></span>14 коллизий.</p>
-      <p><a name="TX_STAT_TCF15"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF15 [0x080]: </b></span>15 коллизий.</p>
-      <p><a name="TX_STAT_TCF16"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF16 [0x084]: </b></span>16 коллизий.</p>
-      <p><a name="TX_STAT_TCF17"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF17 [0x088]: </b></span>17 коллизий.</p>
-      <p><a name="TX_STAT_TCF18"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF18 [0x08C]: </b></span>18 коллизий.</p>
-      <p><a name="TX_STAT_TCF19"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF19 [0x090]: </b></span>19 коллизий.</p>
-      <p><a name="TX_STAT_TCF20"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF20 [0x094]: </b></span>20 коллизий.</p>
-      <p><a name="TX_STAT_TCF21"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF21 [0x098]: </b></span>21 коллизий.</p>
-      <p><a name="TX_STAT_TCF22"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF22 [0x09C]: </b></span>22 коллизий.</p>
-      <p><a name="TX_STAT_TCF23"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF23 [0x0A0]: </b></span>23 коллизий.</p>
-      <p><a name="TX_STAT_TCF24"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF24 [0x0A4]: </b></span>24 коллизий.</p>
-      <p><a name="TX_STAT_TCF25"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF25 [0x0A8]: </b></span>25 коллизий.</p>
-      <p><a name="TX_STAT_TCF26"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF26 [0x0AC]: </b></span>26 коллизий.</p>
-      <p><a name="TX_STAT_TCF27"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF27 [0x0B0]: </b></span>27 коллизий.</p>
-      <p><a name="TX_STAT_TCF28"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF28 [0x0B4]: </b></span>28 коллизий.</p>
-      <p><a name="TX_STAT_TCF29"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF29 [0x0B8]: </b></span>29 коллизий.</p>
-      <p><a name="TX_STAT_TCF30"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF30 [0x0BC]: </b></span>30 коллизий.</p>
-      <table cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+      <p><a name="TX_STAT_TCF0"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF0: </b></span>Счетчик кадров без коллизий.</p>
+      <p><a name="TX_STAT_TCF1"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF1: </b></span>1 коллизия.</p>
+      <p><a name="TX_STAT_TCF2"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF2: </b></span>2 коллизии.</p>
+      <p><a name="TX_STAT_TCF3"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF3: </b></span>3 коллизии.</p>
+      <p><a name="TX_STAT_TCF4"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF4: </b></span>4 коллизии.</p>
+      <p><a name="TX_STAT_TCF5"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF5: </b></span>5 коллизий.</p>
+      <p><a name="TX_STAT_TCF6"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF6: </b></span>6 коллизий.</p>
+      <p><a name="TX_STAT_TCF7"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF7: </b></span>7 коллизий.</p>
+      <p><a name="TX_STAT_TCF8"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF8: </b></span>8 коллизий.</p>
+      <p><a name="TX_STAT_TCF9"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF9: </b></span>9 коллизий.</p>
+      <p><a name="TX_STAT_TCF10"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF10: </b></span>10 коллизий.</p>
+      <p><a name="TX_STAT_TCF11"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF11: </b></span>11 коллизий.</p>
+      <p><a name="TX_STAT_TCF12"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF12: </b></span>12 коллизий.</p>
+      <p><a name="TX_STAT_TCF13"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF13: </b></span>13 коллизий.</p>
+      <p><a name="TX_STAT_TCF14"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF14: </b></span>14 коллизий.</p>
+      <p><a name="TX_STAT_TCF15"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF15: </b></span>15 коллизий.</p>
+      <p><a name="TX_STAT_TCF16"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF16: </b></span>16 коллизий.</p>
+      <p><a name="TX_STAT_TCF17"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF17: </b></span>17 коллизий.</p>
+      <p><a name="TX_STAT_TCF18"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF18: </b></span>18 коллизий.</p>
+      <p><a name="TX_STAT_TCF19"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF19: </b></span>19 коллизий.</p>
+      <p><a name="TX_STAT_TCF20"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF20: </b></span>20 коллизий.</p>
+      <p><a name="TX_STAT_TCF21"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF21: </b></span>21 коллизий.</p>
+      <p><a name="TX_STAT_TCF22"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF22: </b></span>22 коллизий.</p>
+      <p><a name="TX_STAT_TCF23"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF23: </b></span>23 коллизий.</p>
+      <p><a name="TX_STAT_TCF24"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF24: </b></span>24 коллизий.</p>
+      <p><a name="TX_STAT_TCF25"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF25: </b></span>25 коллизий.</p>
+      <p><a name="TX_STAT_TCF26"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF26: </b></span>26 коллизий.</p>
+      <p><a name="TX_STAT_TCF27"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF27: </b></span>27 коллизий.</p>
+      <p><a name="TX_STAT_TCF28"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF28: </b></span>28 коллизий.</p>
+      <p><a name="TX_STAT_TCF29"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF29: </b></span>29 коллизий.</p>
+      <p><a name="TX_STAT_TCF30"></a><span class="bold" style="color: #0000CC"><b>TX_STAT_TCF30: </b></span>30 коллизий.</p>
+      <table cellpadding="1" border="1" cellspacing="0" rules="all">
          <colgroup><col><col><col><col><col></colgroup>
          <thead>
             <tr bgcolor="#C0C0C0">
@@ -332,7 +332,7 @@
                <td>-</td>
                <td>Гистограмма активности коллизий. Индекс каждого регистра соответствует числу коллизий, произошедших при передаче кадра. Каждый элемент массива содержит счетчик успешно переданных кадров, при передаче которых возникло соответствующее число коллизий. Счетчики инкрементируются только в режиме половинного дуплекса.</td>
                <td>R</td>
-               <td>0</td>
+               <td>x</td>
             </tr>
          </tbody>
       </table>

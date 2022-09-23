@@ -1,0 +1,269 @@
+<html>
+   <style> pre.small {line-height: 0.5; font-weight:bold; color: #FF00FF; }</style>
+
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Сторожевой таймер (WDT)</title>
+   </head>
+
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+      <h2>Сторожевой таймер (WDT)</h2>
+      <hr>
+
+      <table cellpadding="4" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col></colgroup>
+         <tbody>
+            <tr> <td bgcolor="#C0C0C0">Версия</td>      <td>1.0</td> </tr>
+            <tr> <td bgcolor="#C0C0C0">Дата</td>        <td>2022.07.11</td> </tr>
+            <tr> <td bgcolor="#C0C0C0">Разработчик</td> <td>А.В. Корнюхин (kornukhin@mail.ru)</td> </tr>
+         </tbody>
+      </table>
+
+      <h3>Введение</h3>
+      <p>
+         Сторожевой таймер предназначен для принудительной перезагрузки системы в случае её зависания.
+         Запись в регистры блокируется для избежания случайной записи в регистры контроллера.
+      </p>
+      <p>
+         Таймер содержит 32-разрядный счетчик, который при достижении значения 0 формирует прерывание
+         <b>irq</b> или сброс <b>rst_req</b> (если прерывание <b>irq</b> не было сброшено).
+      </p>
+      <p>
+         Таймер декрементирует значение на каждом такте синхросигнала.
+      </p>
+
+      <h3>Параметры</h3>
+      <p><b>ehl_wdt</b> может быть настроен под задачу пользователя. За настройку отвечают параметры, представленные в таблице.</p>
+      <table cellpadding="4" width="80%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Значение по умолчанию</th>
+               <th>Допустимые значения</th>
+               <th>Описание</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>WIDTH</td> <td>32</td> <td>8, 16, 32</td> <td>Разрядность шины данных.</td> </tr>
+         </tbody>
+      </table>
+
+      <h3>Интерфейс</h3>
+      <pre class="small">    _________________________</pre>
+      <pre class="small">   |                         |</pre>
+      <pre class="small">---| clk                     |</pre>
+      <pre class="small">---| reset_n             irq |---</pre>
+      <pre class="small">---| wdt_reset_n     rst_req |---</pre>
+      <pre class="small">---| rd                rdata |---</pre>
+      <pre class="small">---| wr                      |</pre>
+      <pre class="small">---| addr                    |</pre>
+      <pre class="small">---| wdata                   |</pre>
+      <pre class="small">   |_________________________|</pre>
+
+      <table summary="io" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Количество</th>
+               <th>Тип</th>
+               <th>Назначение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>clk</td>           <td>1</td>     <td>I</td> <td>Синхросигнал управления.</td> </tr>
+            <tr> <td>reset_n</td>       <td>1</td>     <td>I</td> <td>Сброс контроллера, должен быть неактивен при сбросе от самого сторожевого таймера.</td> </tr>
+            <tr> <td>wdt_reset_n</td>   <td>1</td>     <td>I</td> <td>Сброс сторожевого таймера.</td> </tr>
+            <tr> <td>irq</td>           <td>1</td>     <td>O</td> <td>Прерывание сторожевого таймера. Активный уровень 1.</td> </tr>
+            <tr> <td>rst_req</td>       <td>1</td>     <td>O</td> <td>Сброс сторожевого таймера. Активный уровень 1.</td> </tr>
+            <tr> <td colspan="4" bgcolor="#F0F0F0">Интерфейс управления</td> </tr>
+            <tr> <td>rd</td>            <td>1</td>     <td>I</td> <td>Строб чтения шинного интерфейса.</td> </tr>
+            <tr> <td>wr</td>            <td>1</td>     <td>I</td> <td>Строб записи шинного интерфейса.</td> </tr>
+            <tr> <td>addr</td>          <td>3</td>     <td>I</td> <td>Адрес шинного интерфейса.</td> </tr>
+            <tr> <td>rdata</td>         <td>WIDTH</td> <td>O</td> <td>Выходные данные шинного интерфейса.</td> </tr>
+            <tr> <td>wdata</td>         <td>WIDTH</td> <td>I</td> <td>Входные данные шинного интерфейса.</td> </tr>
+         </tbody>
+      </table>
+
+      <h3><a name="REGS"></a>Регистры контроллера</h3>
+      <p>Запись в несуществующие регистры не приводит к изменению регистров. Чтение несуществующих регистров возвращает 0.</p>
+      <table summary="mem_map" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Аббревиатура</th>
+               <th>Смещение от базового адреса блока</th>
+               <th>Доступ</th>
+               <th>Описание</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td><a href="#LOAD"     class="olink">LOAD</a></td>     <td>0x00</td> <td>RW</td> <td>Период счета сторожевого таймера</td> </tr>
+            <tr> <td><a href="#VAL"      class="olink">VAL</a></td>      <td>0x04</td> <td>R</td>  <td>Текущее значение сторожевого таймера</td> </tr>
+            <tr> <td><a href="#LOCK"     class="olink">LOCK</a></td>     <td>0x08</td> <td>RW</td> <td>Регистр блокировки доступа к регистрам</td> </tr>
+            <tr> <td><a href="#IRQ_CTRL" class="olink">IRQ_CTRL</a></td> <td>0x0C</td> <td>RW</td> <td>Регистр управления прерываниями</td> </tr>
+            <tr> <td><a href="#IRQ_FLAG" class="olink">IRQ_FLAG</a></td> <td>0x10</td> <td>RW</td> <td>Регистр флагов прерывания</td> </tr>
+         </tbody>
+      </table>
+
+      <p><a name="LOAD"></a><span class="bold" style="color: #0000CC"><b>LOAD [0x00].</b></span> Период счета таймера.</p>
+      <table cellpadding="1" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>31:0</td> <td>VALUE</td> <td>Период счета сторожевого таймера. Запись в регистр при работающем таймере приводит к его перезагрузке записываемым значением. Запись 0 приводит к остановке таймера.
+               Для 8-битных систем (<b>WIDTH</b> == 8) перезагрузка производится при записи старшего байта.
+               Для 16-битных систем (<b>WIDTH</b> == 16) перезагрузка производится при записи старшего слова.
+            </td> <td>R/W</td> <td>0</td> </tr>
+         </tbody>
+      </table>
+
+      <p><a name="VAL"></a><span class="bold" style="color: #0000CC"><b>VAL [0x04].</b></span> Текущее значение сторожевого таймера.</p>
+      <table cellpadding="1" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>31:0</td> <td>VALUE</td> <td>Текущее значение таймера.</td> <td>R</td> <td>0</td> </tr>
+         </tbody>
+      </table>
+
+      <p><a name="LOCK"></a><span class="bold" style="color: #0000CC"><b>LOCK [0x08].</b></span> Регистр блокировки доступа к регистрам контроллера. Запись значения 0xD9 в младший байт открывает доступ на запись в регистры. Запись любого другого значения блокирует доступ. По умолчанию запись во все регистры заблокирована.</p>
+      <table cellpadding="1" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>31:1</td> <td>-</td>    <td>Резерв</td> <td>R</td> <td>0</td> </tr>
+            <tr> <td>0</td>    <td>LOCK</td> <td>Блокировка записи в регистры:<li>1 – запись в регистры заблокирована;</li><li>0 – запись в регистры разрешена.</li></td> <td>R/W</td> <td>1</td> </tr>
+         </tbody>
+      </table>
+
+      <p><a name="IRQ_CTRL"></a><span class="bold" style="color: #0000CC"><b>IRQ_CTRL [0x0C]: </b></span>Регистр управления прерываниями.</p>
+      <table cellpadding="1" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>31:2</td> <td>-</td> <td><b>Резерв</b></td> <td>R</td> <td>0</td> </tr>
+            <tr> <td>1</td>   <td>RE</td> <td>Разрешение генерации сброса по окончании счета таймера:<li>0 - запрещено;</li><li>1 - разрешено.</li></td> <td>R/W</td> <td>0</td> </tr>
+            <tr> <td>0</td>   <td>IE</td> <td>Разрешение генерации прерывания по окончании счета таймера:<li>0 - запрещено;</li><li>1 - разрешено.</li></td> <td>R/W</td> <td>0</td> </tr>
+         </tbody>
+      </table>
+
+      <p><a name="IRQ_FLAG"></a><span class="bold" style="color: #0000CC"><b>IRQ_FLAG [0x10]: </b></span>Регистр флагов прерываний. Для сброса <b>IF</b> следует записать в него 1.</p>
+      <table cellpadding="1" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>31:2</td> <td>-</td>   <td><b>Резерв</b></td> <td>R</td> <td>0</td> </tr>
+            <tr> <td>1</td>    <td>RF</td>  <td>Отображает состояние системы после выхода из сброса:<li>0 - сброс от внешнего источника (<b>wdt_reset_n</b>);</li> <li>1 - сброс от сторожевого таймера.</li><sup>*</sup>Начальное значение зависит от причины перезагрузки:<li>0 - система сброшена независимо от сторожевого таймера;</li><li>1 - система сброшена сторожевым таймером.</li></td> <td>R/W1C</td> <td>0<sup>*</sup></td> </tr>
+            <tr> <td>0</td>    <td>IF</td>  <td>Флаг прерывания. 1 указывает на наличие разрешенного прерывания.</td> <td>R/W1C</td> <td>0</td> </tr>
+         </tbody>
+      </table>
+
+      <h3>Интеграция в систему</h3>
+      <p>Для применения таймера в системе следует сформировать корректный сигнал сброса. Пример такого формирователя приведен далее.</p>
+      <pre class="small">   wire rst_req;</pre>
+      <pre class="small">   reg wdt_reset_n;</pre>
+      <pre class="small">   always@(posedge clk or negedge reset_n)</pre>
+      <pre class="small">   if(!reset_n)</pre>
+      <pre class="small">      wdt_reset_n <= 1'b0;</pre>
+      <pre class="small">   else if(rst_req)      // запрос на сброс от сторожевого таймера</pre>
+      <pre class="small">      wdt_reset_n <= 1'b0;</pre>
+      <pre class="small">   else</pre>
+      <pre class="small">      wdt_reset_n <= 1'b1;</pre>
+      <pre class="small"> </pre>
+      <pre class="small">   ehl_wdt dut</pre>
+      <pre class="small">   (</pre>
+      <pre class="small">      .clk         ( clk         ),</pre>
+      <pre class="small">      .reset_n     ( reset_n     ),</pre>
+      <pre class="small">      .wdt_reset_n ( wdt_reset_n ),</pre>
+      <pre class="small">      .rst_req     ( rst_req     ),</pre>
+
+      <hr>
+      <h3>Базовые функции</h3>
+      <hr>
+      <p><b>API_WDT_START</b>: стартовать таймер.</p>
+      <pre class="small">void API_WDT_START(struct EHL_WDT* dev_id, unsigned int value, bool lock = true);</pre>
+      <pre class="small">   dev_id - указатель на структуру таймера</pre>
+      <pre class="small">   value  - период счета</pre>
+      <pre class="small">   lock   - разблокировать запись перед записью и заблокировать после</pre>
+      <hr>
+      <p><b>API_WDT_STOP</b>: остановить таймер.</p>
+      <pre class="small">void API_WDT_STOP(struct EHL_WDT* dev_id, bool lock = true);</pre>
+      <pre class="small">   dev_id - указатель на структуру таймера</pre>
+      <pre class="small">   lock   - разблокировать запись перед записью и заблокировать после</pre>
+      <hr>
+      <p><b>API_WDT_GET_TIMEOUT</b>: получить период счета.</p>
+      <pre class="small">int API_WDT_GET_TIMEOUT(struct EHL_WDT* dev_id);</pre>
+      <pre class="small">   dev_id - указатель на структуру таймера</pre>
+      <hr>
+      <p><b>API_WDT_GET_INTERVAL</b>: получить текущее значение счета таймера.</p>
+      <pre class="small">int API_WDT_GET_INTERVAL(struct EHL_WDT* dev_id);</pre>
+      <pre class="small">   dev_id - указатель на структуру таймера</pre>
+      <hr>
+      <p><b>API_WDT_ACTIVE</b>: проверить активность таймера. Возвращает 1, если таймер запущен.</p>
+      <pre class="small">int API_WDT_ACTIVE(struct EHL_WDT* dev_id);</pre>
+      <pre class="small">   dev_id - указатель на структуру таймера</pre>
+      <hr>
+      <p><b>API_WDT_DISABLE_IRQ</b>: запрещает прерывания записью 0 в IRQ_CTRL.</p>
+      <pre class="small">void API_WDT_DISABLE_IRQ(struct EHL_WDT* dev_id, bool lock = true);</pre>
+      <pre class="small">   dev_id - указатель на структуру таймера</pre>
+      <pre class="small">   lock   - разблокировать запись перед записью и заблокировать после</pre>
+      <hr>
+      <p><b>API_WDT_ENABLE_IRQ</b>: разрешает выбранные прерывания записью в IRQ_CTRL.</p>
+      <pre class="small">void API_WDT_ENABLE_IRQ(struct EHL_WDT* dev_id, int value, bool lock = true);</pre>
+      <pre class="small">   dev_id - указатель на структуру таймера</pre>
+      <pre class="small">   value  - разрешенные прерывания, записываемые в IRQ_CTRL</pre>
+      <pre class="small">   lock   - разблокировать запись перед записью и заблокировать после</pre>
+      <hr>
+      <p><b>API_WDT_CLEAR_IRQ</b>: сбрасывает выбранные флаги прерываний в IRQ_FLAG.</p>
+      <pre class="small">void API_WDT_CLEAR_IRQ(struct EHL_WDT* dev_id, int value, bool lock = true);</pre>
+      <pre class="small">   dev_id - указатель на структуру таймера</pre>
+      <pre class="small">   value  - сбрасываемые прерывания</pre>
+      <pre class="small">   lock   - разблокировать запись перед записью и заблокировать после</pre>
+      <hr>
+      <p><b>API_WDT_GET_IRQ</b>: возвращает текущие флаги прерываний - значение регистра IRQ_FLAG.</p>
+      <pre class="small">unsigned int API_WDT_GET_IRQ(struct EHL_WDT* dev_id);</pre>
+      <pre class="small">   dev_id - указатель на структуру таймера</pre>
+   </body>
+</html>

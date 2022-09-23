@@ -15,7 +15,7 @@
       </table>
 
 <!-- TODO: keep link to this register, also refer it in initialization procedure and datasheet / API / tests -->
-      <p><a name="ehl-PHY_DLL_CTRL"></a><b style="color: #0000CC">PHY_DLL_CTRL [0x80] : </b>DLL Control Register</p>
+      <p><a name="ehl-PHY_DLL_CTRL"></a><b style="color: #0000CC">PHY_DLL_CTRL [0x00] : </b>DLL Control Register</p>
       <a name="fieldtable-PHY_DLL_CTRL"></a>
       <table summary="Fields for Register: PHY_DLL_CTRL" cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
          <colgroup><col><col><col><col></colgroup>
@@ -40,9 +40,9 @@
                <td>11</td>
                <td>HF</td>
                <td>
-                  <p><b>Диапазон опорных частот PHY</b>.</p>
-                  <p>0 - [100 - 200] МГц</p>
-                  <p>1 - (200 - 400] МГц</p>
+                  <b>Диапазон опорных частот PHY</b>:
+                  <li>0 - [100 - 200] МГц</li>
+                  <li>1 - (200 - 400] МГц</li>
                </td>
                <td>R/W</td>
                <td>0</td>
@@ -51,9 +51,9 @@
                <td>10</td>
                <td>DB</td>
                <td>
-                  <p><b>DLL Bypass. </b>Перевод DLL в режим bypass.</p>
-                  <p>0 - рабочий режим</p>
-                  <p>1 - режим bypass</p>
+                  <b>DLL Bypass. </b>Перевод DLL в режим bypass:
+                  <li>0 - рабочий режим</li>
+                  <li>1 - режим bypass</li>
                </td>
                <td>R/W</td>
                <td>1</td>
@@ -72,7 +72,7 @@
          </tbody>
       </table>
 
-      <p><a name="ehl-PHY_IO_CTRL"></a><b style="color: #0000CC">PHY_IO_CTRL [0x84] : </b>IO Control Register</p>
+      <p><a name="ehl-PHY_IO_CTRL"></a><b style="color: #0000CC">PHY_IO_CTRL [0x04] : </b>IO Control Register</p>
       <a name="fieldtable-PHY_IO_CTRL"></a>
       <table summary="Fields for Register: PHY_IO_CTRL" cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
          <colgroup><col><col><col><col></colgroup>
@@ -104,11 +104,11 @@
                <td>4:3</td>
                <td>ODT</td>
                <td>
-                  <p><b>Управление входным импедансом контактных площадок.</b></p>
-                  <p>00 - бесконечное сопротивление</p>
-                  <p>01 - 75 Ом</p>
-                  <p>10 - 150 Ом</p>
-                  <p>11 - 50 Ом</p>
+                  <b>Управление входным импедансом контактных площадок.</b>
+                  <li>00 - бесконечное сопротивление</li>
+                  <li>01 - 75 Ом</li>
+                  <li>10 - 150 Ом</li>
+                  <li>11 - 50 Ом</li>
                </td>
                <td>R/W</td>
                <td>0</td>
@@ -139,7 +139,7 @@
          </tbody>
       </table>
 
-      <p><a name="ehl-PHY_MODE"></a><b style="color: #0000CC">PHY_MODE [0x9C] : </b>Mode Register</p>
+      <p><a name="ehl-PHY_MODE"></a><b style="color: #0000CC">PHY_MODE [0x1C] : </b>Mode Register</p>
       <a name="fieldtable-PHY_MODE"></a>
       <table summary="Fields for Register: PHY_MODE" cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
          <colgroup><col><col><col><col></colgroup>
@@ -164,7 +164,8 @@
                <td>2</td>
                <td>D2M</td>
                <td>
-                  <b>DDR2 Mode</b>. Перевести PHY в режим DDR2.
+                  <b>DDR2 Mode</b>. Активация режима DDR2.<li>1 - PHY в режиме DDR2;</li><li>0 - PHY не в режиме DDR2.</li>
+                  Не допускается устанавливать одновременно с <b>D4M</b>.
                </td>
                <td>R/W</td>
                <td>1</td>
@@ -180,7 +181,8 @@
                <td>0</td>
                <td>D4M</td>
                <td>
-                  <b>DDR4 Mode</b>. Перевести PHY в режим DDR4.
+                  <b>DDR4 Mode</b>. Активация режима DDR4.<li>1 - PHY в режиме DDR4;</li><li>0 - PHY не в режиме DDR4.</li>
+                  Не допускается устанавливать одновременно с <b>D2M</b>.
                </td>
                <td>R/W</td>
                <td>0</td>

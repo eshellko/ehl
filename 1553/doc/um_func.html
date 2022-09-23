@@ -44,7 +44,7 @@
             <tr> <td><a href="reg_desc.html#Config"       class="olink">CFG</a></td>           <td>0x00</td> <td>Регистр настройки</td> </tr>
             <tr> <td><a href="reg_desc.html#BC_ADDR"      class="olink">BC_ADDR</a></td>       <td>0x04</td> <td>Регистр настройки адреса задания КШ</td> </tr>
             <tr> <td><a href="reg_desc.html#Control"      class="olink">CTRL</a></td>          <td>0x08</td> <td>Регистр управления</td> </tr>
-            <tr> <td><a href="reg_desc.html#Timer"        class="olink">TIME</a></td>          <td>0x0C</td> <td>Регистр настройки таймера</td> </tr>
+            <tr> <td><a href="reg_desc.html#Time"         class="olink">TIME</a></td>          <td>0x0C</td> <td>Регистр настройки таймера</td> </tr>
             <tr> <td><a href="reg_desc.html#LStatus"      class="olink">LSTAT</a></td>         <td>0x10</td> <td>Регистр статуса последнего завершенного сообщения</td> </tr>
             <tr> <td><a href="reg_desc.html#BM_ADDR_INIT" class="olink">BM_ADDR_INIT</a></td>  <td>0x14</td> <td>Начальный адрес буфера МШ</td> </tr>
             <tr> <td><a href="reg_desc.html#BM_ADDR_LAST" class="olink">BM_ADDR_LAST</a></td>  <td>0x18</td> <td>Конечный адрес буфера МШ</td> </tr>
@@ -69,7 +69,7 @@
       <p>
          Для всех режимов работы характерно прерывание от DMA.
          Для получения заданий, чтения и записи данных, контроллер использует AHB DMA.
-         В случае получения ошибочного отклика по шине AHB, поступлении следующей команды с шины, или отсутствия отклика в течение длительного периода времени (120 тактов AHB), генерируется прерывание.
+         В случае получения ошибочного отклика по шине AHB, поступлении следующей команды с шины, или отсутствия отклика в течение длительного периода времени (120 тактов <b>ref_clk</b>), генерируется прерывание.
       </p>
 
       <h4>Контроллер Шины</h4>

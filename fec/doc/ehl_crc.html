@@ -2,73 +2,97 @@
    <style> pre.small {line-height: 0.5; font-weight:bold; }</style>
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>CRC</title>
+      <title>Cyclic Redundancy Check</title>
    </head>
    <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
-      <p><b>ehl_crc</b> - Cyclic Redundancy Check</p>
+      <h3><b>ehl_crc</b> - Cyclic Redundancy Check</h3>
       <hr>
-      <p>Модуль подсчета циклической контрольной суммы.</p>
-      <pre class="small">    _______________________</pre>
-      <pre class="small">   |                       |</pre>
-      <pre class="small">---| data_in   crc_out     |---</pre>
-      <pre class="small">---| crc_in    crc_correct |---</pre>
-      <pre class="small">   |_______________________|</pre>
 
-      <h4>Описание</h4>
-      <li>Блок генерации/проверки контрольной суммы.</li>
-      <li>Параметризуемое значение полинома.</li>
-      <li>Ширина шины данных определяется параметром <b>DATA_WIDTH</b>.</li>
+      <table cellpadding="4" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col></colgroup>
+         <tbody>
+            <tr> <td bgcolor="#C0C0C0">Версия</td>      <td>1.0</td> </tr>
+            <tr> <td bgcolor="#C0C0C0">Дата</td>        <td>2013.02.01</td> </tr>
+            <tr> <td bgcolor="#C0C0C0">Разработчик</td> <td>А.В. Корнюхин (kornukhin@mail.ru)</td> </tr>
+         </tbody>
+      </table>
 
-      <h4>Параметры</h4>
-      <li>DATA_WIDTH – количество бит во входных данных. Допустимые значения от 1 до 1024 (значение по умолчанию 4).</li>
-      <li>POLY_WIDTH – количество бит в контрольной сумме. Допустимые значения от 1 до 1024 (значение по умолчанию 1024).</li>
-      <li>INIT_VALUE — начальное значение полинома (0 — все нули, 1 — все единицы (например, Ethernet)).</li>
-      <li>BIT_ORDER – порядок обработки бит в data_in. 0 – LSB, 1 – MSB (значение по умолчанию 0).</li>
-      <li>XOR_MSB — значение старшего бита полинома (1 для Ethernet).</li>
-      <li>POLY_COEF – генерирующий полином (значение по умолчанию 0x04C11DB7).</li>
-
-      <h4>Порты</h4>
+      <h2>Условные обозначения и сокращения</h2>
       <table cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0"> <th>Сокращение</th> <th>Расшифровка</th> </tr>
+         </thead>
+         <tbody>
+            <tr> <td>CRC</td>  <td>Cyclic Redundancy Check</td> </tr>
+         </tbody>
+      </table>
+
+      <h3>Введение</h3>
+      <p>В данной спецификации описываются структура, порядок использования и технические характеристики блока проверки / генерации контрольных сумм (CRC).</p>
+
+      <h2>Интерфейс</h2>
+      <pre class="small">     _______________________</pre>
+      <pre class="small">    |                       |</pre>
+      <pre class="small">----| clk                   |</pre>
+      <pre class="small">----| reset_n               |</pre>
+      <pre class="small">----| ena           crc_out |---</pre>
+      <pre class="small">----| hold      crc_correct |---</pre>
+      <pre class="small">----| data_in      data_out |---</pre>
+      <pre class="small">    |_______________________|</pre>
+
+      <table summary="io" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
          <colgroup><col><col><col><col></colgroup>
          <thead>
             <tr bgcolor="#C0C0C0">
                <th>Название</th>
-               <th>Разрядность</th>
-               <th>Направление</th>
+               <th>Количество</th>
+               <th>Тип</th>
+               <th>Назначение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>clk</td>         <td>1</td>          <td>I</td> <td>Синхросигнал.</td> </tr>
+            <tr> <td>reset_n</td>     <td>1</td>          <td>I</td> <td>Асинхронный сброс (активный уровень 0).</td> </tr>
+            <tr> <td>ena</td>         <td>1</td>          <td>I</td> <td>Разрешение расчета (при 1).</td> </tr>
+            <tr> <td>hold</td>        <td>1</td>          <td>I</td> <td>Приостановка расчета (при 1).</td> </tr>
+            <tr> <td>data_in</td>     <td>DATA_WIDTH</td> <td>I</td> <td>Входные данные.</td> </tr>
+            <tr> <td>data_out</td>    <td>DATA_WIDTH</td> <td>O</td> <td>Выходные данные.</td> </tr>
+            <tr> <td>crc_out</td>     <td>POLY_WIDTH</td> <td>O</td> <td>Выходной код.</td> </tr>
+            <tr> <td>crc_correct</td> <td>1</td>          <td>O</td> <td>Совпадение кода с проверочным полиномом (1).</td> </tr>
+         </tbody>
+      </table>
+
+      <h3>Параметры</h3>
+      <p><b>ehl_crc</b> может быть настроен под задачу пользователя. За настройку отвечают параметры, представленные в таблице.</p>
+      <table cellpadding="4" width="80%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Значение по умолчанию</th>
+               <th>Допустимые значения</th>
                <th>Описание</th>
             </tr>
          </thead>
          <tbody>
-            <tr> <td>data_in</td> <td>DATA_WIDTH</td> <td>Вход</td> <td>Входные данные</td> </tr>
-            <tr> <td>crc_in</td> <td>POLY_WIDTH</td> <td>Вход</td> <td>Текущее значение CRC</td> </tr>
-            <tr> <td>crc_out</td> <td>POLY_WIDTH</td> <td>Выход</td> <td>Следующее значение CRC</td> </tr>
-            <tr> <td>crc_correct</td> <td>1</td> <td>Выход</td> <td>Результат сравнения с ожидаемым остатком</td> </tr>
+            <tr> <td>DATA_WIDTH</td> <td>4</td>          <td>1-128</td>               <td>Разрядность данных.</td> </tr>
+            <tr> <td>POLY_WIDTH</td> <td>32</td>         <td>1-64</td>                <td>Разрядность полинома.</td> </tr>
+            <tr> <td>INIT_VALUE</td> <td>1</td>          <td>0, 1</td>                <td>Начальное значение кода.</td> </tr>
+            <tr> <td>POLY_CHK</td>   <td>0</td>          <td>0, 1</td>                <td>Корректность результата на <b>crc_correct</b>:<li>0 - сравнение с 0;</li><li>1 - сравнение с проверочным полиномом.</li></td> </tr>
+            <tr> <td>BIT_ORDER</td>  <td>0</td>          <td>0, 1</td>                <td>Последовательность обработки входных данных:<li>0 - LSB first;</li><li1 - MSB first.</li></td> </tr>
+            <tr> <td>XOR_MSB</td>    <td>1</td>          <td>0, 1</td>                <td>MSB полинома POLY_WIDTH-ый бит.</td> </tr>
+            <tr> <td>FEEDBACK</td>   <td>0</td>          <td>0, 1</td>                <td>Тип обратной связи<li>0 - внутренняя, выход ^ MSB;</li><li>1 - внешняя, только LSB ^ MSB.</li>.</td> </tr>
+            <tr> <td>XOR_POS</td>    <td>0</td>          <td>0, 1</td>                <td>Место XOR в расчетах:<li>0 - XOR LSB;</li><li>1 - XOR MSB.</li></td> </tr>
+            <tr> <td>POLY_COEF</td>  <td>0x04c11db7</td> <td>0-(2**POLY_WIDTH-1)</td> <td>Полином.</td> </tr>
          </tbody>
       </table>
 
-      <h4>Пример функционирования</h4>
+      <h4>Примеры функционирования</h4>
       <p>Используется для генерации / проверки контрольной суммы. При генерации выход crc_correct следует оставить неподключенным.</p>
       <p>При проверке контрольной суммы пакетов данных USB (CRC16) следует задать параметры <b>POLY_WIDTH</b> = 16, <b>POLY_COEF</b> = 16’h8005. Остальные параметры зависят от реализации схемы подачи данных на <b>ehl_crc</b>.</p>
       <p>При проверке контрольной суммы пакетов данных Ethernet (CRC32) следует задать параметры <b>POLY_WIDTH</b> = 32, <b>POLY_COEF</b> = 32’h04C11DB7. Остальные параметры зависят от реализации схемы подачи данных на <b>ehl_crc</b>.</p>
       <p>Может применяться для проверки целостности содержимого области памяти перед началом исполнения харнящегося в ней кода.</p>
-
-      <h4>Аналогичные функции</h4>
-      <table cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
-         <colgroup><col><col><col></colgroup>
-         <thead>
-            <tr bgcolor="#C0C0C0">
-               <th>Название</th>
-               <th>Библиотека</th>
-               <th>Производитель</th>
-            </tr>
-         </thead>
-         <tbody>
-            <tr> <td></td> <td>DesignWare</td> <td>Synopsys</td> </tr>
-            <tr> <td></td> <td>ChipWare</td> <td>Cadence</td> </tr>
-            <tr> <td></td> <td>LPM Megafunction</td> <td>Altera</td> </tr>
-            <tr> <td></td> <td>LogiCORE</td> <td>Xilinx</td> </tr>
-         </tbody>
-      </table>
 
    </body>
 </html>

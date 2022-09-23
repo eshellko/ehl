@@ -61,7 +61,7 @@ module ehl_ecc_tb;
 
    reg [4:0] ones_cbin;
    integer p;
-   always@*
+   always@(drand)
    begin
       ones_cbin = 4'h0;
       for(p=0; p<CWIDTH+1; p++)
@@ -90,6 +90,7 @@ module ehl_ecc_tb;
       $display("   Info: Some of the test fails at version 3.864... UPDATED to 4.016.");
 `endif
 
+`ifndef VERILATOR
       TEST_INIT("RANDOM_ERR");
       exp_chk = 0;
       repeat(1024)
@@ -120,6 +121,7 @@ module ehl_ecc_tb;
       end
       noise_c = 0;
       TEST_CHECK(exp_chk);
+`endif
 
       TEST_INIT("ENC-DEC-PATH");
          CLEAN_DATA_CYCLE;

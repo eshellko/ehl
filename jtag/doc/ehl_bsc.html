@@ -7,18 +7,18 @@
    <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 
       <h2>Boundary Scan Cell</h2>
-	  <hr>
+      <hr>
       <table cellpadding="4" border="1" cellspacing="0" rules="all">
          <colgroup><col><col></colgroup>
          <tbody>
             <tr> <td bgcolor="#C0C0C0">Версия</td>      <td>1.0</td> </tr>
-            <tr> <td bgcolor="#C0C0C0">Дата</td>        <td>2022.06.28</td> </tr>
+            <tr> <td bgcolor="#C0C0C0">Дата</td>        <td>2022.08.19</td> </tr>
             <tr> <td bgcolor="#C0C0C0">Разработчик</td> <td>А.В. Корнюхин (kornukhin@mail.ru)</td> </tr>
          </tbody>
       </table>
 
       <h3>Введение</h3>
-	  <p>В данной спецификации описываются структура, порядок использования и технические характеристики ячейки граничного сканирования, совместимой со стандартом IEEE 1149.1.</p>
+      <p>В данной спецификации описываются структура, порядок использования и технические характеристики ячейки граничного сканирования, совместимой со стандартом IEEE 1149.1.</p>
 
       <h2>Справочные материалы</h2>
       <table cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
@@ -31,10 +31,9 @@
          </tbody>
       </table>
 
-
       <h3>Параметры</h3>
-	  <p><b>ehl_bsc</b> может быть настроен под задачу пользователя. За настройку отвечают параметры, представленные в таблице.</p>
-      <table cellpadding="4" width="80%" border="1" cellspacing="0" rules="all">
+      <p><b>ehl_bsc</b> может быть настроен под задачу пользователя. За настройку отвечают параметры, представленные в таблице.</p>
+      <table cellpadding="4" border="1" cellspacing="0" rules="all">
          <colgroup><col><col><col><col></colgroup>
          <thead>
             <tr bgcolor="#C0C0C0">
@@ -45,7 +44,7 @@
             </tr>
          </thead>
          <tbody>
-            <tr> <td>TYPE</td> <td>0</td> <td>0, 1</td> <td>Тип ячейки:<li>0 - входная;</li> <li>1 - выходная, разрешение выхода.</li></td> </tr>
+            <tr> <td>BC_TYPE</td> <td>1</td> <td>1, 2</td> <td>Тип ячейки:<li>1 - BC_1;</li> <li>2 - BC_2.</li></td> </tr>
          </tbody>
       </table>
 
@@ -55,17 +54,15 @@
       <pre class="small">---| tck                        |</pre>
       <pre class="small">---| data_in           data_out |---</pre>
       <pre class="small">---| serial_in       serial_out |---</pre>
-      <pre class="small">---| tms                        |</pre>
       <pre class="small">---| shift_dr                   |</pre>
       <pre class="small">---| capture_dr                 |</pre>
       <pre class="small">---| update_dr                  |</pre>
-      <pre class="small">---| extest                     |</pre>
-      <pre class="small">---| intest                     |</pre>
+      <pre class="small">---| xtest                      |</pre>
       <pre class="small">   |____________________________|</pre>
 
       <h2>Режимы работы</h2>
-	  <p>В рабочем режиме (не EXTEST / INTEST) <b>data_out</b> управляется <b>data_in</b>.</p>
-	  <p>User Constant (UC) - пользовательская константа, загружаемая в сдвиговый регистр для управляения выводом <b>data_out</b> в процессе теста.</p>
+      <p>В рабочем режиме (не EXTEST / INTEST) <b>data_out</b> управляется <b>data_in</b>.</p>
+      <p>User Constant (UC) - пользовательская константа, загружаемая в сдвиговый регистр для управления выводом <b>data_out</b> в процессе теста.</p>
       <table summary="modes" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
          <colgroup><col><col><col></colgroup>
          <thead>
@@ -77,17 +74,17 @@
          </thead>
          <tbody>
             <tr> <td>IN</td>
-			     <td><li><b>data_in</b> захватывается в регистр</li> <li><b>data_out</b> = UC</li> </td>
-				 <td><li>0 захватывается в регистр</li> <li><b>data_out</b> управляется регистром</li> </td> </tr>
+                 <td><li><b>data_in</b> захватывается в регистр</li> <li><b>data_out</b> = UC</li> </td>
+                 <td><li>0 захватывается в регистр</li> <li><b>data_out</b> управляется регистром</li> </td> </tr>
             <tr> <td>OUT</td>
-			     <td><li>0 захватывается в регистр</li> <li><b>data_out</b> управляется регистром</li> </td>
-				 <td><li><b>data_in</b> захватывается в регистр</li> <li><b>data_out</b> = UC</li> </tr>
+                 <td><li>0 захватывается в регистр</li> <li><b>data_out</b> управляется регистром</li> </td>
+                 <td><li><b>data_in</b> захватывается в регистр</li> <li><b>data_out</b> = UC</li> </tr>
             <tr> <td>3-STATE</td>
-			     <td><li>0 захватываются в регистры</li> <li><b>data_out</b> обеих ячеек управляется регистром</li> </td>
-				 <td><li><b>data_in</b> захватываются в регистры</li> <li><b>data_out</b> = UC</li> </tr>
+                 <td><li>0 захватываются в регистры</li> <li><b>data_out</b> обеих ячеек управляется регистром</li> </td>
+                 <td><li><b>data_in</b> захватываются в регистры</li> <li><b>data_out</b> = UC</li> </tr>
             <tr> <td>BIDIRECTIONAL</td>
-			     <td><li><b>data_in</b> ячейки IN захватывается в регистр, для остальных захват 0</li> <li><b>data_out</b> ячеек OE/OUT/IN управляются регистром (IN: <b>data_out</b> = UC)</li> </td>
-				 <td><li><b>data_in</b> ячеек OUT/OE захватываются в регистр (0 для IN)</li> <li><b>data_out</b> ячеек OE/OUT/IN управляется регистром (OUT/OE: <b>data_out</b> = UC)</li> </td> </tr>
+                 <td><li><b>data_in</b> ячейки IN захватывается в регистр, для остальных захват 0</li> <li><b>data_out</b> ячеек OE/OUT/IN управляются регистром (IN: <b>data_out</b> = UC)</li> </td>
+                 <td><li><b>data_in</b> ячеек OUT/OE захватываются в регистр (0 для IN)</li> <li><b>data_out</b> ячеек OE/OUT/IN управляется регистром (OUT/OE: <b>data_out</b> = UC)</li> </td> </tr>
          </tbody>
       </table>
 

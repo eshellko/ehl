@@ -7,7 +7,7 @@
       <h2 class="title" style="clear: both"><a name="sectionStart"></a>Описание регистров ehl_emac</h2>
       <hr>
 
-      <p><a name="TX_CTRL"></a><span class="bold" style="color: #0000CC"><b>TX_CTRL [0x0]: </b></span>Регистр управления передатчиком.</p>
+      <p><a name="TX_CTRL"></a><span class="bold" style="color: #0000CC"><b>TX_CTRL [0x0]: </b></span>Регистр управления передатчиком. Реальное влияние регистра на функционирование задержано на время синхронизации с частотой передатчика (параметр <b>CDC_SYNC_STAGE</b>).</p>
       <table cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
          <colgroup><col><col><col><col><col></colgroup>
          <thead>
@@ -37,7 +37,94 @@
          </tbody>
       </table>
 
-      <p><a name="RX_CTRL"></a><span class="bold" style="color: #0000CC"><b>RX_CTRL [0x100]: </b></span>Регистр управления приемником.</p>
+      <p><a name="CFG"></a><span class="bold" style="color: #0000CC"><b>CFG [0x008]: </b></span>Регистр управления MAC.</p>
+      <table cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+<!-- TODO: add others -->
+               <td>31:30</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>29:24</td>
+               <td>IFG</td>
+               <td><b>Interframe Gap</b>. Интервал паузы между кадрами. Интервал задается в количестве BitTimes/текущая_скорость_передачи. Т.е. для интерфейса MII 100 Мб/с за 1 такт передается 4 бита, и значение IFG для 96 BitTimes должно быть задано как 96/4 = 24. Для GMII 1 Гб/с значение следует задать как 96/8=12.</td>
+               <td>R/W</td>
+               <td>24</td>
+            </tr>
+            <tr>
+               <td>23:21</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>20:16</td>
+               <td>AL</td>
+               <td><b>Attempt Limit</b>. Количество попыток переслать кадр в случае коллизии в режиме Half Duplex. При превышении числа попыток кадр отбрасывается, с установлением соответствующего статуса в <b>TX_STAT_TFADTXS</b>. <!--Стандартное значение 16.--> Не допускается записывать значение 0x00.</td>
+               <td>R/W</td>
+               <td>15</td>
+            </tr>
+            <tr>
+               <td>15:6</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>5</td>
+               <td>MACE</td>
+               <td><b>MAC Enable</b>. Разрешение приема кадров с полем DA, равным регистру MAC.</td>
+               <td>R/W</td>
+               <td>1</td>
+            </tr>
+            <tr>
+               <td>4</td>
+               <td>FCE</td>
+               <td><b>Flow Control Enable</b>. Разрешение автоматического приема и передачи Flow Control кадров.<li>0 – запрещено;</li><li>1 – разрешено.</li>В случае запрета кадры принимаются как обычные кадры, автоматической передачи не происходит. Регистр служит маской для приема кадров, содержащих в поле DA значение 0x0180C2000001.</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>3</td>
+               <td>DB</td>
+               <td><b>Disable Broadcast Address Frame</b>. Игнорировать кадры, пришедшие по широковещательному адресу 0xFF:FF:FF:FF:FF:FF.</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>2:1</td>
+               <td>SM</td>
+               <td><b>Speed Mode</b>. Скоростной режим:<li>00 - 0 – 10 Мб/с;</li> <li>01 - 100 Мб/с;</li> <li>10 - 1 Гб/с;</li> <li>11 - 10 Гб/с (в данной версии не поддерживается).</li></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>0</td>
+               <td>DM</td>
+               <td><b>Duplex Mode</b>. Режим работы:<li>0 - Half Duplex;</li> <li>1 - Full Duplex.</li></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <p><a name="RX_CTRL"></a><span class="bold" style="color: #0000CC"><b>RX_CTRL [0x100]: </b></span>Регистр управления приемником. Реальное влияние регистра на функционирование задержано на время синхронизации с частотой приемника (параметр <b>CDC_SYNC_STAGE</b>).</p>
       <table cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
          <colgroup><col><col><col><col><col></colgroup>
          <thead>
@@ -89,30 +176,105 @@
                <td>0</td>
             </tr>
             <tr>
-               <td>47:39</td>
+               <td>47:41</td>
                <td>MAC</td>
                <td>Старшие биты MAC адреса.</td>
                <td>R/W</td>
-               <td>0</td>
+               <td rowspan="3"><b>DEFAULT_MAC</b></td>
             </tr>
             <tr>
                <td>40</td>
+               <td>-</td>
+               <td><b>Резерв</b>. Всегда равен 0.</td>
+               <td>R</td>
+<!--                <td>0</td> -->
+            </tr>
+            <tr>
+               <td>39:0</td>
+               <td>MAC</td>
+               <td>Младшие биты MAC адреса.</td>
+               <td>R/W</td>
+<!--                <td>0</td> -->
+            </tr>
+         </tbody>
+      </table>
+
+      <p><a name="MCASTA0"></a><span class="bold" style="color: #0000CC"><b>MCASTA0 [0x220]: </b></span>Младшие 32 бита группового адреса устройства.</p>
+      <p><a name="MCASTA1"></a><span class="bold" style="color: #0000CC"><b>MCASTA1 [0x224]: </b></span>Старшие 16 бит группового адреса устройства.</p>
+      <table cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>63:48</td>
                <td>-</td>
                <td><b>Резерв</b></td>
                <td>R</td>
                <td>0</td>
             </tr>
             <tr>
-               <td>38:0</td>
-               <td>-</td>
-               <td>Младшие биты MAC адреса.</td>
+               <td>47:41</td>
+               <td>MAC</td>
+               <td>Старшие биты группового MAC адреса.</td>
                <td>R/W</td>
+               <td>x</td>
+            </tr>
+            <tr>
+               <td>40</td>
+               <td>-</td>
+               <td><b>Резерв</b>. Всегда равен 1.</td>
+               <td>R</td>
+               <td>1</td>
+            </tr>
+            <tr>
+               <td>39:0</td>
+               <td>MAC</td>
+               <td>Младшие биты группового MAC адреса.</td>
+               <td>R/W</td>
+               <td>x</td>
+            </tr>
+         </tbody>
+      </table>
+      <p><a name="MCASTM0"></a><span class="bold" style="color: #0000CC"><b>MCASTM0 [0x228]: </b></span>Младшие 32 бита маски группового адреса устройства.</p>
+      <p><a name="MCASTM1"></a><span class="bold" style="color: #0000CC"><b>MCASTM1 [0x22C]: </b></span>Старшие 16 бит маски группового адреса устройства.</p>
+      <table cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>63:48</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
                <td>0</td>
+            </tr>
+            <tr>
+               <td>47:0</td>
+               <td>-</td>
+               <td>Маска группового MAC адреса. 1 в соответствующем разряде означает, что групповой адрес входщего кадра сравнивается с <b>MCASTAx</b>. 0 означает, что бит не сравнивается и считается совпавшим.</td>
+               <td>R/W</td>
+               <td>0xFFFFFFFFFFFF</td>
             </tr>
          </tbody>
       </table>
 
-      <p><a name="MINMAX"></a><span class="bold" style="color: #0000CC"><b>MINMAX [0x210]: </b></span>Управление мин/макс размерами кадров.</p>
+      <p><a name="MINMAX"></a><span class="bold" style="color: #0000CC"><b>MINMAX [0x210]: </b></span>Управление допустимым размером кадра.</p>
       <table cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
          <colgroup><col><col><col><col><col></colgroup>
          <thead>
@@ -136,21 +298,21 @@
                <td>30:16</td>
                <td>MAXL</td>
                <td><b>Maximum Length</b>.
-			      Значение в байтах максимального размера кадра.
-				  При передаче ограничивает размер данных, записываемых в буфер. Включает в себя значение полей Destination Address, Source Address (опционально при записи в буфер), Length/Type, Data (опционально при записи в буфер) и CRC (не передается в буфер).
-				  При приеме ограничивает размер принятого кадра, включая в себя поля Source Address, Destination Address, Length/Type, Data/PAD, CRC.
-				  Значение MaxLR:
-				  <li>не должно превышать 4096 байт;</li>
-				  <li>должно быть больше 256 байт;</li>
-				  <li>должно быть больше значения MinLR.</li>
-				  Пользователь несет ответственность за запись корректных значений в регистр MaxLR.
+                  Значение в байтах максимального размера кадра.
+                  При передаче ограничивает размер данных, записываемых в буфер. Включает в себя значение полей Destination Address, Source Address (опционально при записи в буфер), Length/Type, Data (опционально при записи в буфер) и CRC (не передается в буфер).
+                  При приеме ограничивает размер принятого кадра, включая в себя поля Source Address, Destination Address, Length/Type, Data/PAD, CRC.
+                  Значение <b>MAXL</b>:
+                  <li>не должно превышать 4096 байт;</li>
+                  <li>должно быть больше 256 байт;</li>
+                  <li>должно быть больше значения <b>MINL</b>.</li>
+                  Пользователь несет ответственность за запись корректных значений в регистр <b>MAXL</b>.
 
-				  Размер максимально допустимого кадра.
-				  Определяет максимальную длину кадра в байтах.
-				  Стандартное значение 1518 байт.
-			   </td>
+                  Размер максимально допустимого кадра.
+                  Определяет максимальную длину кадра в байтах.
+                  Стандартное значение 1518 байт.
+               </td>
                <td>R/W</td>
-               <td>0</td>
+               <td>0x5FE</td>
             </tr>
             <tr>
                <td>15:10</td>
@@ -163,20 +325,57 @@
                <td>9:0</td>
                <td>MINL</td>
                <td><b>Minimum Length</b>. 
-			      Значение в байтах минимального размера кадра.
-				  При передаче данные, записываемые в буфер, должны содержать не менее 6 байт Destination Address + 6 байт Source Address (опционально) + 2 байт Length/Type. Оставшееся значение до MinLR заполняется полями PAD и CRC при передаче.
-				  При приеме ограничивает размер принятого кадра, включая Source Address, Destination Address, Length/Type, Data/Pad, CRC.
-				  Значение MinLR:
-				  <li>не должно превышать 512 байт.</li>
-				  <li>должно быть меньше MaxLR.</li>
-				  Пользователь несет ответственность за запись корректных значений в регистр MinLR.
+                  Значение в байтах минимального размера кадра.
+                  При передаче данные, записываемые в буфер, должны содержать не менее 6 байт Destination Address + 6 байт Source Address (опционально) + 2 байт Length/Type. Оставшееся значение до MinLR заполняется полями PAD и CRC при передаче.
+                  При приеме ограничивает размер принятого кадра, включая Source Address, Destination Address, Length/Type, Data/Pad, CRC.
+                  Значение <b>MINL</b>:
+                  <li>не должно превышать 512 байт.</li>
+                  <li>должно быть меньше MaxLR.</li>
+                  Пользователь несет ответственность за запись корректных значений в регистр <b>MINL</b>.
 
-				  Размер минимально допустимого кадра.
-				  Определяет минимальную длину кадра в байтах. Включает в себя поля DA (6 байт), SA (6 байт), LT (2 байта), DATA, CRC (4 байта).
-				  Стандартное значение 64 байта.
-			   </td>
+                  Размер минимально допустимого кадра.
+                  Определяет минимальную длину кадра в байтах. Включает в себя поля DA (6 байт), SA (6 байт), LT (2 байта), DATA, CRC (4 байта).
+                  Стандартное значение 64 байта.
+               </td>
                <td>R/W</td>
+               <td>0x40</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <p><a name="SOFT_RESET"></a><span class="bold" style="color: #0000CC"><b>SOFT_RESET [0x240]: </b></span>Регистр программного сброса.
+         Перед использованием контроллера следует сбросить регистры статистичик приемника и передатчика.
+      </p>
+      <table cellpadding="1" width="90%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:2</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
                <td>0</td>
+            </tr>
+            <tr>
+               <td>1</td>
+               <td>SRRS</td> <td><b>Software Reset Receiver Statistics</b>. Запись 1 приводит к сбросу регистров статистики приемника. </td>
+               <td>R/W</td>
+               <td>0x0</td>
+            </tr>
+            <tr>
+               <td>0</td>
+               <td>SRTS</td> <td><b>Software Reset Transmitter Statistics</b>. Запись 1 приводит к сбросу регистров статистики передатчика. </td>
+               <td>R/W</td>
+               <td>0x0</td>
             </tr>
          </tbody>
       </table>

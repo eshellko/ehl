@@ -7,7 +7,7 @@
    <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 
       <h2>TAP Controller</h2>
-	  <hr>
+      <hr>
       <table cellpadding="4" border="1" cellspacing="0" rules="all">
          <colgroup><col><col></colgroup>
          <tbody>
@@ -18,10 +18,8 @@
       </table>
 
       <h3>Введение</h3>
-	  <p>В данной спецификации описываются структура, порядок использования и технические характеристики контроллера тестового порта, совместимого со стандартом IEEE 1149.1.</p>
+      <p>В данной спецификации описываются структура, порядок использования и технические характеристики контроллера тестового порта, совместимого со стандартом IEEE 1149.1.</p>
 
-<!--
-TODO: add 1149 into list
       <h2>Справочные материалы</h2>
       <table cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
          <colgroup><col><col></colgroup>
@@ -29,13 +27,12 @@ TODO: add 1149 into list
             <tr bgcolor="#C0C0C0"> <th>Номер</th> <th>Наименование</th> </tr>
          </thead>
          <tbody>
-            <tr> <td>1</td> <td>IEEE 1149.1.</td> </tr>
+            <tr> <td>1</td> <td>IEEE Standard Test Access Port and Boundary-Scan Architecture. IEEE Std 1149.1-2001.</td> </tr>
          </tbody>
       </table>
--->
 
       <h3>Параметры</h3>
-	  <p><b>ehl_tap</b> может быть настроен под задачу пользователя. За настройку отвечают параметры, представленные в таблице.</p>
+      <p><b>ehl_tap</b> может быть настроен под задачу пользователя. За настройку отвечают параметры, представленные в таблице.</p>
       <table cellpadding="4" width="80%" border="1" cellspacing="0" rules="all">
          <colgroup><col><col><col><col></colgroup>
          <thead>
@@ -49,17 +46,14 @@ TODO: add 1149 into list
          <tbody>
             <tr> <td>IR_WIDTH</td>   <td>2</td> <td>2-16</td>         <td>Количество бит в регистре инстуркций.</td> </tr>
             <tr> <td>IMPL_STATE</td> <td>0</td> <td>0, 1</td>
-			   <td>
-			      Логика кодирования состояний автомата TAP контроллера:<li>0 - двоичная;</li><li>1 - 1-hot.</li>
-				  <p>При кодировании 1-hot выводы <b>capture_dr</b> и <b>update_dr</b> могут использоваться для тактирования внешней логики. В режиме двоичного кодирования (<b>IMPL_STATE</b>=0) они управляются комбинаторной логикой и могут содержать просечки.</p>
-			   </td>
-			</tr>
+               <td>
+                  Логика кодирования состояний автомата TAP контроллера:<li>0 - двоичная;</li><li>1 - 1-hot.</li>
+                  <p>При кодировании 1-hot выводы <b>capture_dr</b> и <b>update_dr</b> могут использоваться для тактирования внешней логики. В режиме двоичного кодирования (<b>IMPL_STATE</b>=0) они управляются комбинаторной логикой и могут содержать просечки.</p>
+               </td>
+            </tr>
             <tr> <td>ID</td>         <td>0</td> <td>0-0xFFFFFFFF</td> <td>Регистр идентификатор (IDCODE). 1 в младшем разряде говорит о наличии регистра в контроллере.</td> </tr>
          </tbody>
       </table>
-<!--
-      <h3 class="title">Архитектура</h3>
--->
 
       <h2>Интерфейс</h2>
       <pre class="small">    ______________________</pre>
@@ -71,6 +65,7 @@ TODO: add 1149 into list
       <pre class="small">   |             shift_dr |---</pre>
       <pre class="small">   |           capture_dr |---</pre>
       <pre class="small">   |            update_dr |---</pre>
+      <pre class="small">   |          reset_state |---</pre>
       <pre class="small">---| tdr_in   instruction |---</pre>
       <pre class="small">   |______________________|</pre>
 
@@ -93,6 +88,7 @@ TODO: add 1149 into list
             <tr> <td>shift_dr</td>    <td>1</td>        <td>O</td> <td>Команда сдвига регистра данных</td> </tr>
             <tr> <td>capture_dr</td>  <td>1</td>        <td>O</td> <td>Команда захвата регистра данных</td> </tr>
             <tr> <td>update_dr</td>   <td>1</td>        <td>O</td> <td>Команда обновления регистра данных</td> </tr>
+            <tr> <td>reset_state</td> <td>1</td>        <td>O</td> <td>Команда синхронного сброса от автомата</td> </tr>
             <tr> <td>tdo_en</td>      <td>1</td>        <td>O</td> <td>Разрешение передачи через двунаправленный вывод TDO (для обеспечения возможности мультиплексирования TDI и TDO на одной контактной площадке)</td> </tr>
             <tr> <td>tdr_in</td>      <td>1</td>        <td>I</td> <td>Вход от тестового регистра</td> </tr>
             <tr> <td>instruction</td> <td>IR_WIDTH</td> <td>O</td> <td>Значение регистра инструкций</td> </tr>

@@ -10,30 +10,43 @@
 
       <hr>
       <h3>Приемник</h3>
-	  <p>
-	     Приемник осуществляет мониторинг приемной части интерфейса (G)MII.
-		 Он производит определение начала кадра и отбрасывает поля Preamble и SFD.
-		 Далее происходит проверка соответствия поля DA регистру MAC, MULT или значениям 0xFFFFFFFFFFFF или 0x0180C2000001.
-		 В процессе приема происходит проверка соответствия длины кадра значениям MINMAX, отсутствие RX_ER и корректность CRC.
-		 В случае отсутствия указанных видов ошибок и при наличии свободных дескрипторов, контроллер принимает кадр и устанавливает бит 'busy' в ассоциированном дескрипторе.
-	  </p>
+      <p>
+         Приемник осуществляет мониторинг приемной части интерфейса (G)MII.
+         Он производит определение начала кадра и отбрасывает поля Preamble и SFD.
+         Далее происходит проверка соответствия поля DA регистру MAC, MULT или значениям 0xFFFFFFFFFFFF или 0x0180C2000001.
+         В процессе приема происходит проверка соответствия длины кадра значениям MINMAX, отсутствие RX_ER и корректность CRC.
+         В случае отсутствия указанных видов ошибок и при наличии свободных дескрипторов, контроллер принимает кадр и устанавливает бит 'busy' в ассоциированном дескрипторе.
+      </p>
 
       <hr>
       <h3>Передатчик</h3>
-	  <p>
-	     Для передачи данных через MAC следует сконфигурировать регистры <b>ehl_emac</b>.
-		 Обмен данными осуществляется через внешнюю память. <b>ehl_emac</b> производит чтение из памяти в соответствии с параметрами, заданными в дескрипторе кадра.
+      <p>
+         Для передачи данных через MAC следует сконфигурировать регистры <b>ehl_emac</b>.
+         Обмен данными осуществляется через внешнюю память. <b>ehl_emac</b> производит чтение из памяти в соответствии с параметрами, заданными в дескрипторе кадра.
 <!--
-		 Поскольку в данной ревизии используется прямой интерфейс к памяти (в отличии от AXI-подобного интерфейса), контроллер ожидает, что данные записаны в память к моменту записи дескриптора.
-		 Механизмов сигнализации некорректности данных не существует, поэтому пользователь может записывать дескриптор до готовности данных только при уверенности, что данные будут прочитаны позднее.
+         Поскольку в данной ревизии используется прямой интерфейс к памяти (в отличии от AXI-подобного интерфейса), контроллер ожидает, что данные записаны в память к моменту записи дескриптора.
+         Механизмов сигнализации некорректности данных не существует, поэтому пользователь может записывать дескриптор до готовности данных только при уверенности, что данные будут прочитаны позднее.
 -->
          <b>ehl_emac</b> содержит 4 очереди кадров с разным приоритетом.
-		 Глубина каждой очереди конфигурируется независимо и может быть равна 0. В этом случае очередь с заданным приоритетом не реализована.
-	  </p>
-	  <p>
-	     <b>ehl_emac</b> передает кадр в соответствии с дескриптором, записанным в регистры <b>TXDESC0</b> и <b>TXDESC1</b>.
-		 Запись в <b>TXDESC1</b> приводит к попытке записать дескриптор в очередь контроллера. Статус записи следует проверить в регистре <b>DESCST</b>.
-	  </p>
+         Глубина каждой очереди конфигурируется независимо и может быть равна 0. В этом случае очередь с заданным приоритетом не реализована.
+      </p>
+      <p>
+         <b>ehl_emac</b> передает кадр в соответствии с дескриптором, записанным в регистры <b>TXDESC0</b> и <b>TXDESC1</b>.
+         Запись в <b>TXDESC1</b> приводит к попытке записать дескриптор в очередь контроллера. Статус записи следует проверить в регистре <b>DESCST</b>.
+      </p>
+
+      <hr>
+      <h3>Инициализация контроллера</h3>
+      <p>
+         Перед включением контроллера его следует проинициализировать.
+         В процесс инициализации не включен механизм работы с PHY через интерфейс MDIO. Он является специфичным для выбранного PHY и лежит за рамками данного документа.
+      </p>
+      <li>Задать корректный MAC адрес в регистрах <b>MAC0</b> и <b>MAC1</b>;</li>
+      <li>Задать режим работы в <b>CFG</b>;</li>
+      <li>Проинициализировать DMA в <b>TXDMACTRL</b> и <b>RXDMACTRL</b>;</li>
+      <li>Проинициализировать регистры статистики с помощью <b>SOFT_RESET</b>;</li>
+      <li>Выделить внешнюю память для обмена, записать буферные дескрипторы и задать их адреса в <b>TXBDPTR</b> и <b>RXBDPTR</b>;</li>
+      <p>После выполнения указанных (и, при необходимости, дополнительных процедур) можно включить приемник (<b>RX_CTRL</b>) и передатчик (<b>TX_CTRL</b>).</p>
 
       <hr>
       <h2><a name="REGS"></a>Регистры контроллера</h2>
@@ -48,12 +61,29 @@
          </thead>
          <tbody>
             <tr bgcolor="#C0C0C0"> <td colspan="3"><span class="bold" style="color: #0000CC"><b>Передатчик</b></span></td> </tr>
-            <tr> <td><a href="reg_desc.html#TX_CTRL"              class="olink">TX_CTRL</a></td>              <td>0x000</td> <td>Регистр управления передатчиком</td> </tr>
-            <tr> <td><a href="um_func_fc.html#FCVR"               class="olink">FCVR</a></td>                 <td>0x004</td> <td>Значение паузы Flow Control</td> </tr>
-<!--
+            <tr> <td><a href="reg_desc.html#TX_CTRL"              class="olink">TX_CTRL</a></td>          <td>0x000</td> <td>Регистр управления передатчиком</td> </tr>
+            <tr> <td><a href="um_func_fc.html#FCVR"               class="olink">FCVR</a></td>             <td>0x004</td> <td>Значение паузы Flow Control</td> </tr>
+            <tr> <td><a href="reg_desc.html#CFG"                  class="olink">CFG</a></td>              <td>0x008</td> <td>Регистр управления MAC</td> </tr>
+            <tr> <td><a href="reg_desc.html#MAC0"                 class="olink">MAC0</a></td>             <td>0x200</td> <td>Младшие 32 бита MAC адреса контроллера</td> </tr>
+            <tr> <td><a href="reg_desc.html#MAC1"                 class="olink">MAC1</a></td>             <td>0x204</td> <td>Старшие 16 бит MAC адреса контроллера</td> </tr>
+            <tr> <td><a href="reg_desc.html#MINMAX"               class="olink">MINMAX</a></td>           <td>0x210</td> <td>Управление мин/макс размерами кадров</td> </tr>
+            <tr> <td><a href="reg_desc.html#MCASTA0"              class="olink">MCASTA0</a></td>          <td>0x220</td> <td>Младшие 32 бита группового адреса устройства</td> </tr>
+            <tr> <td><a href="reg_desc.html#MCASTA1"              class="olink">MCASTA1</a></td>          <td>0x224</td> <td>Старшие 16 бит группового адреса устройства</td> </tr>
+            <tr> <td><a href="reg_desc.html#MCASTM0"              class="olink">MCASTM0</a></td>          <td>0x228</td> <td>Младшие 32 бита маски группового адреса устройства</td> </tr>
+            <tr> <td><a href="reg_desc.html#MCASTM1"              class="olink">MCASTM1</a></td>          <td>0x22C</td> <td>Старшие 16 бит маски группового адреса устройства</td> </tr>
+            <tr> <td><a href="um_func_tx.html#TXBDPTR"            class="olink">TXBDPTR</a></td>          <td>0x410</td> <td>Начальный адрес цепочки дескрипторов передатчика</td> </tr>
+            <tr> <td><a href="reg_desc.html#SOFT_RESET"           class="olink">SOFT_RESET</a></td>       <td>0x240</td> <td>Регистр программного сброса</td> </tr>
+            <tr> <td><a href="um_func_tx.html#TXDMACTRL"          class="olink">TXDMACTRL</a></td>        <td>0x414</td> <td>Регистр управления DMA передатчика</td> </tr>
+            <tr> <td><a href="um_func_tx.html#TXDMASTAT"          class="olink">TXDMASTAT</a></td>        <td>0x418</td> <td>Регистр состояния DMA передатчика</td> </tr>
+            <tr> <td><a href="um_func_rx.html#RXBDPTR"            class="olink">RXBDPTR</a></td>          <td>0x420</td> <td>Начальный адрес цепочки дескрипторов приемника</td> </tr>
+            <tr> <td><a href="um_func_rx.html#RXDMACTRL"          class="olink">RXDMACTRL</a></td>        <td>0x424</td> <td>Регистр управления DMA приемника</td> </tr>
+            <tr> <td><a href="um_func_irq.html#IRQ_CTRL"          class="olink">IRQ_CTRL</a></td>         <td>0x450</td> <td>Регистр разрешения прерываний</td> </tr>
+            <tr> <td><a href="um_func_irq.html#IRQ_FLAG"          class="olink">IRQ_FLAG</a></td>         <td>0x454</td> <td>Регистр флагов прерываний</td> </tr>
 
-<tr> <td><a href="reg_desc.html#ETH_AS" class="olink">ETH_AS</a></td> <td>0x00C</td> <td>Управление добавлением адреса отправителя в кадр</td> </tr>
--->
+            <tr bgcolor="#C0C0C0"> <td colspan="3"><span class="bold" style="color: #0000CC"><b>Приемник</b></span></td> </tr>
+            <tr> <td><a href="reg_desc.html#RX_CTRL"               class="olink">RX_CTRL</a></td>               <td>0x100</td> <td>Регистр управления приемником</td> </tr>
+            <tr> <td><a href="um_func_fc.html#FCLR"                class="olink">FCLR</a></td>                  <td>0x104</td> <td>Коэффициенты Flow Control</td> </tr>
+
             <tr bgcolor="#C0C0C0"> <td colspan="3"><span class="bold" style="color: #0000CC"><b>Передатчик (статистика)</b></span></td> </tr>
             <tr> <td><a href="reg_desc_tx_stat.html#TX_STAT_TFTO"         class="olink">TX_STAT_TFTO</a></td>         <td>0x010</td> <td>Счетчик успешно переданных кадров.</td> </tr>
             <tr> <td><a href="reg_desc_tx_stat.html#TX_STAT_TSCF"         class="olink">TX_STAT_TSCF</a></td>         <td>0x014</td> <td>Счетчик кадров, в процессе передачи которых возникла 1 коллизия, и переданных со второй попытки.</td> </tr>
@@ -99,17 +129,7 @@
             <tr> <td><a href="reg_desc_tx_stat.html#TX_STAT_TCF28"        class="olink">TX_STAT_TCF28</a></td>        <td>0x0B4</td> <td>28 коллизий.</td> </tr>
             <tr> <td><a href="reg_desc_tx_stat.html#TX_STAT_TCF29"        class="olink">TX_STAT_TCF29</a></td>        <td>0x0B8</td> <td>29 коллизий.</td> </tr>
             <tr> <td><a href="reg_desc_tx_stat.html#TX_STAT_TCF30"        class="olink">TX_STAT_TCF30</a></td>        <td>0x0BC</td> <td>30 коллизий.</td> </tr>
-<!--
-<tr> <td><a href="reg_desc.html#ETH_TXDESC0" class="olink">ETH_TXDESC0</a></td> <td>0x0C0</td> <td>Дескриптор передаваемого кадра. Младшие 32 бита.</td> </tr>
-<tr> <td><a href="reg_desc.html#ETH_TXDESC1" class="olink">ETH_TXDESC1</a></td> <td>0x0C4</td> <td>Дескриптор передаваемого кадра. Старшие 32 бита.</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_DESCST"           class="olink">ETH_DESCST</a></td>           <td>0x0C8</td> <td>Статус последней записи дескриптора</td> </tr>
-<tr> <td><a href="reg_desc.html#ETH_TLFS" class="olink">ETH_TLFS</a></td> <td>0x0CC</td> <td>Статус последнего переданного кадра</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_RTSTAT"            class="olink">ETH_RTSTAT</a></td>            <td>0x0D0</td> <td>Программный сброс регистров Statistics передатчика.</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TQS"              class="olink">ETH_TQS</a></td>              <td>0x0D4</td> <td>Статус очереди передатчика</td> </tr>
--->
-            <tr bgcolor="#C0C0C0"> <td colspan="3"><span class="bold" style="color: #0000CC"><b>Приемник</b></span></td> </tr>
-            <tr> <td><a href="reg_desc.html#RX_CTRL"               class="olink">RX_CTRL</a></td>               <td>0x100</td> <td>Регистр управления приемником</td> </tr>
-            <tr> <td><a href="um_func_fc.html#FCLR"                class="olink">FCLR</a></td>                  <td>0x104</td> <td>Коэффициенты Flow Control</td> </tr>
+
             <tr bgcolor="#C0C0C0"> <td colspan="3"><span class="bold" style="color: #0000CC"><b>Приемник (статистика)</b></span></td> </tr>
             <tr> <td><a href="reg_desc_rx_stat.html#RX_STAT_RFTLE"        class="olink">RX_STAT_RFTLE</a></td>        <td>0x108</td> <td>Счетчик принятых кадров, размер которых превышает заданный регистром MaxLR.</td> </tr>
             <tr> <td><a href="reg_desc_rx_stat.html#RX_STAT_RORO0"        class="olink">RX_STAT_RORO0</a></td>        <td>0x10C</td> <td>Счетчик байт данных (включая пад) в успешно принятых кадрах. Счетчик не инкрементируется, если кадр содержит ошибки размера, контрольной суммы, смещения или переполнения буфера. Младшие 32 бита.</td> </tr>
@@ -122,237 +142,30 @@
             <tr> <td><a href="reg_desc_rx_stat.html#RX_STAT_RIRLE"        class="olink">RX_STAT_RIRLE</a></td>        <td>0x128</td> <td>Счетчик кадров со значением в поле Length/Type, меньшим либо равным 0x5DC, но не соответствующем количеству принятых байт. Данный счетчик учитывает кадры, дополненные полем PAD.</td> </tr>
             <tr> <td><a href="reg_desc_rx_stat.html#RX_STAT_RAE"          class="olink">RX_STAT_RAE</a></td>          <td>0x12C</td> <td>Счетчик кадров, состоящих из нецелого числа байт и имеющих ошибку контрольной суммы.</td> </tr>
             <tr> <td><a href="reg_desc_rx_stat.html#RX_STAT_RFLDTIMRE"    class="olink">RX_STAT_RFLDTIMRE</a></td>    <td>0x130</td> <td>Счетчик кадров, не принятых из-за внутренних ошибок приемника (переполнение буфера приемника). Счетчик инкрементируется, если кадр не содержит других ошибок.</td> </tr>
-<!--
-            <tr> <td><a href="reg_desc.html#ETH_RBA"              class="olink">ETH_RBA</a></td>              <td>0x134</td> <td>Базовый адрес приемного буфера.</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_RBM"              class="olink">ETH_RBM</a></td>              <td>0x138</td> <td>Индекс дескриптора первого (самого раннего) принятого кадра.</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_RRSTAT"            class="olink">ETH_RRSTAT</a></td>            <td>0x13C</td> <td>Программный сброс регистров Statistics приемника.</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_RX_VLAN_CTRL"     class="olink">ETH_RX_VLAN_CTRL</a></td>     <td>0x140</td> <td>Управление VLAN приемника.</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_RD0"              class="olink">ETH_RD0</a></td>              <td>0x180</td> <td>Дескриптор принятого кадра (0). При RX_DESCR_COUNT>0. Запись в регистр приводит к сбросу бита busy.</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_RD1"              class="olink">ETH_RD1</a></td>              <td>0x184</td> <td>Дескриптор принятого кадра (1). При RX_DESCR_COUNT>1.</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_RD2"              class="olink">ETH_RD2</a></td>              <td>0x188</td> <td>Дескриптор принятого кадра (2). При RX_DESCR_COUNT>2.</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_RD3"              class="olink">ETH_RD3</a></td>              <td>0x18C</td> <td>Дескриптор принятого кадра (3). При RX_DESCR_COUNT>3.</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_RD4"              class="olink">ETH_RD4</a></td>              <td>0x190</td> <td>Дескриптор принятого кадра (4). При RX_DESCR_COUNT>4.</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_RD5"              class="olink">ETH_RD5</a></td>              <td>0x194</td> <td>Дескриптор принятого кадра (5). При RX_DESCR_COUNT>5.</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_RD6"              class="olink">ETH_RD6</a></td>              <td>0x198</td> <td>Дескриптор принятого кадра (6). При RX_DESCR_COUNT>6.</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_RD7"              class="olink">ETH_RD7</a></td>              <td>0x19C</td> <td>Дескриптор принятого кадра (7). При RX_DESCR_COUNT>7.</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_RD8"              class="olink">ETH_RD8</a></td>              <td>0x1A0</td> <td>Дескриптор принятого кадра (8). При RX_DESCR_COUNT>8.</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_RD9"              class="olink">ETH_RD9</a></td>              <td>0x1A4</td> <td>Дескриптор принятого кадра (9). При RX_DESCR_COUNT>9.</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_RD10"             class="olink">ETH_RD10</a></td>             <td>0x1A8</td> <td>Дескриптор принятого кадра (10). При RX_DESCR_COUNT>10.</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_RD11"             class="olink">ETH_RD11</a></td>             <td>0x1AC</td> <td>Дескриптор принятого кадра (11). При RX_DESCR_COUNT>11.</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_RD12"             class="olink">ETH_RD12</a></td>             <td>0x1B0</td> <td>Дескриптор принятого кадра (12). При RX_DESCR_COUNT>12.</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_RD13"             class="olink">ETH_RD13</a></td>             <td>0x1B4</td> <td>Дескриптор принятого кадра (13). При RX_DESCR_COUNT>13.</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_RD14"             class="olink">ETH_RD14</a></td>             <td>0x1B8</td> <td>Дескриптор принятого кадра (14). При RX_DESCR_COUNT>14.</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_RD15"             class="olink">ETH_RD15</a></td>             <td>0x1BC</td> <td>Дескриптор принятого кадра (15). При RX_DESCR_COUNT>15.</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_RD16"             class="olink">ETH_RD16</a></td>             <td>0x1C0</td> <td>Дескриптор принятого кадра (16). При RX_DESCR_COUNT>16.</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_RD17"             class="olink">ETH_RD17</a></td>             <td>0x1C4</td> <td>Дескриптор принятого кадра (17). При RX_DESCR_COUNT>17.</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_RD18"             class="olink">ETH_RD18</a></td>             <td>0x1C8</td> <td>Дескриптор принятого кадра (18). При RX_DESCR_COUNT>18.</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_RD19"             class="olink">ETH_RD19</a></td>             <td>0x1CC</td> <td>Дескриптор принятого кадра (19). При RX_DESCR_COUNT>19.</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_RD20"             class="olink">ETH_RD20</a></td>             <td>0x1D0</td> <td>Дескриптор принятого кадра (20). При RX_DESCR_COUNT>20.</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_RD21"             class="olink">ETH_RD21</a></td>             <td>0x1D4</td> <td>Дескриптор принятого кадра (21). При RX_DESCR_COUNT>21.</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_RD22"             class="olink">ETH_RD22</a></td>             <td>0x1D8</td> <td>Дескриптор принятого кадра (22). При RX_DESCR_COUNT>22.</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_RD23"             class="olink">ETH_RD23</a></td>             <td>0x1DC</td> <td>Дескриптор принятого кадра (23). При RX_DESCR_COUNT>23.</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_RD24"             class="olink">ETH_RD24</a></td>             <td>0x1E0</td> <td>Дескриптор принятого кадра (24). При RX_DESCR_COUNT>24.</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_RD25"             class="olink">ETH_RD25</a></td>             <td>0x1E4</td> <td>Дескриптор принятого кадра (25). При RX_DESCR_COUNT>25.</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_RD26"             class="olink">ETH_RD26</a></td>             <td>0x1E8</td> <td>Дескриптор принятого кадра (26). При RX_DESCR_COUNT>26.</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_RD27"             class="olink">ETH_RD27</a></td>             <td>0x1EC</td> <td>Дескриптор принятого кадра (27). При RX_DESCR_COUNT>27.</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_RD28"             class="olink">ETH_RD28</a></td>             <td>0x1F0</td> <td>Дескриптор принятого кадра (28). При RX_DESCR_COUNT>28.</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_RD29"             class="olink">ETH_RD29</a></td>             <td>0x1F4</td> <td>Дескриптор принятого кадра (29). При RX_DESCR_COUNT>29.</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_RD30"             class="olink">ETH_RD30</a></td>             <td>0x1F8</td> <td>Дескриптор принятого кадра (30). При RX_DESCR_COUNT>30.</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_RD31"             class="olink">ETH_RD31</a></td>             <td>0x1FC</td> <td>Дескриптор принятого кадра (31). При RX_DESCR_COUNT>31.</td> </tr>
--->
-            <tr> <td><a href="reg_desc.html#MAC0"             class="olink">MAC0</a></td>             <td>0x200</td> <td>Младшие 32 бита MAC адреса контроллера</td> </tr>
-            <tr> <td><a href="reg_desc.html#MAC1"             class="olink">MAC1</a></td>             <td>0x204</td> <td>Старшие 16 бит MAC адреса контроллера</td> </tr>
-<!--
-            <tr> <td><a href="reg_desc.html#ETH_MULT0"            class="olink">ETH_MULT0</a></td>            <td>0x280</td> <td>Младшие 32 бита группового адреса устройства</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_MULT1"            class="olink">ETH_MULT1</a></td>            <td>0x20C</td> <td>Старшие 16 бит группового адреса устройства</td> </tr>
--->
-            <tr> <td><a href="reg_desc.html#MINMAX"           class="olink">MINMAX</a></td>           <td>0x210</td> <td>Управление мин/макс размерами кадров</td> </tr>
-<!--
-            <tr> <td><a href="reg_desc.html#ETH_CFG"              class="olink">ETH_CFG</a></td>              <td>0x214</td> <td>Конфигурационный регистр</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TX_DESC_ADDR_MSB" class="olink">ETH_TX_DESC_ADDR_MSB</a></td> <td>0x218</td> <td>Старшие 32 бита адресов дексрипторов передачика</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_RX_DESC_ADDR_MSB" class="olink">ETH_RX_DESC_ADDR_MSB</a></td> <td>0x21C</td> <td>Старшие 32 бита адресов дексрипторов приемника</td> </tr>
--->
+
             <tr bgcolor="#C0C0C0"> <td colspan="3"><span class="bold" style="color: #0000CC"><b>Управление PHY</b></span></td> </tr>
             <tr> <td><a href="um_func_miim.html#MCR"              class="olink">MCR</a></td>              <td>0x300</td> <td>Регистр управления MIIM</td> </tr>
             <tr> <td><a href="um_func_miim.html#MDR"              class="olink">MDR</a></td>              <td>0x304</td> <td>Регистр данных MIIM</td> </tr>
-            <tr bgcolor="#C0C0C0"> <td colspan="3"><span class="bold" style="color: #0000CC"><b>Дескрипторы</b></span></td> </tr>
-<!--
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC0_ADDR64"   class="olink">ETH_TXDESC0_ADDR64</a></td>   <td>0x400</td> <td>Старшие 32 бита дескриптора адреса передатчика # 0</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC0_ADDR"     class="olink">ETH_TXDESC0_ADDR</a></td>     <td>0x404</td> <td>Младшие 32 бита дескриптора адреса передатчика # 0</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC0_CTRL"     class="olink">ETH_TXDESC0_CTRL</a></td>     <td>0x408</td> <td>CTRL дескриптор передатчика # 0</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC0_VLAN"     class="olink">ETH_TXDESC0_VLAN</a></td>     <td>0x40C</td> <td>VLAN дескриптор передатчика # 0</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC1_ADDR"     class="olink">ETH_TXDESC1_ADDR</a></td>     <td>0x410</td> <td>Младшие 32 бита дескриптора адреса передатчика # 1</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC1_ADDR64"   class="olink">ETH_TXDESC1_ADDR64</a></td>   <td>0x414</td> <td>Старшие 32 бита дескриптора адреса передатчика # 1</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC1_CTRL"     class="olink">ETH_TXDESC1_CTRL</a></td>     <td>0x418</td> <td>CTRL дескриптор передатчика # 1</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC1_VLAN"     class="olink">ETH_TXDESC1_VLAN</a></td>     <td>0x41C</td> <td>VLAN дескриптор передатчика # 1</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC2_ADDR"     class="olink">ETH_TXDESC2_ADDR</a></td>     <td>0x420</td> <td>Младшие 32 бита дескриптора адреса передатчика # 2</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC2_ADDR64"   class="olink">ETH_TXDESC2_ADDR64</a></td>   <td>0x424</td> <td>Старшие 32 бита дескриптора адреса передатчика # 2</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC2_CTRL"     class="olink">ETH_TXDESC2_CTRL</a></td>     <td>0x428</td> <td>CTRL дескриптор передатчика # 2</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC2_VLAN"     class="olink">ETH_TXDESC2_VLAN</a></td>     <td>0x42C</td> <td>VLAN дескриптор передатчика # 2</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC3_ADDR"     class="olink">ETH_TXDESC3_ADDR</a></td>     <td>0x430</td> <td>Младшие 32 бита дескриптора адреса передатчика # 3</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC3_ADDR64"   class="olink">ETH_TXDESC3_ADDR64</a></td>   <td>0x434</td> <td>Старшие 32 бита дескриптора адреса передатчика # 3</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC3_CTRL"     class="olink">ETH_TXDESC3_CTRL</a></td>     <td>0x438</td> <td>CTRL дескриптор передатчика # 3</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC3_VLAN"     class="olink">ETH_TXDESC3_VLAN</a></td>     <td>0x43C</td> <td>VLAN дескриптор передатчика # 3</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC4_ADDR"     class="olink">ETH_TXDESC4_ADDR</a></td>     <td>0x440</td> <td>Младшие 32 бита дескриптора адреса передатчика # 4</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC4_ADDR64"   class="olink">ETH_TXDESC4_ADDR64</a></td>   <td>0x444</td> <td>Старшие 32 бита дескриптора адреса передатчика # 4</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC4_CTRL"     class="olink">ETH_TXDESC4_CTRL</a></td>     <td>0x448</td> <td>CTRL дескриптор передатчика # 4</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC4_VLAN"     class="olink">ETH_TXDESC4_VLAN</a></td>     <td>0x44C</td> <td>VLAN дескриптор передатчика # 4</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC5_ADDR"     class="olink">ETH_TXDESC5_ADDR</a></td>     <td>0x450</td> <td>Младшие 32 бита дескриптора адреса передатчика # 5</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC5_ADDR64"   class="olink">ETH_TXDESC5_ADDR64</a></td>   <td>0x454</td> <td>Старшие 32 бита дескриптора адреса передатчика # 5</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC5_CTRL"     class="olink">ETH_TXDESC5_CTRL</a></td>     <td>0x458</td> <td>CTRL дескриптор передатчика # 5</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC5_VLAN"     class="olink">ETH_TXDESC5_VLAN</a></td>     <td>0x45C</td> <td>VLAN дескриптор передатчика # 5</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC6_ADDR"     class="olink">ETH_TXDESC6_ADDR</a></td>     <td>0x460</td> <td>Младшие 32 бита дескриптора адреса передатчика # 6</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC6_ADDR64"   class="olink">ETH_TXDESC6_ADDR64</a></td>   <td>0x464</td> <td>Старшие 32 бита дескриптора адреса передатчика # 6</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC6_CTRL"     class="olink">ETH_TXDESC6_CTRL</a></td>     <td>0x468</td> <td>CTRL дескриптор передатчика # 6</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC6_VLAN"     class="olink">ETH_TXDESC6_VLAN</a></td>     <td>0x46C</td> <td>VLAN дескриптор передатчика # 6</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC7_ADDR"     class="olink">ETH_TXDESC7_ADDR</a></td>     <td>0x470</td> <td>Младшие 32 бита дескриптора адреса передатчика # 7</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC7_ADDR64"   class="olink">ETH_TXDESC7_ADDR64</a></td>   <td>0x474</td> <td>Старшие 32 бита дескриптора адреса передатчика # 7</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC7_CTRL"     class="olink">ETH_TXDESC7_CTRL</a></td>     <td>0x478</td> <td>CTRL дескриптор передатчика # 7</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC7_VLAN"     class="olink">ETH_TXDESC7_VLAN</a></td>     <td>0x47C</td> <td>VLAN дескриптор передатчика # 7</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC8_ADDR"     class="olink">ETH_TXDESC8_ADDR</a></td>     <td>0x480</td> <td>Младшие 32 бита дескриптора адреса передатчика # 8</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC8_ADDR64"   class="olink">ETH_TXDESC8_ADDR64</a></td>   <td>0x484</td> <td>Старшие 32 бита дескриптора адреса передатчика # 8</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC8_CTRL"     class="olink">ETH_TXDESC8_CTRL</a></td>     <td>0x488</td> <td>CTRL дескриптор передатчика # 8</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC8_VLAN"     class="olink">ETH_TXDESC8_VLAN</a></td>     <td>0x48C</td> <td>VLAN дескриптор передатчика # 8</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC9_ADDR"     class="olink">ETH_TXDESC9_ADDR</a></td>     <td>0x490</td> <td>Младшие 32 бита дескриптора адреса передатчика # 9</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC9_ADDR64"   class="olink">ETH_TXDESC9_ADDR64</a></td>   <td>0x494</td> <td>Старшие 32 бита дескриптора адреса передатчика # 9</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC9_CTRL"     class="olink">ETH_TXDESC9_CTRL</a></td>     <td>0x498</td> <td>CTRL дескриптор передатчика # 9</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC9_VLAN"     class="olink">ETH_TXDESC9_VLAN</a></td>     <td>0x49C</td> <td>VLAN дескриптор передатчика # 9</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC10_ADDR"    class="olink">ETH_TXDESC10_ADDR</a></td>    <td>0x4A0</td> <td>Младшие 32 бита дескриптора адреса передатчика # 10</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC10_ADDR64"  class="olink">ETH_TXDESC10_ADDR64</a></td>  <td>0x4A4</td> <td>Старшие 32 бита дескриптора адреса передатчика # 10</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC10_CTRL"    class="olink">ETH_TXDESC10_CTRL</a></td>    <td>0x4A8</td> <td>CTRL дескриптор передатчика # 10</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC10_VLAN"    class="olink">ETH_TXDESC10_VLAN</a></td>    <td>0x4AC</td> <td>VLAN дескриптор передатчика # 10</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC11_ADDR"    class="olink">ETH_TXDESC11_ADDR</a></td>    <td>0x4B0</td> <td>Младшие 32 бита дескриптора адреса передатчика # 11</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC11_ADDR64"  class="olink">ETH_TXDESC11_ADDR64</a></td>  <td>0x4B4</td> <td>Старшие 32 бита дескриптора адреса передатчика # 11</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC11_CTRL"    class="olink">ETH_TXDESC11_CTRL</a></td>    <td>0x4B8</td> <td>CTRL дескриптор передатчика # 11</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC11_VLAN"    class="olink">ETH_TXDESC11_VLAN</a></td>    <td>0x4BC</td> <td>VLAN дескриптор передатчика # 11</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC12_ADDR"    class="olink">ETH_TXDESC12_ADDR</a></td>    <td>0x4C0</td> <td>Младшие 32 бита дескриптора адреса передатчика # 12</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC12_ADDR64"  class="olink">ETH_TXDESC12_ADDR64</a></td>  <td>0x4C4</td> <td>Старшие 32 бита дескриптора адреса передатчика # 12</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC12_CTRL"    class="olink">ETH_TXDESC12_CTRL</a></td>    <td>0x4C8</td> <td>CTRL дескриптор передатчика # 12</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC12_VLAN"    class="olink">ETH_TXDESC12_VLAN</a></td>    <td>0x4CC</td> <td>VLAN дескриптор передатчика # 12</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC13_ADDR"    class="olink">ETH_TXDESC13_ADDR</a></td>    <td>0x4D0</td> <td>Младшие 32 бита дескриптора адреса передатчика # 13</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC13_ADDR64"  class="olink">ETH_TXDESC13_ADDR64</a></td>  <td>0x4D4</td> <td>Старшие 32 бита дескриптора адреса передатчика # 13</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC13_CTRL"    class="olink">ETH_TXDESC13_CTRL</a></td>    <td>0x4D8</td> <td>CTRL дескриптор передатчика # 13</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC13_VLAN"    class="olink">ETH_TXDESC13_VLAN</a></td>    <td>0x4DC</td> <td>VLAN дескриптор передатчика # 13</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC14_ADDR"    class="olink">ETH_TXDESC14_ADDR</a></td>    <td>0x4E0</td> <td>Младшие 32 бита дескриптора адреса передатчика # 14</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC14_ADDR64"  class="olink">ETH_TXDESC14_ADDR64</a></td>  <td>0x4E4</td> <td>Старшие 32 бита дескриптора адреса передатчика # 14</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC14_CTRL"    class="olink">ETH_TXDESC14_CTRL</a></td>    <td>0x4E8</td> <td>CTRL дескриптор передатчика # 14</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC14_VLAN"    class="olink">ETH_TXDESC14_VLAN</a></td>    <td>0x4EC</td> <td>VLAN дескриптор передатчика # 14</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC15_ADDR"    class="olink">ETH_TXDESC15_ADDR</a></td>    <td>0x4F0</td> <td>Младшие 32 бита дескриптора адреса передатчика # 15</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC15_ADDR64"  class="olink">ETH_TXDESC15_ADDR64</a></td>  <td>0x4F4</td> <td>Старшие 32 бита дескриптора адреса передатчика # 15</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC15_CTRL"    class="olink">ETH_TXDESC15_CTRL</a></td>    <td>0x4F8</td> <td>CTRL дескриптор передатчика # 15</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC15_VLAN"    class="olink">ETH_TXDESC15_VLAN</a></td>    <td>0x4FC</td> <td>VLAN дескриптор передатчика # 15</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC16_ADDR"    class="olink">ETH_TXDESC16_ADDR</a></td>    <td>0x500</td> <td>Младшие 32 бита дескриптора адреса передатчика # 16</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC16_ADDR64"  class="olink">ETH_TXDESC16_ADDR64</a></td>  <td>0x504</td> <td>Старшие 32 бита дескриптора адреса передатчика # 16</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC16_CTRL"    class="olink">ETH_TXDESC16_CTRL</a></td>    <td>0x508</td> <td>CTRL дескриптор передатчика # 16</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC16_VLAN"    class="olink">ETH_TXDESC16_VLAN</a></td>    <td>0x50C</td> <td>VLAN дескриптор передатчика # 16</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC17_ADDR"    class="olink">ETH_TXDESC17_ADDR</a></td>    <td>0x510</td> <td>Младшие 32 бита дескриптора адреса передатчика # 17</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC17_ADDR64"  class="olink">ETH_TXDESC17_ADDR64</a></td>  <td>0x514</td> <td>Старшие 32 бита дескриптора адреса передатчика # 17</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC17_CTRL"    class="olink">ETH_TXDESC17_CTRL</a></td>    <td>0x518</td> <td>CTRL дескриптор передатчика # 17</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC17_VLAN"    class="olink">ETH_TXDESC17_VLAN</a></td>    <td>0x51C</td> <td>VLAN дескриптор передатчика # 17</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC18_ADDR"    class="olink">ETH_TXDESC18_ADDR</a></td>    <td>0x520</td> <td>Младшие 32 бита дескриптора адреса передатчика # 18</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC18_ADDR64"  class="olink">ETH_TXDESC18_ADDR64</a></td>  <td>0x524</td> <td>Старшие 32 бита дескриптора адреса передатчика # 18</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC18_CTRL"    class="olink">ETH_TXDESC18_CTRL</a></td>    <td>0x528</td> <td>CTRL дескриптор передатчика # 18</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC18_VLAN"    class="olink">ETH_TXDESC18_VLAN</a></td>    <td>0x52C</td> <td>VLAN дескриптор передатчика # 18</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC19_ADDR"    class="olink">ETH_TXDESC19_ADDR</a></td>    <td>0x530</td> <td>Младшие 32 бита дескриптора адреса передатчика # 19</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC19_ADDR64"  class="olink">ETH_TXDESC19_ADDR64</a></td>  <td>0x534</td> <td>Старшие 32 бита дескриптора адреса передатчика # 19</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC19_CTRL"    class="olink">ETH_TXDESC19_CTRL</a></td>    <td>0x538</td> <td>CTRL дескриптор передатчика # 19</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC19_VLAN"    class="olink">ETH_TXDESC19_VLAN</a></td>    <td>0x53C</td> <td>VLAN дескриптор передатчика # 19</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC20_ADDR"    class="olink">ETH_TXDESC20_ADDR</a></td>    <td>0x540</td> <td>Младшие 32 бита дескриптора адреса передатчика # 20</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC20_ADDR64"  class="olink">ETH_TXDESC20_ADDR64</a></td>  <td>0x544</td> <td>Старшие 32 бита дескриптора адреса передатчика # 20</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC20_CTRL"    class="olink">ETH_TXDESC20_CTRL</a></td>    <td>0x548</td> <td>CTRL дескриптор передатчика # 20</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC20_VLAN"    class="olink">ETH_TXDESC20_VLAN</a></td>    <td>0x54C</td> <td>VLAN дескриптор передатчика # 20</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC21_ADDR"    class="olink">ETH_TXDESC21_ADDR</a></td>    <td>0x550</td> <td>Младшие 32 бита дескриптора адреса передатчика # 21</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC21_ADDR64"  class="olink">ETH_TXDESC21_ADDR64</a></td>  <td>0x554</td> <td>Старшие 32 бита дескриптора адреса передатчика # 21</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC21_CTRL"    class="olink">ETH_TXDESC21_CTRL</a></td>    <td>0x558</td> <td>CTRL дескриптор передатчика # 21</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC21_VLAN"    class="olink">ETH_TXDESC21_VLAN</a></td>    <td>0x55C</td> <td>VLAN дескриптор передатчика # 21</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC22_ADDR"    class="olink">ETH_TXDESC22_ADDR</a></td>    <td>0x560</td> <td>Младшие 32 бита дескриптора адреса передатчика # 22</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC22_ADDR64"  class="olink">ETH_TXDESC22_ADDR64</a></td>  <td>0x564</td> <td>Старшие 32 бита дескриптора адреса передатчика # 22</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC22_CTRL"    class="olink">ETH_TXDESC22_CTRL</a></td>    <td>0x568</td> <td>CTRL дескриптор передатчика # 22</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC22_VLAN"    class="olink">ETH_TXDESC22_VLAN</a></td>    <td>0x56C</td> <td>VLAN дескриптор передатчика # 22</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC23_ADDR"    class="olink">ETH_TXDESC23_ADDR</a></td>    <td>0x570</td> <td>Младшие 32 бита дескриптора адреса передатчика # 23</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC23_ADDR64"  class="olink">ETH_TXDESC23_ADDR64</a></td>  <td>0x574</td> <td>Старшие 32 бита дескриптора адреса передатчика # 23</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC23_CTRL"    class="olink">ETH_TXDESC23_CTRL</a></td>    <td>0x578</td> <td>CTRL дескриптор передатчика # 23</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC23_VLAN"    class="olink">ETH_TXDESC23_VLAN</a></td>    <td>0x57C</td> <td>VLAN дескриптор передатчика # 23</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC24_ADDR"    class="olink">ETH_TXDESC24_ADDR</a></td>    <td>0x580</td> <td>Младшие 32 бита дескриптора адреса передатчика # 24</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC24_ADDR64"  class="olink">ETH_TXDESC24_ADDR64</a></td>  <td>0x584</td> <td>Старшие 32 бита дескриптора адреса передатчика # 24</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC24_CTRL"    class="olink">ETH_TXDESC24_CTRL</a></td>    <td>0x588</td> <td>CTRL дескриптор передатчика # 24</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC24_VLAN"    class="olink">ETH_TXDESC24_VLAN</a></td>    <td>0x58C</td> <td>VLAN дескриптор передатчика # 24</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC25_ADDR"    class="olink">ETH_TXDESC25_ADDR</a></td>    <td>0x590</td> <td>Младшие 32 бита дескриптора адреса передатчика # 25</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC25_ADDR64"  class="olink">ETH_TXDESC25_ADDR64</a></td>  <td>0x594</td> <td>Старшие 32 бита дескриптора адреса передатчика # 25</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC25_CTRL"    class="olink">ETH_TXDESC25_CTRL</a></td>    <td>0x598</td> <td>CTRL дескриптор передатчика # 25</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC25_VLAN"    class="olink">ETH_TXDESC25_VLAN</a></td>    <td>0x59C</td> <td>VLAN дескриптор передатчика # 25</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC26_ADDR"    class="olink">ETH_TXDESC26_ADDR</a></td>    <td>0x5A0</td> <td>Младшие 32 бита дескриптора адреса передатчика # 26</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC26_ADDR64"  class="olink">ETH_TXDESC26_ADDR64</a></td>  <td>0x5A4</td> <td>Старшие 32 бита дескриптора адреса передатчика # 26</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC26_CTRL"    class="olink">ETH_TXDESC26_CTRL</a></td>    <td>0x5A8</td> <td>CTRL дескриптор передатчика # 26</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC26_VLAN"    class="olink">ETH_TXDESC26_VLAN</a></td>    <td>0x5AC</td> <td>VLAN дескриптор передатчика # 26</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC27_ADDR"    class="olink">ETH_TXDESC27_ADDR</a></td>    <td>0x5B0</td> <td>Младшие 32 бита дескриптора адреса передатчика # 27</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC27_ADDR64"  class="olink">ETH_TXDESC27_ADDR64</a></td>  <td>0x5B4</td> <td>Старшие 32 бита дескриптора адреса передатчика # 27</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC27_CTRL"    class="olink">ETH_TXDESC27_CTRL</a></td>    <td>0x5B8</td> <td>CTRL дескриптор передатчика # 27</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC27_VLAN"    class="olink">ETH_TXDESC27_VLAN</a></td>    <td>0x5BC</td> <td>VLAN дескриптор передатчика # 27</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC28_ADDR"    class="olink">ETH_TXDESC28_ADDR</a></td>    <td>0x5C0</td> <td>Младшие 32 бита дескриптора адреса передатчика # 28</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC28_ADDR64"  class="olink">ETH_TXDESC28_ADDR64</a></td>  <td>0x5C4</td> <td>Старшие 32 бита дескриптора адреса передатчика # 28</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC28_CTRL"    class="olink">ETH_TXDESC28_CTRL</a></td>    <td>0x5C8</td> <td>CTRL дескриптор передатчика # 28</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC28_VLAN"    class="olink">ETH_TXDESC28_VLAN</a></td>    <td>0x5CC</td> <td>VLAN дескриптор передатчика # 28</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC29_ADDR"    class="olink">ETH_TXDESC29_ADDR</a></td>    <td>0x5D0</td> <td>Младшие 32 бита дескриптора адреса передатчика # 29</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC29_ADDR64"  class="olink">ETH_TXDESC29_ADDR64</a></td>  <td>0x5D4</td> <td>Старшие 32 бита дескриптора адреса передатчика # 29</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC29_CTRL"    class="olink">ETH_TXDESC29_CTRL</a></td>    <td>0x5D8</td> <td>CTRL дескриптор передатчика # 29</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC29_VLAN"    class="olink">ETH_TXDESC29_VLAN</a></td>    <td>0x5DC</td> <td>VLAN дескриптор передатчика # 29</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC30_ADDR"    class="olink">ETH_TXDESC30_ADDR</a></td>    <td>0x5E0</td> <td>Младшие 32 бита дескриптора адреса передатчика # 30</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC30_ADDR64"  class="olink">ETH_TXDESC30_ADDR64</a></td>  <td>0x5E4</td> <td>Старшие 32 бита дескриптора адреса передатчика # 30</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC30_CTRL"    class="olink">ETH_TXDESC30_CTRL</a></td>    <td>0x5E8</td> <td>CTRL дескриптор передатчика # 30</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC30_VLAN"    class="olink">ETH_TXDESC30_VLAN</a></td>    <td>0x5EC</td> <td>VLAN дескриптор передатчика # 30</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC31_ADDR"    class="olink">ETH_TXDESC31_ADDR</a></td>    <td>0x5F0</td> <td>Младшие 32 бита дескриптора адреса передатчика # 31</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC31_ADDR64"  class="olink">ETH_TXDESC31_ADDR64</a></td>  <td>0x5F4</td> <td>Старшие 32 бита дескриптора адреса передатчика # 31</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC31_CTRL"    class="olink">ETH_TXDESC31_CTRL</a></td>    <td>0x5F8</td> <td>CTRL дескриптор передатчика # 31</td> </tr>
-            <tr> <td><a href="reg_desc.html#ETH_TXDESC31_VLAN"    class="olink">ETH_TXDESC31_VLAN</a></td>    <td>0x5FC</td> <td>VLAN дескриптор передатчика # 31</td> </tr>
-
-SOFT_RESET - exclude other resets from design except primary one...
-TX_QUEUE priority control - round-robin / fixed / every 4-th
--->
          </tbody>
       </table>
 
 <!--
       <h2><a name="TRANSMIT"></a>Передача</h2>
-      <p>Хост размещает данные во внешней памяти.</p>
-      <p>Хост запрашивает свободный дескриптор. При получении, хост работает с ним. В противном случае следует либо ожидать доступного дескриптора, либо выполнить обработку исключения.</p>
-      <p>Дескриптор состоит из 4 32-разрядных регистров: VLAN, CTRL, ADDR64, ADDR.</p>
-      <p>Хост записывает адрес внешней памяти в младшую часть дескриптора. Также он записывает старшие 64 бита адреса (в случае, если система поддерживает 64-битную адресацию). В случае с 32-битной адресацией следует проинициализировать старшие 32 бита адреса значением 0 (или PARAMETER будет отключать доступ к этим регистрам). В случае с поддержкой VLAN, хост также инициализирует дексриптор VLAN (если установлен бит <b>ADD_VLAN</b>).</p>
-      <p>Хост записывает размер кадра и устанавливает флаг <b>OWN</b> в старшей части дескриптора.</p>
-      <p>После установки <b>OWN</b> дескриптор не доступен для записи для хоста.</p>
-      <p>Хост может прочитать <b>ETH_DESCST</b>, чтобы убедиться, что дескриптор был принят.</p>
-      <p>После этого хост может отслеживать статус дескрипторов (todo: прерывания, которые устанавливаются по окончании передачи кадра).</p>
+В случае с поддержкой VLAN, хост также инициализирует дексриптор VLAN (если установлен бит <b>ADD_VLAN</b>).</p>
 TODO: прерывание (если хост поставил флаг в дескрипторе) по окончании передачи этого кадра
-      <table summary="TX_DESC" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
-         <colgroup><col><col></colgroup>
-         <thead>
-            <tr bgcolor="#C0C0C0">
-               <th>Биты</th>
-               <th>Описание</th>
-            </tr>
-         </thead>
+
          <tbody>
 todo: keep first timestamp allowed by SW, and not for every Rx Descriptor
-            <tr> <td>127:112</td> <td>...</td> </tr>
-            <tr> <td>111:96</td>  <td><b>VLTAG: </b> тэг VLAN кадра в формате { PRI[2:0], CFI, VLAN[11:0] }</td> </tr>
-            <tr> <td>95</td>      <td>Владелец дескриптора - 0 - контроллер, 1 - хост</td> </tr>
-            <tr> <td>94</td>      <td>...</td> </tr>
+
+<tr> <td>111:96</td>  <td><b>VLTAG: </b> тэг VLAN кадра в формате { PRI[2:0], CFI, VLAN[11:0] }</td> </tr>
             <tr> <td>93</td>      <td>Сохранить TimeStamp кадра согласно IEEE 1588</td> </tr>
-            <tr> <td>92</td>      <td>Статус передачи: 0 - успешно, 1 - ошибки.</td> </tr>
-            <tr> <td>91</td>      <td>Статус TX_ER в процессе передачи: 1 - ошибка с FIFO Underrun.</td> </tr>
-            <tr> <td>90:86</td>   <td>Количество попыток, с которых удалось передать кадр.</td> </tr>
             <tr> <td>85</td>      <td>todo: PTP</td> </tr>
             <tr> <td>84</td>      <td>todo: add CRC</td> </tr>
             <tr> <td>83</td>      <td>Аппартаное добавление поля Source Address в отправляемый кадр. Значение берется из регистров <b>ETH_MAC0</b> и <b>ETH_MAC1</b>.</td> </tr>
-            <tr> <td>82</td>      <td>Добавить VLAN: 0 - передать Ethernet кадр без изменений, 1 - добавить VLAN тэг мз дескриптора <b>VLTAG</b> в кадр</td> </tr>
+<tr> <td>82</td>      <td>Добавить VLAN: 0 - передать Ethernet кадр без изменений, 1 - добавить VLAN тэг мз дескриптора <b>VLTAG</b> в кадр</td> </tr>
             <tr> <td>81:80</td>   <td>Приоритет передачи: 3-0</td> </tr>
-            <tr> <td>79:64</td>   <td>Размер кадра в байтах</td> </tr>
-            <tr> <td>63:32</td>   <td>Старшие 32 бита начального адреса кадра во внешней памяти. В случае поддержки системой 64-битной адресации.</td> </tr>
-            <tr> <td>31:0</td>    <td>Начальный адрес кадра во внешней памяти</td> </tr>
          </tbody>
       </table>
-
-      <h2><a name="RECEIVE"></a>Прием</h2>
 -->
 
    </body>

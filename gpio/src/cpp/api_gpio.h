@@ -8,6 +8,31 @@
 //                   This API utilizes 32 bit I/O to the GPIO registers.
 //                   With less than 32 bits, the unused bits from registers
 //                   are read as zero and written as don't cares.
+// Notes:            APIs are compatible with 'ehl_gpio_top' controller that
+//                   implemented with the following parameters
+// GPIO data output register (GDOR)
+//   GDOR_ENA = 5'b111x1
+// GPIO output enable register (GOER)
+//   GOER_ENA = 5'bxxxx1
+// GPIO alternative function register (GAFR)
+//   GAFR_ENA = 5'bxxxx1
+// GPIO pull enable register (GPER)
+//   GPER_ENA = 5'bxxxx1
+// GPIO pull type register (GPTR)
+//   GPTR_ENA = 5'bxxxx1
+// GPIO interrupt enable register (GIER)
+//   GIER_ENA = 5'bxxxx1
+// GPIO interrupt source register (GISR)
+//   GISR_ENA = 5'bxxxx1
+// GPIO interrupt flag register (GIFR)
+//   READ_GIFR_ENA = 1
+//   CLR_GIFR_ENA = 1
+// GPIO Data input register (GDIR)
+//   READ_GDIR_ENA = 1
+// GPIO capture mode register (GCMR)
+//   GCMR_ENA = 5'bxxxx1
+// GPIO filter mode register (GFMR)
+//   GFMR_ENA = 5'bxxxx1
 //--------------------------------------------
 // Structure definition
 //--------------------------------------------
@@ -98,7 +123,7 @@ void API_GPIO_CLEAR_BIT(struct EHL_GPIO* dev_id, int idx)
 }
 void API_GPIO_TOGGLE_BIT(struct EHL_GPIO* dev_id, int idx)
 {
-   dev_id->GDOR.INV = (~(1 << idx));
+   dev_id->GDOR.INV = (1 << idx);
 }
 //
 // Interrupt routines

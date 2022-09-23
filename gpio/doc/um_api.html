@@ -6,6 +6,21 @@
    </head>
    <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
       <h3>Базовые функции</h3>
+      <p><b style="color: #FF0000">Замечание. </b>Для полной совместимостью с API контроллер должен быть реализован со следующими значениями параметров:</p>
+      <ul>
+      <li>GDOR_ENA = 5'b111x1</li>
+      <li>GOER_ENA = 5'bxxxx1</li>
+      <li>GAFR_ENA = 5'bxxxx1</li>
+      <li>GPER_ENA = 5'bxxxx1</li>
+      <li>GPTR_ENA = 5'bxxxx1</li>
+      <li>GIER_ENA = 5'bxxxx1</li>
+      <li>GISR_ENA = 5'bxxxx1</li>
+      <li>READ_GIFR_ENA = 1</li>
+      <li>CLR_GIFR_ENA = 1</li>
+      <li>READ_GDIR_ENA = 1</li>
+      <li>GCMR_ENA = 5'bxxxx1</li>
+      <li>GFMR_ENA = 5'bxxxx1</li>
+      </ul>
       <hr>
       <p><b>API_GPIO_INIT</b>: инициализация GPIO</p>
       <pre class="small">void API_GPIO_INIT(struct EHL_GPIO* dev_id, int direction, int pull_up, int pull_down, int filter, int int_rise, int int_any, int altf, int value_init);</pre>
