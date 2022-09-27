@@ -1,0 +1,9 @@
+src/rtl/ehl_timer.v
+src/rtl/ehl_timer_core.v
+src/rtl/ehl_timer_apb.v
+../cdc/src/rtl/ehl_cdc_pulse.v
+src/rtl/ehl_timer_csr.v
+../techmap/src/rtl/ehl_cdc.v
+../logic/src/rtl/ehl_pulse.v
+../cdc/src/rtl/ehl_lbcd.v
+../techmap/src/rtl/ehl_clock_gate.v

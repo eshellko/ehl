@@ -5,7 +5,6 @@
 // Designer:         A.Kornukhin (kornukhin@mail.ru)
 // Last modified by: 1.0 2022-06-01 A.Kornukhin: Initial release
 // Description:      Control & Status Registers (CSR) Structure & API Definition
-
 //--------------------------------------------
 // Structure definition
 //--------------------------------------------

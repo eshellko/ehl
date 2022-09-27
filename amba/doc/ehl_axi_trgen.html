@@ -1,0 +1,338 @@
+<html>
+   <style> pre.small {line-height: 0.5; font-weight:bold; }</style>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>AXI Traffic Generator</title>
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+
+      <h2>AMBA AXI Traffic Generator</h2>
+	  <hr>
+      <table cellpadding="4" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col></colgroup>
+         <tbody>
+            <tr> <td bgcolor="#C0C0C0">Версия</td>      <td>1.0</td> </tr>
+            <tr> <td bgcolor="#C0C0C0">Дата</td>        <td>2022.09.26</td> </tr>
+            <tr> <td bgcolor="#C0C0C0">Разработчик</td> <td>А.В. Корнюхин (kornukhin@mail.ru)</td> </tr>
+         </tbody>
+      </table>
+
+      <h3>Введение</h3>
+	  <p>В данной спецификации описываются структура, порядок использования и технические характеристики генератора трафика шины AMBA AXI.</p>
+
+      <h3>Параметры</h3>
+	  <p><b>ehl_axi_trgen</b> может быть настроен под задачу пользователя. За настройку отвечают параметры, представленные в таблице.</p>
+      <table cellpadding="4" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Значение по умолчанию</th>
+               <th>Допустимые значения</th>
+               <th>Описание</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>AXI_WIDTH</td>  <td>64</td> <td>64, 128</td> <td>Ширина шины данных AXI.</td> </tr>
+            <tr> <td>SYNC_STAGE</td> <td>2</td>  <td>0-3</td>     <td>Количество последовательно включенных триггеров в синхронизаторах контроллера.</td> </tr>
+         </tbody>
+      </table>
+
+      <h3>Интерфейс</h3>
+      <ul>
+      <pre class="small">    _______________________</pre>
+      <pre class="small">   |                       |</pre>
+      <pre class="small">---| hclk                  |</pre>
+      <pre class="small">---| hresetn               |</pre>
+      <pre class="small">   | . . . . . . . . . . . |</pre>
+      <pre class="small">---| paddr          prdata |---</pre>
+      <pre class="small">---| penable        pready |---</pre>
+      <pre class="small">---| pwrite        pslverr |---</pre>
+      <pre class="small">---| psel                  |</pre>
+      <pre class="small">---| pwdata                |</pre>
+      <pre class="small">   | . . . . . . . . . . . |</pre>
+      <pre class="small">---| aclk                  |</pre>
+      <pre class="small">---| aresetn               |</pre>
+      <pre class="small">   | . . . . . . . . . . . |</pre>
+      <pre class="small">---| awready        awaddr |---</pre>
+      <pre class="small">   |                 awlen |---</pre>
+      <pre class="small">   |                awsize |---</pre>
+      <pre class="small">   |               awvalid |---</pre>
+      <pre class="small">   | . . . . . . . . . . . |</pre>
+      <pre class="small">---| wready          wdata |---</pre>
+      <pre class="small">   |                 wstrb |---</pre>
+      <pre class="small">   |                 wlast |---</pre>
+      <pre class="small">   |                wvalid |---</pre>
+      <pre class="small">   | . . . . . . . . . . . |</pre>
+      <pre class="small">---| bresp          bready |---</pre>
+      <pre class="small">---| bvalid                |</pre>
+      <pre class="small">   | . . . . . . . . . . . |</pre>
+      <pre class="small">---| arready        araddr |---</pre>
+      <pre class="small">   |                 arlen |---</pre>
+      <pre class="small">   |                arsize |---</pre>
+      <pre class="small">   |               arvalid |---</pre>
+      <pre class="small">   | . . . . . . . . . . . |</pre>
+      <pre class="small">---| rdata          rready |---</pre>
+      <pre class="small">---| rresp                 |</pre>
+      <pre class="small">---| rlast                 |</pre>
+      <pre class="small">---| rvalid                |</pre>
+      <pre class="small">   |_______________________|</pre>
+      </ul>
+
+      <h3>Перечень регистров</h3>
+      <table cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Регистр</th>
+               <th>Адрес</th>
+               <th>Описание</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td><a href="ehl_axi_trgen.html#NREPEAT" class="olink">NREPEAT</a></td>     <td>0x00</td> <td>Регистр NREPEAT</td> </tr>
+            <tr> <td><a href="ehl_axi_trgen.html#LEVEL" class="olink">LEVEL</a></td>         <td>0x04</td> <td>Регистр LEVEL</td> </tr>
+            <tr> <td><a href="ehl_axi_trgen.html#MODE" class="olink">MODE</a></td>           <td>0x08</td> <td>Регистр MODE</td> </tr>
+            <tr> <td><a href="ehl_axi_trgen.html#ADDR" class="olink">ADDR</a></td>           <td>0x0C</td> <td>Регистр ADDR</td> </tr>
+            <tr> <td><a href="ehl_axi_trgen.html#RESP_FIFO" class="olink">RESP_FIFO</a></td> <td>0x10</td> <td>Регистр RESP_FIFO</td> </tr>
+            <tr> <td><a href="ehl_axi_trgen.html#STAT_FIFO" class="olink">STAT_FIFO</a></td> <td>0x14</td> <td>Регистр STAT_FIFO</td> </tr>
+            <tr> <td><a href="ehl_axi_trgen.html#USER_PAT" class="olink">USER_PAT</a></td>   <td>0x20 - 0x5C</td> <td>Регистр USER_PAT</td> </tr>
+         </tbody>
+      </table>
+
+      <h3>Описание регистров</h3>
+      <p><a name="NREPEAT"></a><b style="color: #0000CC">NREPEAT [0x00] : </b>задает количество повторений в транзакции. Каждая транзакция состоит из передачи 16 слов по шине AXI.</p>
+      <table cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:8</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>7:0</td>
+               <td>CNT</td>
+               <td>Запись в регистр приводит к запуска записанного числа транзакций на шине AXI.</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <p><a name="LEVEL"></a><b style="color: #0000CC">LEVEL [0x04] : </b>задает уровень использования пропускной полосы AXI.</p>
+      <table cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:3</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>2:0</td>
+               <td>BW</td>
+               <td><b>Bandwidth</b>.
+                  <li>0 - каждый такт;</li>
+                  <li>1 - каждый 2 такт;</li>
+                  <li>2 - каждый 3 такт;</li>
+                  <li>3 - каждый 4 такт;</li>
+                  <li>4 - каждый такт, время между транзакциями - 16 тактов.</li>
+               </td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <p><a name="MODE"></a><b style="color: #0000CC">MODE [0x08] : </b>задает режим передачи.</p>
+      <table cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:8</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>7:0</td>
+               <td>MODE</td>
+               <td><b>MODE</b>
+                  <li>0 - [НЕ ПОДДЕРЖИВАЕТСЯ] init: ADDR 0-MAX_Specified, DATA 0x0, LEN=0xF, SIZE=AXI_SIZE - used to make ECC area of RAM initialized;</li>
+                  <li>1 - [НЕ ПОДДЕРЖИВАЕТСЯ] random ADDR (unaligned), random DATA, random LEN, random SIZE, random MASK, specified Level;</li>
+                  <li>2 - [НЕ ПОДДЕРЖИВАЕТСЯ] single specified ADDR, random DATA, READ-WRITE, specified repeat count;</li>
+                  <li>3 - [НЕ ПОДДЕРЖИВАЕТСЯ] sequential ADDR (start-stop specified), specified DATA (random/0x55/0xAA/0x01..0x80/...), specified LEN, SIZE, MASK;</li>
+                  <li>4 - [НЕ ПОДДЕРЖИВАЕТСЯ] aligned ADDR (specified), random DATA, random LEN, random LEVEL;</li>
+                  <li>5 - [НЕ ПОДДЕРЖИВАЕТСЯ] XOR-data: read data (from HAMMING/DATA area), XOR with specified MASK, WRITE bask; LEN=0, SIZE=0, ADDR=specified, count=1 --- slow mode to handle ECC modes, not to check performance;</li>
+                  <li>6 - WRITE-Data-Eye-Template;</li>
+                  <li>7 - WRITE-pause-READ random 32-bit 16-beat data;</li>
+                  <li>8 - User Patterns provided by user's registers;</li>
+               </td>
+               <td>R/W</td>
+               <td>6</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <p><a name="ADDR"></a><b style="color: #0000CC">ADDR [0x0C] : </b>задает начальный адрес AXI транзакции.</p>
+      <table cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:0</td>
+               <td>ADDR</td>
+               <td><b>ADDR</b>. Начальный адрес транзакции.</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <p><a name="RESP_FIFO"></a><b style="color: #0000CC">RESP_FIFO [0x10] : </b> содержит информацию о запрошенной команде.</p>
+      <table cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31</td>
+               <td>BCR</td>
+               <td>Устаналивается в 1 если <b>Write Response Channel Response</b> не равен 0.</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>30</td>
+               <td>RDCR</td>
+               <td>Устаналивается в 1 если <b>Read Data Channel Response</b> не равен 0.</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>29</td>
+               <td>RDE</td>
+               <td><b>Read Data Error</b>. Устанавливается в 1, если прочитанные данные не совпадают с ожидаемыми.</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>28</td>
+               <td>RLE</td>
+               <td><b>Read Last Error</b>. Устснавливается в 1, если не корректно установлен флаг RLAST.</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>27:0</td>
+               <td>CNT</td>
+               <td><b>Counter</b>. Количество ошибок в транзакции.</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <p><a name="STAT_FIFO"></a><b style="color: #0000CC">STAT_FIFO [0x14] : </b> статус FIFO.</p>
+      <table cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:1</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>0</td>
+               <td>FE</td>
+               <td><b>FIFO Empty</b>. Флаг EMPTY FIFO статусов транзакций. FIFO записывается по окончании транзакции, инициированной записью в <b>NREPEAT</b>.</td>
+               <td>R</td>
+               <td>1</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <p><a name="USER_PAT"></a><b style="color: #0000CC">USER_PAT [0x20-0x5C] : </b> data patterns used for AXI Write Data Channel, [0] used for 1-st beat, [1] for 2nd and so on.</p>
+      <table cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:0</td>
+               <td>DATA</td>
+               <td><b>DATA</b></td>
+               <td>R/W</td>
+               <td>x</td>
+            </tr>
+         </tbody>
+      </table>
+
+   </body>
+</html>
