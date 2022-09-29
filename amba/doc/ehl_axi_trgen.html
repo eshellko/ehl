@@ -1,5 +1,5 @@
 <html>
-   <style> pre.small {line-height: 0.5; font-weight:bold; }</style>
+   <style> pre.small {line-height: 0.5; font-weight:bold; color : #0000FF; }</style>
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
       <title>AXI Traffic Generator</title>
@@ -80,7 +80,7 @@
       </ul>
 
       <h3>Перечень регистров</h3>
-      <table cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+      <table cellpadding="4" border="1" cellspacing="0" rules="all">
          <colgroup><col><col><col></colgroup>
          <thead>
             <tr bgcolor="#C0C0C0">
@@ -102,7 +102,7 @@
 
       <h3>Описание регистров</h3>
       <p><a name="NREPEAT"></a><b style="color: #0000CC">NREPEAT [0x00] : </b>задает количество повторений в транзакции. Каждая транзакция состоит из передачи 16 слов по шине AXI.</p>
-      <table cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+      <table cellpadding="4" border="1" cellspacing="0" rules="all">
          <colgroup><col><col><col><col></colgroup>
          <thead>
             <tr bgcolor="#C0C0C0">
@@ -132,7 +132,7 @@
       </table>
 
       <p><a name="LEVEL"></a><b style="color: #0000CC">LEVEL [0x04] : </b>задает уровень использования пропускной полосы AXI.</p>
-      <table cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+      <table cellpadding="4" border="1" cellspacing="0" rules="all">
          <colgroup><col><col><col><col></colgroup>
          <thead>
             <tr bgcolor="#C0C0C0">
@@ -168,7 +168,7 @@
       </table>
 
       <p><a name="MODE"></a><b style="color: #0000CC">MODE [0x08] : </b>задает режим передачи.</p>
-      <table cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+      <table cellpadding="4" border="1" cellspacing="0" rules="all">
          <colgroup><col><col><col><col></colgroup>
          <thead>
             <tr bgcolor="#C0C0C0">
@@ -208,7 +208,7 @@
       </table>
 
       <p><a name="ADDR"></a><b style="color: #0000CC">ADDR [0x0C] : </b>задает начальный адрес AXI транзакции.</p>
-      <table cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+      <table cellpadding="4" border="1" cellspacing="0" rules="all">
          <colgroup><col><col><col><col></colgroup>
          <thead>
             <tr bgcolor="#C0C0C0">
@@ -231,7 +231,7 @@
       </table>
 
       <p><a name="RESP_FIFO"></a><b style="color: #0000CC">RESP_FIFO [0x10] : </b> содержит информацию о запрошенной команде.</p>
-      <table cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+      <table cellpadding="4" border="1" cellspacing="0" rules="all">
          <colgroup><col><col><col><col></colgroup>
          <thead>
             <tr bgcolor="#C0C0C0">
@@ -282,7 +282,7 @@
       </table>
 
       <p><a name="STAT_FIFO"></a><b style="color: #0000CC">STAT_FIFO [0x14] : </b> статус FIFO.</p>
-      <table cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+      <table cellpadding="4" border="1" cellspacing="0" rules="all">
          <colgroup><col><col><col><col></colgroup>
          <thead>
             <tr bgcolor="#C0C0C0">
@@ -312,7 +312,7 @@
       </table>
 
       <p><a name="USER_PAT"></a><b style="color: #0000CC">USER_PAT [0x20-0x5C] : </b> data patterns used for AXI Write Data Channel, [0] used for 1-st beat, [1] for 2nd and so on.</p>
-      <table cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+      <table cellpadding="4" border="1" cellspacing="0" rules="all">
          <colgroup><col><col><col><col></colgroup>
          <thead>
             <tr bgcolor="#C0C0C0">
@@ -333,6 +333,36 @@
             </tr>
          </tbody>
       </table>
+
+      <h2>Программирование</h2>
+      <h3>Базовые функции</h3>
+      <hr>
+      <p><b>API_AXI_TRGEN_INIT</b>: инициализация генератора</p>
+      <pre class="small">void API_AXI_TRGEN_INIT(struct EHL_AXI_TRGEN* dev_id);</pre>
+      <pre class="small">   dev_id     - указатель на структуру генератора</pre>
+      <hr>
+      <p><b>API_AXI_TRGEN_SET_ADDRESS</b>: установить начальный адрес транзакции</p>
+      <pre class="small">void API_AXI_TRGEN_SET_ADDRESS(struct EHL_AXI_TRGEN* dev_id, int addr);</pre>
+      <pre class="small">   dev_id - указатель на структуру генератора</pre>
+      <pre class="small">   addr   - начальный адрес</pre>
+      <hr>
+      <p><b>API_AXI_TRGEN_START</b>: запускает транзакцию в соответствии с настрйоками регистров</p>
+      <pre class="small">void API_AXI_TRGEN_START(struct EHL_AXI_TRGEN* dev_id, int nrepeat);</pre>
+      <pre class="small">   dev_id  - указатель на структуру генератора</pre>
+      <pre class="small">   nrepeat - количество повторений транзакции</pre>
+      <hr>
+      <p><b>API_AXI_TRGEN_SET_PATTERN</b>: задает шаблон данных для передачи</p>
+      <pre class="small">void API_AXI_TRGEN_SET_PATTERN(struct EHL_AXI_TRGEN* dev_id, unsigned int upat[16]);</pre>
+      <pre class="small">   dev_id - указатель на структуру генератора</pre>
+      <pre class="small">   upat   - шаблон данных</pre>
+      <hr>
+      <p><b>API_AXI_TRGEN_WAIT_FIFO_NOT_EMPTY</b>: в цикле ожидает наличия в FIFO данных</p>
+      <pre class="small">void API_AXI_TRGEN_WAIT_FIFO_NOT_EMPTY(struct EHL_AXI_TRGEN* dev_id);</pre>
+      <pre class="small">   dev_id - указатель на структуру генератора</pre>
+      <hr>
+      <p><b>API_AXI_TRGEN_GET_RESPONSE_FIFO</b>: возвращает содержимое FIFO посе появления в нем данных</p>
+      <pre class="small">unsigned int API_AXI_TRGEN_GET_RESPONSE_FIFO(struct EHL_AXI_TRGEN* dev_id);</pre>
+      <pre class="small">   dev_id - указатель на структуру генератора</pre>
 
    </body>
 </html>
