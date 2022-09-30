@@ -1,0 +1,20 @@
+<html>
+   <style> pre.small {line-height: 0.5; font-weight:bold; color: #0000FF; }</style>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>API</title>
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+      <h3>Базовые функции</h3>
+      <hr>
+      <p><b>API_DDR_INIT</b>: инициализация контроллера памяти</p>
+      <pre class="small">int API_DDR_INIT(unsigned int cnum, struct ddr_ctrl dc[]);</pre>
+      <pre class="small">   cnum       - количество контроллеров памяти</pre>
+      <pre class="small">   dc         - массив структур параметров контроллеров памяти</pre>
+      <p>Возвращаемые значения</p>
+      <pre class="small">DDR_INIT_RV_OKAY        - инициализация завершена успешно.</pre>
+      <pre class="small">DDR_INIT_RV_TRNG_FAILED - ошибка в процессе тренинга.</pre>
+      <pre class="small">DDR_INIT_BAD_CONFIG     - некорректная настройка параметров контроллера.</pre>
+      <pre class="small">DDR_INIT_TIMEOUT_EXCEED - ошибка, время ожидания операции превышено. Контроллер может оказаться в нерабочем состоярнии, выполняя последнюю операцию.</pre>
+   </body>
+</html>

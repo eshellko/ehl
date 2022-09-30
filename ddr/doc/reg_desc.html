@@ -1,0 +1,2475 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Описание регистров ehl_ddr</title>
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+      <h2 class="title" style="clear: both"><a name="sectionStart"></a>Описание регистров ehl_ddr</h2>
+      <hr>
+      <p><a name="ehl-DDR_MR0"></a><b style="color: #0000CC">DDR_MR0 [0x0] : </b>Mode Register</p>
+      <p>Регистр является локальной копией Mode Register/Mode Register(0) микросхем SDRAM, управляемых контроллером памяти. Его значение записывается в SDRAM при команде Load Mode Register. Подробное описание регистра приведено в [1] для DDR2 и в [8] для DDR3. Значения <b>DDR_MR0</b>, <b>DDR_MR1</b>, <b>DDR_MR2</b>, <b>DDR_MR3</b> используются для конфигурации регистров SDRAM при инициализации и в процессе работы контроллера.</p>
+      <p>Регистр имеет различное функциональное наполнение в зависимости от режима работы. Далее приведены таблицы для режимов DDR2/3/4.</p>
+      <p>Старшая часть регистра является локальной копией Mode Register(4) микросхем SDRAM, управляемых контроллером памяти. Его значение записывается в SDRAM при команде Load Mode Register(4). Подробное описание регистра приведено в [12]. Регистр присутствует только в конфигурации DDR4.</p>
+      <table summary="Fields for Register: DDR_MR0" cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:30</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+<!-- TODO: keep MR4 and up in separate tables !? -->
+            <tr>
+               <td>16+13</td>
+               <td>hPPR</td>
+               <td><b>hPPR</b></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>16+12</td>
+               <td>WP</td>
+               <td><b>Write Preamble</b></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>16+11</td>
+               <td>RP</td>
+               <td><b>Read Preamble</b></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>16+10</td>
+               <td>RPTM</td>
+               <td><b>Read Preamble Training Mode</b></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>16+9</td>
+               <td>SRA</td>
+               <td><b>Self Refresh Abort</b></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>16+8:16+6</td>
+               <td>CCAL</td>
+               <td><b>CS to CMD Address Latency</b></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>16+5</td>
+               <td>sPPR</td>
+               <td><b>sPPR</b></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>16+4</td>
+               <td>IVF</td>
+               <td><b>Internal Vref Monitor</b></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>16+3</td>
+               <td>TCRM</td>
+               <td><b>Temperature Controlled Refresh Mode</b></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>16+2</td>
+               <td>TCCR</td>
+               <td><b>Temperature Controlled Refresh Range</b></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>16+1</td>
+               <td>MPDM</td>
+               <td><b>Maximum Power Down Mode</b></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>16+0</td>
+               <td>-</td>
+               <td><b>резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>15:14</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>13</td>
+               <td>WR</td>
+               <td>Старший бит Write Recovery в режиме DDR4.</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>12</td>
+               <td>PD</td>
+               <td>
+                  <p>Перед переходом в режим Power-Down контроллер закрывает все открытые страницы, таким образом Active Power-Down не поддерживается. Должен быть записан в соответствии с указанным требованием.</p>
+                  <p>Значение бита соответствует значению <b>DDR2_CTRL.DM</b>.</p>
+                  <b>DDR2: Active Power Down Exit - должен быть записан 0 в данном режиме</b>
+                  <li>0 - Fast exit</li>
+                  <li>1 - Slow exit</li>
+                  <b>DDR3: DLL Control for Precharge PD - должен быть записан 1 в данном режиме</b>
+                  <li>0 - Slow exit</li>
+                  <li>1 - Fast exit</li>
+                  <b>DDR4: Старший бит CAS Latency</b>
+               </td>
+<!-- TODO: update XML r/w -->
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>11:9</td>
+               <td>WR</td>
+               <td><b>Write recovery.</b></td>
+               <td>R/W</td>
+               <td>0x5</td>
+            </tr>
+            <tr>
+               <td>8</td>
+               <td>DR</td>
+               <td><b>DLL Reset.</b></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>7</td>
+               <td>TM</td>
+               <td>
+                  <b>Test mode</b>
+                  <li>0 - Normal</li>
+                  <li>1 - Test</li>
+               </td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>6:4</td>
+               <td>CL</td>
+               <td>
+                  <p><b>DDR2: CAS Latency</b></p>
+                  <p><b>DDR3: CAS Latency[3:1]</b></p>
+                  <p style="color: #FF0000">Значение CL=2 (опциональное в [1 Figure 15]) поддерживается не всеми моделями памяти. Данный режим следует использовать с аккуратностью. Верификация режима не проводилась.</p>
+<!-- TODO: check in regression -->
+<!--                   <p style="color: #FF0000">Значение WL=2 (соответствующее CL=3 и AL=0) не поддерживается.</p> -->
+               </td>
+               <td>R/W</td>
+               <td>0x5</td>
+            </tr>
+            <tr>
+               <td>3</td>
+               <td>BT</td>
+               <td>
+                  <b>Burst type.</b>
+                  <li>0 - Sequential (DDR2) / Nibble sequential (DDR3)</li>
+                  <li>1 - Interleave</li>
+                  <p>Режим Interleave не поддерживается.</p>
+               </td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>2:0</td>
+               <td>BL</td>
+               <td>
+                  <b>DDR2: Burst length.</b>
+                  <li>010 - 4</li>
+                  <li>011 - 8</li>
+                  <p>Два старших бита должны быть записаны значением 0b01 в этом режиме.</p>
+                  <p><b>DDR3: CAS Latency[0], Burst length.</b></p>
+                  <p>Поддерживаются только режимы Burst Length BL8 и BC4.</p>
+                  <li>00 - BL8</li>
+                  <li>10 - BC4</li>
+               </td>
+               <td>R/W</td>
+               <td>0x2</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <p>Режим DDR4.</p>
+      <table summary="Fields for Register: DDR4_MR" cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:14</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>13, 11:9</td>
+               <td>WR</td>
+               <td><b>Write Recovery</b>. См. [12 Table 2].</td>
+               <td>R/W</td>
+               <td>0x5</td>
+            </tr>
+            <tr>
+               <td>12, 6:4, 2</td>
+               <td>CL</td>
+               <td><b>CAS Latency</b>. См. [12 Table 3].</td>
+               <td>R/W</td>
+               <td>0xA</td>
+            </tr>
+            <tr>
+               <td>8</td>
+               <td>DR</td>
+               <td><b>DLL Reset</b></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>7</td>
+               <td>TM</td>
+               <td>
+                  <b>Test mode</b>
+                  <li>0 - Normal</li>
+                  <li>1 - Test</li>
+               </td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>3</td>
+               <td>BT</td>
+               <td>
+                  <p><b>Read Burst type.</b></p>
+                  <p>Режим Interleave не поддерживается.</p>
+               </td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>1:0</td>
+               <td>BL</td>
+               <td>
+                  <p><b>Burst length.</b></p>
+                  <p>Поддерживаются только режимы Burst Length BL8MRS и BC4MRS.</p>
+                  <li>00 - BL8MRS</li>
+                  <li>10 - BC4MRS</li>
+               </td>
+               <td>R/W</td>
+               <td>0x2</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <br class="table-break">
+      <p><a name="ehl-DDR_MR1"></a><b style="color: #0000CC">DDR_MR1 [0x4] : </b>Extended Mode Register 1</p>
+      <p>Регистр является локальной копией Extended Mode Register(1) / Mode Register(1) микросхем SDRAM, управляемых контроллером памяти. Его значение записывается в SDRAM при команде Load Extended Mode Register(1). Подробное описание регистра приведено в [1] для DDR2 и в [8] для DDR3.</p>
+      <p>Старшая часть регистра является локальной копией Mode Register(5) микросхем SDRAM, управляемых контроллером памяти. Его значение записывается в SDRAM при команде Load Mode Register(4). Подробное описание регистра приведено в [12]. Регистр присутствует только в конфигурации DDR4.</p>
+      <table summary="Fields for Register: DDR_MR1" cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:29</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>16+12</td>
+               <td>RD</td>
+               <td><b>Read DBI</b></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>16+11</td>
+               <td>WD</td>
+               <td><b>Write DBI</b></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>16+10</td>
+               <td>DM</td>
+               <td><b>Data Mask</b></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>16+9</td>
+               <td>CAPPR</td>
+               <td><b>CA Parity Persistent Error</b></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>16+8:16+6</td>
+               <td>RP</td>
+               <td><b>RTT_PARK</b></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>16+5</td>
+               <td>OIBDPDM</td>
+               <td><b>ODT Input Buffer During Power-Down mode</b></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>16+4</td>
+               <td>CAPES</td>
+               <td><b>CA Parity Error Status</b></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>16+3</td>
+               <td>CEC</td>
+               <td><b>CRC Error Clear</b></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>16+2:16+0</td>
+               <td>CAPLM</td>
+               <td><b>CA Parity Latency Mode</b></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>15:13</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>12</td>
+               <td>Qoff</td>
+               <td>Qoff</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>11</td>
+               <td>ERD</td>
+               <td>
+                  <p><b>DDR2: Enable RDQS</b></p>
+                  <p>Память с шириной данных x4 не поддерживается, поэтому регистр не используется.</p>
+                  <p><b>DDR3/4: TDQS enable</b></p>
+                  <p>Не поддерживается.</p>
+               </td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>10</td>
+               <td>EDQS</td>
+               <td>
+                  <p><b>DDR2: Enable DQSn</b></p>
+                  <li>0 - differential</li>
+                  <li>1 - single ended</li>
+                  <p><b>DDR3: </b>Должен быть сброшен в этом режиме</p>
+                  <p>Не поддерживается.</p>
+                  <p><b>DDR4: </b>Старший бит RTT_NOM</p>
+               </td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>9:7</td>
+               <td>OCD</td>
+               <td>
+                  <p><b>DDR2: OCD Program</b></p>
+                  <p>Режим калибровки не поддерживается, поэтому значение регистра при инициализации задается аппаратно. Должен быть записан 0 в этом режиме.</p>
+                  <p><b>DDR3: Rtt_Nom[2], резерв, Write Leveling Enable</b></p>
+                  <p><b>DDR4: Rtt_Nom[1:0], Write Leveling Enable</b></p>
+               </td>
+               <td>
+                  <p>R/W</p>
+               </td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>6</td>
+               <td>TRH</td>
+               <td>
+                  <p><b>DDR2: Termination Resistor </b>(high bit)</p>
+                  <p><b>DDR3: Rtt_Nom[1]</b></p>
+                  <p><b>DDR4: не поддерживается - записывать 0</b></p>
+               </td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>5:3</td>
+               <td>AL</td>
+               <td>
+                  <p><b>DDR2: Additive Latency[2:0]</b></p>
+                  <p><b>DDR3: Output Drive Impedance[1], Additive Latency[1:0]</b></p>
+                  <p><b>DDR4: резерв, Additive Latency</b></p>
+               </td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>2</td>
+               <td>TRL</td>
+               <td>
+                  <p><b>DDR2: Termination Resistor </b>(low bit)</p>
+                  <p><b>DDR3: Rtt_Nom[0]</b></p>
+                  <p><b>DDR4: Output Driver Impedance Control[1]</b></p>
+               </td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>1</td>
+               <td>DIC</td>
+               <td>
+                  <p><b>DDR2: Driver Impedance Control</b></p>
+                  <p><b>DDR3/4: Output Driver Impedance Control[0]</b></p>
+               </td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>0</td>
+               <td>DE</td>
+               <td><b>DLL Enable</b></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <br class="table-break">
+      <p><a name="ehl-DDR_MR2"></a><b style="color: #0000CC">DDR_MR2 [0x8] : </b>Extended Mode Register 2</p>
+      <p>Регистр является локальной копией Extended Mode Register(2) / Mode Register(2) микросхем SDRAM, управляемых контроллером памяти. Его значение записывается в SDRAM при команде Load Extended Mode Register(2). Подробное описание регистра приведено в [1] для DDR2 и в [8] для DDR3.</p>
+      <p>Старшая часть регистра является локальной копией Mode Register(6) микросхем SDRAM, управляемых контроллером памяти. Его значение записывается в SDRAM при команде Load Mode Register(4). Подробное описание регистра приведено в [12]. Регистр присутствует только в конфигурации DDR4.</p>
+      <table summary="Fields for Register: DDR_MR2" cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:29</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>16+12:16+10</td>
+               <td>tCCD_L</td>
+               <td><b>TODO</b></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>16+9:16+8</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>16+7</td>
+               <td>VDTE</td>
+               <td><b>Vref DQ Training Enable</b></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>16+6</td>
+               <td>VDTR</td>
+               <td><b>Vref DQ Training Range</b></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>16+5:16+0</td>
+               <td>VD Training Value</td>
+               <td><b>Vref DQ Training Value</b></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>15:13</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>12</td>
+               <td>WC</td>
+               <td><b>DDR4: Write CRC</b></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>11:9</td>
+               <td>RW</td>
+               <td><b>RTT_WR</b></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>8</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>7</td>
+               <td>SE</td>
+               <td>
+                  <p><b>DDR2:</b> High Temperature Self-Refresh Rate Enable (SRF)</p>
+                  <p><b>DDR3:</b> Self-Refresh Temperature (SRT) Range</p>
+                  <p><b>DDR4:</b> старий бит LP ASR</p>
+               </td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>6</td>
+               <td>ASR</td>
+               <td>
+                  <p><b>DDR2: резерв</b></p>
+                  <p>Должен быть записан 0 в этом режиме.</p>
+                  <p><b>DDR3: Auto Self-Refresh</b></p>
+                  <p><b>DDR4: младший бит LP ASR</b></p>
+               </td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>5:4</td>
+               <td>CWL</td>
+               <td>
+                  <p><b>DDR2: резерв</b></p>
+                  <p>Должен быть записан 0 в этом режиме.</p>
+                  <p><b>DDR3/4: CAS Write Latency[2:1]</b></p>
+               </td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>3</td>
+               <td>DE</td>
+               <td>
+                  <p><b>DDR2: DCC Enable</b></p>
+                  <p>Не поддерживается. Должен быть записан 0 в этом режиме.</p>
+                  <p><b>DDR3/4: CAS Write Latency[0]</b></p>
+               </td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>2:0</td>
+               <td>PASR</td>
+               <td>
+                  <p><b>DDR2/3</b>: <b>PASR</b>.</p>
+                  <p><b>DDR4</b>: не используется. Должен быть записан 0.</p>
+               </td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <br class="table-break">
+      <p><a name="ehl-DDR_MR3"></a><b style="color: #0000CC">DDR_MR3 [0xc] : </b>Extended Mode Register 3</p>
+      <p>Регистр является локальной копией Extended Mode Register(3)/Mode Register(3) микросхем SDRAM, управляемых контроллером памяти. Его значение записывается в SDRAM при команде Load Extended Mode Register(3). Подробное описание регистра приведено в [1] для DDR2 и в [8] для DDR3.</p>
+      <table summary="Fields for Register: DDR_MR3" cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:13</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>12:11</td>
+               <td>MRF</td>
+               <td>
+                  <p><b>DDR2/3: резерв</b></p>
+                  <p><b>DDR4: MPR Read Format</b></p>
+               </td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>10:9</td>
+               <td>WCL</td>
+               <td>
+                  <p><b>DDR2/3: резерв</b></p>
+                  <p><b>DDR4: Write CMD Latency</b></p>
+               </td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>8:6</td>
+               <td>FGR</td>
+               <td>
+                  <p><b>DDR2/3: резерв</b></p>
+                  <p><b>DDR4: Fine Granularity Refresh Mode</b></p>
+               </td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>5</td>
+               <td>TSR</td>
+               <td>
+                  <p><b>DDR2/3: резерв</b></p>
+                  <p><b>DDR4: Temperature Sensor Readout</b></p>
+               </td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>4</td>
+               <td>PDA</td>
+               <td>
+                  <p><b>DDR2/3: резерв</b></p>
+                  <p><b>DDR4: Per DRAM Addressability</b></p>
+               </td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>3</td>
+               <td>GM</td>
+               <td>
+                  <p><b>DDR2/3: резерв</b></p>
+                  <p><b>DDR4: Geardown Mode</b></p>
+               </td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>2</td>
+               <td>MPR</td>
+               <td>
+                  <p><b>DDR2: резерв</b></p>
+                  <p>Должен быть записан 0 в этом режиме.</p>
+                  <p><b>DDR3: MPR</b></p>
+                  <p><b>DDR4: MPR Operation</b></p>
+               </td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>1:0</td>
+               <td>MPRL</td>
+               <td>
+                  <p><b>DDR2: резерв</b></p>
+                  <p><b>DDR3: MPR Location</b></p>
+                  <p>Поддерживается только значение 0.</p>
+                  <p><b>DDR4: MPR Page Selection</b></p>
+               </td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <br class="table-break">
+      <p><a name="ehl-DDR_TYPE"></a><b style="color: #0000CC">DDR_TYPE [0x10] : </b>DRAM Structure Register</p>
+      <p>Значение регистра должно быть задано в соответствии со структурой SDRAM.</p>
+      <table summary="Fields for Register: DDR_TYPE" cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Присутствие</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:23</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>-</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+<!-- TODO: every 2 bursts will require 2 activates, instead of 1 with pause between them!!! add picture for this case !!!-->
+            <tr>
+               <td>22</td>
+               <td>BGD</td>
+               <td>
+                  <p><b>Bank Group Decoding</b>. Задает положение бит Bank Group относительно бит Bank.</p>
+                  <li>0 - Bank Group располагается в младших битах адреса относительно Bank</li>
+                  <li>1 - Bank Group располагается между Column[2] и Column[3]</li>
+               </td>
+               <td>RAM_MODES[2] = 1</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>21</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>-</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>20:19</td>
+               <td>CIDM</td>
+               <td>
+                  <b>CID Mask</b>. Количество сигналов CID
+                  <li>00 - 0</li>
+                  <li>01 - 1 - 2 элемента в 3D стеке</li>
+                  <li>10 - 2 - 4 элемента в 3D стеке</li>
+                  <li>11 - 3 - 8 элементов в 3D стеке</li>
+               </td>
+               <td>RAM_MODES[2] = 1</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>18:17</td>
+               <td>BGM</td>
+               <td>
+                  <b>Bank Group Mask</b>. Количество Bank Group
+                  <li>00 - 0</li>
+                  <li>01 - 2</li>
+                  <li>11 - 4</li>
+               </td>
+               <td>RAM_MODES[2] = 1</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>16:15</td>
+               <td>MC3</td>
+               <td>
+                  <b>Map CS3. </b>Схема отображения адресов чипа в сигналы CS для ADDR=3.
+                  <li>00 - dfi_cs_n[0]</li>
+                  <li>01 - dfi_cs_n[1]</li>
+                  <li>10 - dfi_cs_n[2]</li>
+                  <li>11 - dfi_cs_n[3]</li>
+               </td>
+               <td>RANK_CNT=4</td>
+               <td>R/W</td>
+               <td>3</td>
+            </tr>
+            <tr>
+               <td>14:13</td>
+               <td>MC2</td>
+               <td>
+                  <b>Map CS2. </b>Схема отображения адресов чипа в сигналы CS для ADDR=2.
+                  <li>00 - dfi_cs_n[0]</li>
+                  <li>01 - dfi_cs_n[1]</li>
+                  <li>10 - dfi_cs_n[2]</li>
+                  <li>11 - dfi_cs_n[3]</li>
+               </td>
+               <td>RANK_CNT=4</td>
+               <td>R/W</td>
+               <td>2</td>
+            </tr>
+            <tr>
+               <td>12:11</td>
+               <td>MC1</td>
+               <td>
+                  <b>Map CS1. </b>Схема отображения адресов чипа в сигналы CS для ADDR=1.
+                  <li>00 - dfi_cs_n[0]</li>
+                  <li>01 - dfi_cs_n[1]</li>
+                  <li>10 - dfi_cs_n[2]</li>
+                  <li>11 - dfi_cs_n[3]</li>
+               </td>
+               <td> RANK_CNT>=2</td>
+               <td>R/W</td>
+               <td>1</td>
+            </tr>
+            <tr>
+               <td>10:9</td>
+               <td>MC0</td>
+               <td>
+                  <b>Map CS0. </b>Схема отображения адресов чипа в сигналы CS для ADDR=0.
+                  <li>00 - dfi_cs_n[0]</li>
+                  <li>01 - dfi_cs_n[1]</li>
+                  <li>10 - dfi_cs_n[2]</li>
+                  <li>11 - dfi_cs_n[3]</li>
+                  <p>Значения регистров MCx должны быть отличны друг от друга и уникальны. Значения не должны превышать (RANK_CNT-1).</p>
+               </td>
+               <td>RANK_CNT>1</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>8</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>-</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>7:3</td>
+               <td>RM</td>
+               <td>
+                  <b>Row Mask: </b>количество строк (страниц) памяти.
+                  <li>00000 - 2**12 = 4096</li>
+                  <li>00001 - 2**13 = 8192</li>
+                  <li>00011 - 2**14 = 16384</li>
+                  <li>00111 - 2**15 = 32768</li>
+                  <li>01111 - 2**16 = 65536</li>
+                  <li>11111 - 2**17 = 131072</li>
+<!-- DDR4 -->
+<!--                   <p>111111 - 2**18 = 262144</p> -->
+                  <p>Остальные комбинации зарезервированы. [A-5-1-8]</p>
+               </td>
+               <td>всегда</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>2</td>
+               <td>BM</td>
+               <td>
+                  <b>Bank Mask: </b>количество банков памяти.
+                  <li>0 - 4</li>
+                  <li>1 - 8</li>
+               </td>
+               <td>всегда</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>1:0</td>
+               <td>CM</td>
+               <td>
+                  <b>Column Mask: </b>количество столбцов памяти.
+                  <li>0 - 2**9 = 512</li>
+                  <li>1 - 2**10 = 1024</li>
+                  <li>3 - 2**11 = 2048</li>
+               </td>
+               <td>всегда</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <br class="table-break">
+      <p><a name="ehl-DDR_TIME0"></a><b style="color: #0000CC">DDR_TIME0 [0x14] : </b>DRAM Timing Register 0</p>
+      <p>Регистр (наряду с <b>DDR_TIME1</b>) задает основные временные параметры SDRAM для контроллера. Для получения оптимальных результатов работы контроллера следует выбирать параметры в соответствии с характеристиками микросхемы.</p>
+      <table summary="Fields for Register: DDR_TIME0" cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>30:26</td>
+               <td>tMOD</td>
+               <td><p>Одноименный параметр JEDEC в тактах частоты памяти.</p><p><b style="color: #FF0000">Замечание. Здесь и далее под частотой памяти понимается удвоенная частота mctrl_clk.</b></p></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>25:21</td>
+               <td>tWTR</td>
+               <td>Одноименный параметр JEDEC в тактах частоты памяти.</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>20:16</td>
+               <td>tWR</td>
+               <td>Одноименный параметр JEDEC в тактах частоты памяти.</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>15:10</td>
+               <td>tRAS</td>
+               <td>Одноименный параметр JEDEC в тактах частоты памяти.</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>9:0</td>
+               <td>tRFC</td>
+               <td>Одноименный параметр JEDEC в тактах частоты памяти.</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <br class="table-break">
+      <p><a name="ehl-DDR_TIME1"></a><b style="color: #0000CC">DDR_TIME1 [0x18] : </b>DRAM Timing Register 1</p>
+      <p>Регистр (наряду с <b>DDR_TIME0</b>) задает основные временные параметры SDRAM для контроллера. Для получения оптимальных результатов работы контроллера следует выбирать параметры в соответствии с характеристиками микросхемы.</p>
+      <table summary="Fields for Register: DDR_TIME1" cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:18</td>
+               <td>tREFI</td>
+               <td>Одноименный параметр JEDEC в тактах частоты памяти.</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>17:13</td>
+               <td>tRCD</td>
+               <td>Одноименный параметр JEDEC в тактах частоты памяти.</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>12:8</td>
+               <td>tRP</td>
+               <td>Одноименный параметр JEDEC в тактах частоты памяти.</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>7:4</td>
+               <td>tRTP</td>
+               <td>Одноименный параметр JEDEC в тактах частоты памяти.</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>3:0</td>
+               <td>tCKE</td>
+               <td>Одноименный параметр JEDEC в тактах частоты памяти.</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <br class="table-break">
+      <p><a name="ehl-DDR_ODT"></a><b style="color: #0000CC">DDR_ODT [0x1c] : </b>ODT Mask Register</p>
+      <table summary="Fields for Register: DDR_ODT" cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Присутствие</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:28</td>
+               <td>WR3</td>
+               <td>
+                  <b>Write Rank 3. </b>Биты ODT, устанавливаемые при записи в ранк 3.
+               </td>
+               <td>RANK_CNT=4</td>
+               <td>R/W</td>
+               <td>0b0111</td>
+            </tr>
+            <tr>
+               <td>27:24</td>
+               <td>RR3</td>
+               <td>
+                  <b>Read Rank 3. </b>Биты ODT, устанавливаемые при чтении из ранка 3.
+               </td>
+               <td>RANK_CNT=4</td>
+               <td>R/W</td>
+               <td>0b0111</td>
+            </tr>
+            <tr>
+               <td>23:20</td>
+               <td>WR2</td>
+               <td>
+                  <b>Write Rank 2. </b>Биты ODT, устанавливаемые при записи в ранк 2.
+               </td>
+               <td>RANK_CNT=4</td>
+               <td>R/W</td>
+               <td>0b1011</td>
+            </tr>
+            <tr>
+               <td>19:16</td>
+               <td>RR2</td>
+               <td>
+                  <b>Read Rank 2. </b>Биты ODT, устанавливаемые при чтении из ранка 2.
+               </td>
+               <td>RANK_CNT=4</td>
+               <td>R/W</td>
+               <td>0b1011</td>
+            </tr>
+            <tr>
+               <td>15:12</td>
+               <td>WR1</td>
+               <td>
+                  <b>Write Rank 1. </b>Биты ODT, устанавливаемые при записи в ранк 1.
+               </td>
+               <td>RANK_CNT>1</td>
+               <td>R/W</td>
+               <td>0b1101</td>
+            </tr>
+            <tr>
+               <td>11:8</td>
+               <td>RR1</td>
+               <td>
+                  <b>Read Rank 1. </b>Биты ODT, устанавливаемые при чтении из ранка 1.
+               </td>
+               <td>RANK_CNT>1</td>
+               <td>R/W</td>
+               <td>0b1101</td>
+            </tr>
+            <tr>
+               <td>7:4</td>
+               <td>WR0</td>
+               <td>
+                  <b>Write Rank 0. </b>Биты ODT, устанавливаемые при записи в ранк 0.
+               </td>
+               <td>всегда</td>
+               <td>R/W</td>
+               <td>0b1110</td>
+            </tr>
+            <tr>
+               <td>3:0</td>
+               <td>RR0</td>
+               <td>
+                  <b>Read Rank 0. </b>Биты ODT, устанавливаемые при чтении из ранка 0.
+                  Для всех битовых полей <b>DDR_ODT</b> старший бит относится к RANK 3, младший к RANK 0. Если соответствующие ранки не используются в данной конфигурации, биты доступны только по чтению.
+               </td>
+               <td>всегда</td>
+               <td>R/W</td>
+               <td>0b1110</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <br class="table-break">
+      <p><a name="ehl-DDR2_CTRL"></a><b style="color: #0000CC">DDR2_CTRL [0x20] : </b>DDR2 Control Register</p>
+      <p>Регистр установки режимов функционирования контроллера.</p>
+      <table summary="Fields for Register: DDR2_CTRL" cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Присутствие</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>-</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>30</td>
+               <td>DM4</td>
+               <td>
+                  <b>Режим DDR4. </b>Определяет протокол работы с памятью.
+                  <li>1 - ddr4.</li>
+                  <li>0 - ddr2 (<b>DM</b> = 0) или ddr3 (<b>DM</b> = 1).</li>
+               </td>
+               <td>всегда</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>29</td>
+               <td>ESR</td>
+               <td>
+                  <p><b>Enable Second Refresh. </b>Разрешение запуска второй команды REFRESH сразу после выполнения первой.</p>
+                  <p>
+                     Периодические команды REFRESH выполняются в соответствии со значением интервала <b>TIME1.tREFI</b>.
+                     Если установлен <b>ESR</b>, то контроллер будет пытаться выполнить вторую команду REFRESH по завершении первой.
+                     Вторая команда будет выполняться, если по завершении интервала tRFC в очереди контроллера отсутствуют команды чтения/записи (<b>DDR2_CTRL.CB</b>).
+                     Выполнение 2-ой команды может задержать выолнения последующих команд чтения/записи, если они поступили сразу после подтверждения второй команды REFRESH.
+                     Однако, выполнение второй команды также приведет к пропуску следующей запланированной команды REFRESH, что позволит не прерывать последовательность чтения/записи и не выполнять связанные с этим процедуры PRECHARGE/ACTIVE.
+                  </p>
+                  <p>Данный бит не следует устанавливать во время выолнения инициализации памяти, поскольку это может привести к нарушению последовательности выполнения 8 команд REFRESH, требуемых при инициализации.</p>
+                  <p>Не рекомендуется использовать данный функционал совместно с командой SELF REFRESH в связи с недостаточной протестированностью режима.</p>
+               </td>
+               <td>всегда</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>28:25</td>
+               <td>ERT</td>
+               <td>
+                  <p><b>Enable Rank Training. </b>Разрешение тренинга указанного RANK памяти в режиме автоматического тренинга. Установка бита ERT[0] приводит к запуску тренинга RANK0, ERT[1] - RANK1, ERT[2] - RANK2, ERT[3] - RANK[3].</p>
+                  <p>Не допускается запуск тренинга, если данный регистр равен 0.</p>
+                  <p>Перед запуском ручного тренинга следует установить в значение с одним выбранным ранком.</p>
+                  <p>В конфигурации с RANK_CNT != 4 биты, отвечающие за отсутствующие ранки доступны только по чтению.</p>
+                  <p>В конфигурации с RANK_CNT = 1 доступен только по чтению.</p>
+               </td>
+               <td>PHY_TYPE = 0</td>
+               <td>R/W</td>
+               <td>1</td>
+            </tr>
+            <tr>
+               <td>24:21</td>
+               <td>ORD</td>
+               <td>
+                  <b>ODT Read Delay. </b>Задержка в тактах частоты памяти между командой чтения и включением ODT на шине DFI в режиме DDR2 (плюс 1 дополнительная задержка внутри контроллера).
+                  В режимах DDR3/4 задержка формируется аппаратно.
+                  Для <b>PHY_TYPE</b>=0 рекомендуемое значение (RDDATA_EN - 3).
+                  Для <b>PHY_TYPE</b>=4 и 5 ODT не поддерживается ввиду малых значений RDDATA_EN.
+               </td>
+               <td>RAM_MODES[0] = 1</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>20:17</td>
+               <td>OWD</td>
+               <td>
+                  <b>ODT Write Delay. </b>Задержка в тактах частоты памяти между командой записи и включением ODT на шине DFI в режиме DDR2 (плюс 1 дополнительная задержка внутри контроллера).
+                  В режимах DDR3/4 задержка формируется аппаратно.
+<!-- TODO: make by hardware, using 6-bit wide regster !!? -->
+                  Для <b>PHY_TYPE</b>=0 рекомендуемое значение (WRLAT - 1). Использование ODT при WRLAT меньше 2 не поддерживается ввиду времени включения резисторов - 2 такта частоты памяти.
+                  Для <b>PHY_TYPE</b>=4 и 5 ODT не поддерживается ввиду малых значений WRLAT.
+               </td>
+               <td>RAM_MODES[0] = 1</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>16</td>
+               <td>RWE</td>
+               <td>
+                  <b>Read/Write Enable. </b>Разрешение передачи данных через DFI.
+               </td>
+               <td>всегда</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>15</td>
+               <td>CB</td>
+               <td>
+                  <b>Core busy. </b>Флаг устанавливается аппаратно, если контроллер принял к обработке данные для записи или чтения. Если обработки не происходит, флаг сбрасывается. Данные, находящиеся в FIFO, но не переданные в обработку в контроллер не приводят к установке флага.
+               </td>
+               <td>всегда</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>14</td>
+               <td>DM</td>
+               <td>
+                  <b>Режим DDR. </b>Определяет протокол работы с памятью наряду с <b>DM4</b>. Актуален при <b>DM4</b> равном 0.
+                  <li>0 - ddr2</li>
+                  <li>1 - ddr3</li>
+               </td>
+               <td>всегда</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>13:11</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>-</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>10:3</td>
+               <td>PDI</td>
+               <td>
+                  <p><b>Power-Down IDLE Interval.</b></p>
+                  <p>Запись в этот регистр значения, отличного от нуля приводит к автоматическому переводу контроллера в режим Power-Down, если в течение указанного интервала (в тактах частоты памяти), не было зафиксировано активности на интерфейсе DFI.</p>
+                  <p>Использование режима Precharge Power-Down вносит дополнительные задержки/потребление при входе/выходе в режим. Поэтому не следует задавать значение регистра таким, чтобы контроллер переходил в режим при небольших простоях шины между последовательными командами чтения и записи.</p>
+               </td>
+               <td>всегда</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>2</td>
+               <td>REF</td>
+               <td>
+                  <b>Разрешение периодического обновления памяти.</b>
+                  <li>0 - запрещено.</li>
+                  <li>1 - разрешено.</li>
+                  <p>Период между командами REFRESH определяется DDR_TIME1.tREFI.</p>
+               </td>
+               <td>всегда</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>1</td>
+               <td>DCDM</td>
+               <td>
+                  <b>DRAM Clock Disable Mask.</b>
+                  <li>0 - синхросигнал памяти включен всегда.</li>
+                  <li>1 - синхросигнал отключается при переходе в режим SELF-REFRESH.</li>
+               </td>
+               <td>всегда</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>0</td>
+               <td>DIC</td>
+               <td><b>DFI Init Complete</b>. Значение сигнала <b>dfi_init_complete</b>. В конфигурациях <b>PHY_TYPE</b> = 0 и 2 всегда равен 1. В конфигурации <b>PHY_TYPE</b> = 1 / 3 / 6 управляется PHY. Может требовать установки <b>DDR_CMD.DIS</b> для собственной установки. Следует проконсультироваться с документацией на PHY для определения протокола работы с блоком (<b>ehl_ddr</b> не проводит обработку соответствия протокола <b>dfi_init_start</b>/<b>dfi_init_complete</b>, такая обработка должна производиться програмно). Для UniPHY и PHY Xilinx следует использовать регистр <b>FPGA_CTRL</b> для определения состояния инициализации.</td>
+               <td>всегда</td>
+               <td>R</td>
+               <td>0/1 (зависит от <b>PHY_TYPE</b>)</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <br class="table-break">
+      <p><a name="ehl-DDR3_CTRL"></a><b style="color: #0000CC">DDR3_CTRL [0x24] : </b>DDR3 Control Register</p>
+      <p>Регистр служит для управления режимами контроллера, специфичными для режима DDR3.</p>
+      <table summary="Fields for Register: DDR3_CTRL" cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Присутствие</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:4</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>RAM_MODES[1]=1</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>3</td>
+               <td>EZQS</td>
+               <td>
+                  <b>Разрешение периодического выполнения ZQCS. </b>Запрос на исполнение команды происходит в соответствии со значением внутреннего счетчика по модулю, определяемому <b>DDR3_ZQ</b>.
+               </td>
+               <td>RAM_MODES[1]=1</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>2</td>
+               <td>RLS</td>
+               <td>
+                  <b>Запуск отсчета Reset Low интервала. </b>Сбрасывается аппаратно при сбросе счетчика <b>DDR3_RESET.RL</b>.
+               </td>
+               <td>RAM_MODES[1]=1</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>1</td>
+               <td>RHS</td>
+               <td>
+                  <b>Запуск отсчета Reset High интервала. </b>Сбрасывается аппаратно при сбросе счетчика <b>DDR3_RESET.RH</b>.
+               </td>
+               <td>RAM_MODES[1]=1</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>0</td>
+               <td>RV</td>
+               <td>
+                  <b>Текущее значение dfi_reset_n. </b>Устанавливается аппаратно при сбросе счетчика <b>DDR3_RESET.RL</b>.
+               </td>
+               <td>RAM_MODES[1]=1</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <br class="table-break">
+      <p><a name="ehl-DDR_PHY"></a><b style="color: #0000CC">DDR_PHY [0x28] : </b>PHY Timing Parameters Register</p>
+      <p>Коэффициенты в регистре определяют временные характеристики PHY в соответствии со стандартом DFI [2]. Их значение должно совпадать с параметрами модуля PHY, управляемого контроллером памяти.</p>
+      <p><b style="color: #FF0000">Замечание</b>. Для конфиграций ПЛИС (<b>PHY_TYPE</b> равен 2 или 5) не допускается изменение значений CL, CWL, AL. Значения определяются при генерации аппаратного представления PHY.</p>
+      <table summary="Fields for Register: DDR_PHY" cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Присутствие</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31</td>
+               <td>DLLR</td>
+               <td>
+                  <b>DLL Reset. </b>Управление сбросом DLL. Запись 1 переводит DLL в состояние сброса. Запись 0 переводит DLL в рабочий режим. Сброс DLL требуется перед началом работы с ним, после установки корректной опорной частоты. Следует иметь в виду, что если опорная частота (даже в режиме <b>DLL Bypass</b>) находится за пределами допустимого диапазона (менее 100 МГц), DLL может перейти в нерабочее состояние, вывести из которого может только <b>DLL Reset</b>.
+               </td>
+               <td>PHY_TYPE = 0 || PHY_TYPE = 1</td>
+               <td>R/W</td>
+               <td>1</td>
+            </tr>
+            <tr>
+               <td>30:26</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>-</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>25</td>
+               <td>RDCSGAP</td>
+               <td>
+                  Значение параметра t<sub>rdcsgap</sub> DFI:
+                  <li>0 - 2</li>
+                  <li>1 - 4</li>
+               </td>
+               <td>всегда</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>24</td>
+               <td>WRCSGAP</td>
+               <td>
+                  Значение параметра t<sub>wrcsgap</sub> DFI
+                  <li>0 - 2</li>
+                  <li>1 - 4</li>
+                  <b>PHY_TYPE</b>=3 поддерживает только <b>WRCSGAP</b> = 4
+               </td>
+               <td>RAM_MODES[1] = 1</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>23:18</td>
+               <td>TRE</td>
+               <td>
+                  <b>RDDATA_EN. </b>Значение параметра t<sub>rddata_en</sub> DFI. Определяет количество тактов синхросигнала памяти между командой чтения на интерфейсе DFI и <b>dfi_rddata_en</b>. Значение зависит от типа используемого PHY.
+                  <li><b>PHY_TYPE</b>=0: CL + AL + 1.</li>
+                  <li><b>PHY_TYPE</b>=1: RL - 3 (нечетные RL), RL - 2 (четные RL). Без деления на 2, как того требуется в документации на PUBL.</li>
+                  <li><b>PHY_TYPE</b>=2: AL.</li>
+                  <li><b>PHY_TYPE</b>=3: RL - 5.</li>
+                  <li><b>PHY_TYPE</b>=4: RL - 3.</li>
+                  <li><b>PHY_TYPE</b>=5: 0.</li>
+                  <li><b>PHY_TYPE</b>=6: RL - 3 (нечетные RL), RL - 2 (четные RL). Без деления на 2, как того требуется в документации на PUB.</li>
+               </td>
+               <td>всегда</td>
+               <td>R/W</td>
+               <td>0x6</td>
+            </tr>
+            <tr>
+               <td>17:12</td>
+               <td>RDCSLAT</td>
+               <td><b>RDCSLAT. </b>Значение параметра t<sub>rdcslat</sub> DFI. Для <b>PHY_TYPE</b> = 0 рекомендуется задавать равным <b>RDDATA_EN</b>. Значение зависит от типа используемого PHY.</td>
+               <td>всегда</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>11:6</td>
+               <td>TWL</td>
+               <td>
+                  <b>WRLAT. </b>Значение параметра t<sub>phy_wrlat</sub> DFI. Определяет количество тактов синхросигнала памяти между командой записи на интерфейсе DFI и данными <b>dfi_wrdata_en</b>.
+                  <li><b>PHY_TYPE</b>=0: WL + AL - 1 (ddr2) / CWL + AL - 1 (ddr4).</li>
+                  <li><b>PHY_TYPE</b>=1: WL - 1 (нечетные WL), WL - 2 (четные WL). Без деления на 2, как того требуется в документации на PUBL.</li>
+                  <li><b>PHY_TYPE</b>=2: WL - 1 (нечетные WL), WL (четные WL).</li>
+                  <li><b>PHY_TYPE</b>=3: WL - 5.</li>
+                  <li><b>PHY_TYPE</b>=4: WL - 2.</li>
+                  <li><b>PHY_TYPE</b>=5: 0.</li>
+                  <li><b>PHY_TYPE</b>=1: WL - 3 (нечетные WL), WL - 4 (четные WL). Без деления на 2, как того требуется в документации на PUB.</li>
+               </td>
+               <td>всегда</td>
+               <td>R/W</td>
+               <td>0x2</td>
+            </tr>
+            <tr>
+               <td>5:0</td>
+               <td>WRCSLAT</td>
+<!-- TODO: it is not writeable for DDR2 -- used only for DFI testing inside PHY (but not used internally) -->
+               <td><b>WRCSLAT. </b>Значение параметра t<sub>wrcslat</sub> DFI.<!-- Для <b>PHY_TYPE</b> = 0 рекомендуется задавать равным <b>WRLAT</b>.--></td>
+               <td>RAM_MODES[1] = 1</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <br class="table-break">
+      <p><a name="ehl-DDR_CMD"></a><b style="color: #0000CC">DDR_CMD [0x30] : </b>Command Register</p>
+      <p>Регистр управляет запуском команд тренировки, изменения значений регистров SDRAM, перехода в режимы пониженного энергопотребления. Запись команд в <b>DDR_CMD</b> должна производиться по одной за раз [A-5-1-16]. Запись команд в данный регистр должна выполняться, только когда завершилось выполнение всех остальных команд (регистр равен 0 за исключением бита LPM).</p>
+      <table summary="Fields for Register: DDR_CMD" cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Присутствие</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:28</td>
+               <td>LMRR</td>
+               <td>
+                  <p><b>Load Mode Register Ranks</b>. Задает чипы динамической памяти, для которых выполняется текущая команда Load Mode Register. Активный уровень 0.</p>
+                  <p>По умолчанию команда записи управляющих регистров DRAM (<b>DDR_CMD.LMRA</b>) записывает идентичные данные во все подключенные чипы памяти - все биты <b>dfi_cs_n</b> равны 0.</p>
+                  <p>В некоторых случаях может потребоватьс язаписать различные данные в разные чипы памяти. Например, при проведении тренинга Write Leveling (выполняется в PHY и не поддерживается контроллером) согласно [8 4.8.2] требуется оставить активныем драйвер только одного чипа, подключенного к контроллеру памяти. Несоответствие между значениями регистров в DRAM и регистров <b>DDRx_yMRz</b> при записи в часть чипов отдается на откуп пользователя - после проведения тренинга следует записать идентичные значения во все чипы.</p>
+                  <p>Старший бит соответсвует RANK-3, младший - RANK-0.</p>
+                  <p>Биты, соответствующие отсутствующим чипам, равны 0 (например, биты [31:30] при <b>RANK_CNT</b> = 2).</p>
+                  <p>В конфигурации с одним чипом всегда равен 0x0 и не доступен по записи.</p>
+               </td>
+               <td>всегда</td>
+               <td>R/W</td>
+               <td>0x0</td>
+            </tr>
+            <tr>
+               <td>27:17</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>-</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+<!--            <tr>
+               <td>27:21</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>-</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>20:17</td>
+               <td>TA</td>
+               <td>
+                  <p><b>Training Address</b></p>
+TODO: задать весь адрес программно, чтобы иметь возможность писать в любой регион? На самом деле требуется только обеспечить возможность пользователю писать в тот адрес, который впоследствии будет использоваться для тренинга
+такой адрес выбирается пользователем, но должен быть задан равным тому, что может использовать контроллер.
+И вот тут контроллер может использовать только часть адресов и надо, чтобы пользователь также мог писать в них.
+                  <p>Старшие 4 бита адреса страницы, используемые при проведении тренинга.</p>
+                  <p>По умолчанию, тренинг проводится по физическому адресу 0x0 для каждого CS_N. Содержимое памяти по выбранному адресу должно быть записано перед проведением Date Eye тренинга паттерном 0x00-0xFF.</p>
+                  <p>Не всегда адрес 0x0 может быть доступен пользователю. <b>TA</b> позволяет задать 4 старших бита адреса страницы, используемыx при проведении тренинга.</p>
+               </td>
+               <td>PHY_TYPE = 0</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>-->
+            <tr>
+               <td>16</td>
+               <td>MGT</td>
+               <td>
+                  <p><b>Manual Gate Training.</b></p>
+<!-- TODO: check DDR_GT registers referenced here -->
+                  <p>Команда запуска процедуры тренинга маски стробов для заданного в DDR_GT набора коэффициентов. Бит сбрасывается по окончании процедуры. Результат тренинга доступен в <b>DDR_GTR.RLS</b>. В отличие от <b>DDR_CMD.RGT</b> процедура проводится для 1 набора коэффициентов и не приводит к изменению DDR_GT по окончании процедуры.</p>
+                  <p>Перед запуском процедуры следует задать значение <b>DDR2_CTRL.ERT</b> соответствующим только одному ранку памяти, для которого и будет проводиться тренинг.</p>
+               </td>
+               <td>PHY_TYPE = 0</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>15</td>
+               <td>SR</td>
+               <td>
+                  <p><b>Self-Refresh.</b> Перевод памяти в режим пониженного энергопотребления с автоматическим обновлением содержимого.</p>
+                  <p>При чтении указывает текущий режим контроллера.</p>
+                  <p>Бит сбрасывается при наступлении следующих условий:</p>
+                  <li>наличие команд/данных в буфере AXI</li>
+                  <li>запись 0 в SR</li>
+               </td>
+               <td>всегда</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>14</td>
+               <td>PD</td>
+               <td>
+<!-- (todo:Не убрать ли пользовательский контроль над входом в этот режим. Оставив только вход по обнулению счетчика IDLE интервала. -->
+<!-- Поскольку сейчас режим используется исключительно для экономии энергии, эффективнее иметь аппаратное управление вместо программного. -->
+<!-- С другой стороны, для расширения функционала в будущем неплохо иметь эту возможность, если будет доработана процедура изменения тактовой частоты в данном режиме - программно такое возможно уже сейчас с отключением REFRESH и прочими радостями (только переход должен быть быстрым, включая переключение DLL).) -->
+                  <p><b>Power-Down.</b> Перевод памяти в режим пониженного энергопотребления.</p>
+                  <p>При чтении указывает текущий режим контроллера.</p>
+                  Бит сбрасывается при наступлении следующих условий:
+                  <li>периодический запрос на выполнение команды REFRESH</li>
+                  <li>периодический запрос на выполнение команды ZQCS</li>
+                  <li>наличие команд/данных в буфере AXI</li>
+                  <li>запись 0 в PD</li>
+               </td>
+               <td>всегда</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>13</td>
+               <td>LPM</td>
+               <td>
+                  <p><b>Low-Power mode.</b> Устанавливается аппаратно, если контроллер находится в режиме пониженного энергопотребления (Self-Refresh или Power-Down).</p>
+                  <p>Указывает текущее состояние памяти, в отличие от <b>SR</b> и <b>PD</b>, которые не учитывают задержки выполнения команд. Протокол работы с командами <a href="um_func.html#LP" class="olink">Low-Power</a>.</p>
+                  <p>Устанавливается также в случае автоматического перехода в режим Power-Down по истечении интервала <b>DDR2_CTRL.PDI</b>. В этом случае SR и PD сброшены.</p>
+               </td>
+               <td>всегда</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>12:11</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>-</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>10</td>
+               <td>RGT</td>
+               <td>
+                  <p><b>Запуск процедуры Gate Training ehl_ddr_phy.</b></p>
+                  <p>Сбрасывается по окончании тренинга маски строба. По окончании процедуры результат тренинга записывается в <b>DDR_GT</b>. На время тренинга не допускается работа с регистрами контроллера, за исключением чтения данного регистра.</p>
+               </td>
+               <td>PHY_TYPE = 0</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>9</td>
+               <td>RDET</td>
+               <td>
+                  <p><b>Запуск процедуры Data Eye Training ehl_ddr_phy.</b></p>
+                  <p>Перед началом процедуры следует записать данные 0xFF-0x00 по адресу 0x0 SDRAM. Эти данные будут использоваться контроллером для тренинга смещения стробов.</p>
+                  <p>Сбрасывается по окончании тренинга. По окончании процедуры результат тренинга записывается в <b>DDR_DET</b>. На время тренинга не допускается работа с регистрами контроллера, за исключением чтения данного регистра.</p>
+               </td>
+               <td>PHY_TYPE = 0</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>8:7</td>
+               <td>-</td>
+               <td><b>Резерв<!-- (todo: PRECHARGE ALL command required, to allow closing memory during MPR training in DDR3 mode)--></b></td>
+               <td>-</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>6:4</td>
+               <td>LMRA</td>
+               <td>
+                  <p>Адрес Mode регистра SDRAM, в который следует произвести запись. Следует записывать одной командой с установкой <b>DDR_CMD.LMR</b> и не менять до окончания процедуры записи (до сброса <b>DDR_CMD.LMR</b>). По чтению всегда равен 0.</p>
+                  <li>000 - <b>DDR_MR0</b></li>
+                  <li>001 - <b>DDR_MR1</b></li>
+                  <li>010 - <b>DDR_MR2</b></li>
+                  <li>011 - <b>DDR_MR3</b></li>
+                  <li>100 - MR4 - <b>DDR_MR0</b></li>
+                  <li>101 - MR5 - <b>DDR_MR1</b></li>
+                  <li>110 - MR6 - <b>DDR_MR2</b></li>
+                  <li>111 - резерв</li>
+                  <p>Старший бит игнорируется при отсутствии поддержки режима DDR4 (RAM_MODES[2] = 0).</p>
+               </td>
+               <td>всегда</td>
+               <td>R0/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>3</td>
+               <td>LMR</td>
+               <td>
+                  <p><b>Запуск Load Mode Register.</b></p>
+                  <p>Установка приводит к записи в регистр Mode SDRAM. Биты LMRA определяют адрес регистра, в который производится запись. Сбрасывается аппаратно по окончании процедуры записи. Не допускается установка <b>DDR_CMD.LMR</b>, если он уже установлен.</p>
+               </td>
+               <td>всегда</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>2</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>-</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>1</td>
+               <td>STI</td>
+               <td>
+                  <p><b>Запуск инициализации DRAM.</b></p>
+                  <p>Установка приводит к началу процедуры инициализации динамической памяти.</p>
+                  <p>Не допускается работы с SDRAM памятью до окончания процедуры инициализации и тренингов (за исключением записи данных, требуемых Data Eye Training).</p>
+                  <p>При чтении указывает текущее состояние процедуры инициализации.</p>
+               </td>
+               <td>всегда</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>0</td>
+               <td>DIS</td>
+               <td><b>DFI Init Start</b>. Управление сигналом <b>dfi_init_start</b> интерфейса DFI. Должен быть установлен перед началом использования PHY.</td>
+               <td>PHY_TYPE = 1 || PHY_TYPE = 3 || PHY_TYPE = 6</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <br class="table-break">
+      <p><a name="ehl-DDR_ECC_FIFO_LSB"></a><b style="color: #0000CC">DDR_ECC_FIFO_LSB [0x34] : </b>Error detection FIFO (LSB)</p>
+      <p>Вместе с регистром <b>DDR_ECC_FIFO_MSB</b> регистр представляет собой FIFO, в которое записываются адреса памяти, при чтении из которых были обнаружены одиночные или двойные ошибки. FIFO записывается, если в нем есть место (глубина определяется параметром <b>ERROR_FIFO_DEPTH</b>) и корректирующий код обнаружил ошибку в принимаемых по DFI данных. Сохраняется значение текущего адреса памяти, и значение сигналов ошибки для старшей и младшей частей данных (в режиме Half-Data Rate для каждой из 4 частей данных). Чтение из регистра не приводит к инкременту указателя чтения FIFO.</p>
+      <table summary="Fields for Register: DDR_ECC_FIFO_LSB" cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:0</td>
+               <td>ADDR</td>
+               <td>Младшие 32 бита адреса AXI, содержащего ошибку.</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <br class="table-break">
+      <p><a name="ehl-DDR_ECC_FIFO_MSB"></a><b style="color: #0000CC">DDR_ECC_FIFO_MSB [0x38] : </b>Error detection FIFO (MSB)</p>
+      <p>Регистр функционирует в связке с <b>DDR_ECC_FIFO_LSB</b>. Чтение из регистра приводит к инкременту указателя чтения FIFO.</p>
+      <table summary="Fields for Register: DDR_ECC_FIFO_MSB" cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Присутствие</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:29</td>
+               <td>ADDR</td>
+               <td>Старшие 7 бит адреса AXI, содержащего ошибку.</td>
+               <td>ECC_ENA = 1</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>24:8</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>-</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>7:6</td>
+               <td>Code_ERR_3</td>
+               <td>
+                  Код ошибки для старшей четверти данных HDR:
+                  <li>00 - нет ошибки</li>
+                  <li>01 - одиночная ошибка</li>
+                  <li>10 - двойная ошибка</li>
+                  <li>11 - ошибка в контрольном разряде общей точности</li>
+               </td>
+               <td><p>ECC_ENA = 1</p></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>5:4</td>
+               <td>Code_ERR_2</td>
+               <td>
+                  Код ошибки для третьей четверти данных HDR:
+                  <li>00 - нет ошибки</li>
+                  <li>01 - одиночная ошибка</li>
+                  <li>10 - двойная ошибка</li>
+                  <li>11 - ошибка в контрольном разряде общей точности</li>
+               </td>
+               <td><p>ECC_ENA = 1</p></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>3:2</td>
+               <td>Code_ERR_1</td>
+               <td>
+                  Код ошибки для старшей половины данных SDR / второй четверти данных HDR:
+                  <li>00 - нет ошибки</li>
+                  <li>01 - одиночная ошибка</li>
+                  <li>10 - двойная ошибка</li>
+                  <li>11 - ошибка в контрольном разряде общей точности</li>
+               </td>
+               <td>ECC_ENA = 1</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>1:0</td>
+               <td>Code_ERR_0</td>
+               <td>
+                  Код ошибки для младшей половины данных SDR / первой четверти данных HDR:
+                  <li>00 - нет ошибки</li>
+                  <li>01 - одиночная ошибка</li>
+                  <li>10 - двойная ошибка</li>
+                  <li>11 - ошибка в контрольном разряде общей точности</li>
+               </td>
+               <td>ECC_ENA = 1</td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <br class="table-break">
+      <p><a name="ehl-DDR_EC"></a><b style="color: #0000CC">DDR_EC [0x3c] : </b>Error Correction and Detection Control Register</p>
+      <p>Регистр содержит счетчики обнаруженных ошибок в прочитанных из памяти данных, границу формирования прерываний, режимы тестирования корректирующего кода. Регистр доступен для записи только в конфигурации с корректирующим кодом (<b>ECC_ENA</b> = 0b1).</p>
+      <table summary="Fields for Register: DDR_EC" cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:24</td>
+               <td>Cnt_SERR</td>
+               <td>
+                  <p><b>Счетчик одиночных ошибок</b></p>
+                  <p>Останавливается при достижении значения 255. Прерывание сбрасывается при Cnt_SERR <= Num_SERR. При одновременной записи в регистр и инкременте (обнаружении ошибки) приоритет отдается записи.</p>
+               </td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>23:16</td>
+               <td>Num_SERR</td>
+               <td>
+                  <p><b>Порог генерации прерывания для одиночных ошибок</b></p>
+                  <p>При достижении или превышении порога счетчиком Cnt_SERR генерируется прерывание.</p>
+               </td>
+               <td>R/W</td>
+               <td>0xFF</td>
+            </tr>
+            <tr>
+               <td>15:8</td>
+               <td>Cnt_DERR</td>
+               <td>
+                  <p><b>Счетчик двойных ошибок</b></p>
+                  <p>Останавливается при достижении значения 255. Прерывание сбрасывается при обнулении Cnt_DERR. При одновременной записи в регистр и инкременте (обнаружении ошибки) приоритет отдается записи.</p>
+               </td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>7:4</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>3</td>
+               <td>WB</td>
+               <td>
+                  <p><b>Разрешение автоматического исправления корректируемых ошибок</b></p>
+                  <p>При обнаружении исправляемой кодом Хэмминга ошибки в прочитанных данных контроллер инициирует последовательность Read-Modify-Write из адреса, по которому была обнаружена ошибка.</p>
+               </td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>2</td>
+               <td>NEMPTY</td>
+               <td>
+                  <p>Признак наличия данных в FIFO ошибочных адресов (DDR_ECC_FIFO_x).</p>
+               </td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>1:0</td>
+               <td>MODE</td>
+               <td>
+                  <p><b>Режим коррекции ошибок</b></p>
+                  <p>Memory mode:</p>
+                  <li>00 - режим без коррекции ошибок, обмен данными только с блоком данных памяти</li>
+                  <li>01 - режим с коррекцией ошибок, обмен с блоком данных и блоком контрольных разрядов</li>
+                  <li>10 - режим тестирования блока контрольных разрядов</li>
+                  <li>11 - резерв</li>
+               </td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+      <p>Тестирование коррекции ошибок осуществляется с помощью <b>DDR_EC.MODE</b>.</p>
+      <p>При отключенном режиме коррекции ошибок (<b>DDR_EC.MODE</b> = 0) запись осуществляется только в блок данных, содержимое блока контрольных разрядов остается неизменным [A-5-1-22]. При чтении данные, считываемые из блока данных, поступают на выход напрямую в обход схемы коррекции ошибок. Сигналы ошибок не формируются [A-5-1-23].</p>
+      <p>В режиме коррекции ошибок (<b>DDR_EC.MODE</b> = 1) одиночные ошибки накапливаются в <b>DDR_EC.Cnt_SERR</b>. Двойные ошибки накапливаются в <b>DDR_EC.Cnt_DERR</b>. При <b>DDR_EC.Cnt_SERR</b> > <b>DDR_EC.Num_SERR</b> или при обнаружении двойной ошибки (<b>DDR_EC.Cnt_DERR</b> > 0) контроллер генерирует прерывание <b>interrupt</b>. [A-5-1-24]</p>
+      <p>Режим тестирования контрольных битов (<b>DDR_EC.MODE</b> = 2) предусматривает запись данных с входной шины данных в блок контрольных разрядов напрямую, минуя схему кодирования. Содержимое блока данных остается неизменным. [A-5-1-25] При чтении из памяти на выходную шину поступают данные из блока контрольных разрядов. Старшие разряды дополняются нулями при записи и чтении. Сигналы ошибок не формируются. [A-5-1-26]</p>
+
+      <br class="table-break">
+      <p><a name="ehl-DDR_ECC_SE_PAT0"></a><b style="color: #0000CC">DDR_ECC_SE_PAT0 [0x40] : </b>Error Correction Single Error Pattern 0 Register</p>
+      <p>Регистр содержит флаги, указывающие на наличие одиночной ошибки для бита шины данных. Регистр пристутствует в конфигурации с <b>ECC_ENA</b> = 1.</p>
+      <table summary="Fields for Register: DDR_ECC_SE_PAT0" cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:0</td>
+               <td>-</td>
+		<td>Младшие 32 бита признаков одиночных ошибок. Соответствуют младшим 32 битам на шине данных SDRAM. Если кодом Хэмминга обнаружена одиночная ошибка при чтении, то бит устанавливается в 1. Флаги имеют накопительный характер и устанавливаются по схеме ИЛИ между текущим значением регистра и вектором обнаруженных ошибок. Регистр доступен по записи для сброса установленных флагов. При одновременной записи и одиночной ошибки, приоритет отдается записи, ошибка не будет сохранена.</p></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <p><a name="ehl-DDR_ECC_SE_PAT1"></a><b style="color: #0000CC">DDR_ECC_SE_PAT1 [0x44] : </b>Error Correction Single Error Pattern 1 Register</p>
+      <p>Регистр аналогичен регистру <b>DDR_ECC_SE_PAT0</b> для старших 32 бит данных на шине данных SDRAM.</p>
+
+      <p><a name="ehl-DDR_ECC_SE_PAT2"></a><b style="color: #0000CC">DDR_ECC_SE_PAT2 [0x48] : </b>Error Correction Single Error Pattern 2 Register</p>
+      <p>Регистр аналогичен регистру <b>DDR_ECC_SE_PAT0</b> для 8 бит кода Хэмминга.</p>
+      <table summary="Fields for Register: DDR_ECC_SE_PAT0" cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:8</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>7:0</td>
+               <td>-</td>
+               <td>8 бит признаков одиночных ошибок в коде Хэмминга. Если ширина кода Хэмминга меньше 8, то старшие биты не будут установлены аппаратно.</p></td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <br class="table-break">
+      <p><a name="ehl-DDR3_RESET"></a><b style="color: #0000CC">DDR3_RESET [0x4c] : </b>DDR3 Reset Timing Parameters Register</p>
+      <p>Регистр содержит значения счетчиков, задающих временные ограничения между подачей питания, установкой <b>dfi_reset_n</b> и установкой <b>dfi_cke</b> в режиме ddr3. Модуль счета в 64 раза больше записанного в регистры значения тактов частоты памяти.</p>
+      <table summary="Fields for Register: DDR3_RESET" cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Присутствие</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:16</td>
+               <td>RL</td>
+               <td>
+                  <b>Период счетчика Reset Low. </b> Установка dfi_reset_n в DDR3 должна происходить не ранее 200 мкс с момента подачи питания. Записанное значение выражается в тактах частоты памяти, умноженных на 64.
+               </td>
+               <td>RAM_MODES[1]=1</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>15:0</td>
+               <td>RH</td>
+               <td>
+                  <b>Период счетчика Reset High. </b> Установка dfi_cke в DDR3 должна происходить не ранее 500 мкс с момента установки dfi_reset_n. Записанное значение выражается в тактах частоты памяти, умноженных на 64.
+               </td>
+               <td>RAM_MODES[1]=1</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <br class="table-break">
+      <p><a name="ehl-DDR3_ZQ"></a><b style="color: #0000CC">DDR3_ZQ [0x50] : </b>ZQ Calibration Interval Register</p>
+      <p>Регистр содержит значение интервала счета между запросами на выполнение калибровки ZQCS в соответствии со стандартом DDR3. Записанное в регистр значение умножается на 1024 при генерации интервалов во внутреннем счетчике. Счетчик неактивен в режиме DDR2. В режиме DDR3 счетчик сбрасывается при установке <b>DDR3_CTRL.EZQCS</b>.</p>
+      <table summary="Fields for Register: DDR3_ZQ" cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Присутствие</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:0</td>
+               <td>ZT</td>
+               <td>Счетчик интервала между командами ZQCS. Значение счетчика в тактах частоты памяти умножается на 1024. При значении 0 периодические команды не формируются.</td>
+               <td>RAM_MODES[1]=1</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <br class="table-break">
+      <p><a name="ehl-FPGA_CTRL"></a><b style="color: #0000CC">FPGA_CTRL [0x54] : </b>Altera UniPHY / Xilinx PHY Control Register</p>
+      <p>Регистр предназначен для управления Altera UniPHY [9], в случае, если контроллер сконфигурирован для поддержки данного вида PHY (<b>PHY_TYPE</b>=2).</p>
+      <p>Регистр предназначен для управления Xilinx PHY, в случае, если контроллер сконфигурирован для поддержки данного вида PHY (<b>PHY_TYPE</b>=5).</p>
+      <table summary="Fields for Register: FPGA_CTRL" cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:4</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>3</td>
+               <td>CS</td>
+               <td>
+                  <b>Calibration Success. </b>Устанавливается, если калибровка завершена успешно. Сбрасывается при установке CR.
+               </td>
+               <td>R</td>
+               <td>x</td>
+            </tr>
+            <tr>
+               <td>2</td>
+               <td>CF</td>
+               <td>
+                  <b>Calibration Failed. </b>Устанавливается, если калибровка завершена с ошибками. Сбрасывается при установке CR.
+               </td>
+               <td>R</td>
+               <td>x</td>
+            </tr>
+            <tr>
+               <td>1</td>
+               <td>IR</td>
+               <td>
+                  <b>Initialization Request. </b>Запрос процедуры инициализации PHY. Установка бита пирводит к началу процедуры инициализации.
+                  Отсутствует в конфигурации <b>PHY_TYPE</b>=5. Инициализация происходит аппаратно после выхода из сброса.
+               </td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>0</td>
+               <td>CR</td>
+               <td>
+                  <b>Calibration Request. </b>Запрос калибровки PHY. Установка бита приводит к сбросу логики, отвечающей за калибровку. Последующий сброс бита приводит к началу процедуры калибровки.
+                  Отсутствует в конфигурации <b>PHY_TYPE</b>=5. Инициализация происходит аппаратно после выхода из сброса.
+               </td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <br class="table-break">
+<!-- TODO: add DLL_LOCKED here -->
+<!-- TODO: add control over some sort of turned byte OFF for debugging -->
+      <p><a name="ehl-DDR_BYTE0"></a><b style="color: #0000CC">DDR_BYTE0 [0x58] : </b>Data Byte 0 Register</p>
+      <p>Регистр ассоциирован с параметрами младшего байта данных. Регистр присутствует только в конфигурации <b>PHY_TYPE</b> = 0</p>
+      <table summary="Fields for Register: DDR_BYTE0" cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Присутствие</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31</td>
+               <td>RLS</td>
+               <td>
+                  <p>Отражает текущее значение <b>dfi_rdlvl_resp</b> для байта 0. Может быть использован для проведения Gate Training в ручном режиме. Значение соответствует последнему <b>RANK_CNT</b> для которого проводилось чтение и не содержит информации о том, какой <b>dfi_rdlvl_cs_n</b> использовался для чтения.</p>
+                  <p>До проведения первого чтения из памяти (это должен выполнять Gate Training) регистр содержит невалидную информацию.</p>
+               </td>
+               <td>всегда</td>
+               <td>R</td>
+               <td>x</td>
+            </tr>
+            <tr>
+               <td>30</td>
+               <td>DRV</td>
+               <td>
+                  <p><b>DFI Rddata Valid.</b> Регистр записывается текущим значением <b>dfi_rddata_valid</b>[0], если не все биты данного вектора установлены в начале транзакции.</p>
+                  <p>При некорректно спроектированной системе DDR (память, печатная плата, корпус, PHY, контроллер памяти) возможно, что стробы DQS для различных байтовых линий имеют разброс во времени прихода. Если задержка прихода стробов превышает разрешенный лимит, то возможно, что данные, захваченные частью стробов будут захвачены на одном фронте частоты в PHY, а часть на другом. В этом случае сигнал <b>dfi_rddata_valid</b> будет установлен для части бит. Значение DRV, отличное от 0 сигнализирует об ошибке в проектировании и требует внесения изменений в систему.</p>
+                  <p>Этот регистр может быть установлен во время Data Eye Training, когда стробы смещаются относительно данных и могут оказаться по разные стороны фронта синхросигнала из-за разброса технологических параметров. Такое функционирование ожидаемо. Следует сбросить регистр после проведения Data Eye Training. Сброс регистра происходит путем записи в него <b>любого</b> значения.</p>
+                  <p>Данный регистр служит исключительно для начальной отладки системы.</p>
+                  <p>В конфигурации <b>ECC_ENA</b> = 0 и <b>SDRAM_WIDTH</b> = 8 регистр всегда равен 0.</p>
+               </td>
+               <td>всегда</td>
+               <td>R/W0</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>29:28</td>
+               <td>ET</td>
+               <td>
+                  <p><b>Error Type.</b> Регистр отражает текущее значение полей ошибок тренинга для последнего проверенного RANK. Коды ошибок следующие:</p>
+                  <li>00 - ошибок не обнаружено;</li>
+<!-- TODO: для DET возвращать другие коды ошибок -->
+                  <li>01 - первое захваченное значение при Gate Training равно 1;</li>
+                  <li>10 - не обнаружено значений 0 во время Gate Training;</li>
+                  <li>11 - не обнаружено значений 1 во время Gate Training.</li>
+                  <p>Значение поля валидно только при завершенном тренинге (сброшены <b>DDR_CMD.MGT</b>, <b>DDR_CMD.RGT</b>, <b>DDR_CMD.RDET</b>).</p>
+                  <p>Сбрасывается в момент начала Gate Training или Data Eye Training.</p>
+               </td>
+               <td>всегда</td>
+               <td>R</td>
+               <td>x</td>
+            </tr>
+            <tr>
+               <td>27:25</td>
+               <td>DETr3</td>
+               <td> <p>Аналогично <b>DETr0</b> только для RANK-3.</p></td>
+               <td>RANK_CNT > 2</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>24:22</td>
+               <td>DETr2</td>
+               <td> <p>Аналогично <b>DETr0</b> только для RANK-2.</p></td>
+               <td>RANK_CNT > 2</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>21:19</td>
+               <td>DETr1</td>
+               <td> <p>Аналогично <b>DETr0</b> только для RANK-1.</p></td>
+               <td>RANK_CNT > 1</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>18:16</td>
+               <td>DETr0</td>
+               <td>
+<!-- TODO:<p>Коэффициенты в регистре задают смещение (в градусах относительно периода частоты памяти) строба DQS в середину диапазона данных для каждого канала данных (выводы <b>dfi_rdlvl_delay</b>). Соответствие значений регистров коэффициентам смещения определяется используемым PHY. Значение регистров обновляется автоматически по окончании процедуры Data Eye Training (<b>DDR_CMD.RDET</b>).</p> -->
+                  Смещение стробов DQS/DQS_N байта 0 для RANK-0.
+                  <li>000 - 18 градусов</li>
+                  <li>001 - 36 градусов</li>
+                  <li>010 - 54 градусов</li>
+                  <li>011 - 72 градусов</li>
+                  <li>100 - 90 градусов</li>
+                  <li>101 - 108 градусов</li>
+                  <li>110 - 126 градусов</li>
+                  <li>111 - 144 градусов</li>
+               </td>
+               <td>всегда</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>15:12</td>
+               <td>GTr3</td>
+               <td> <p>Аналогично <b>GTr0</b> только для RANK-3.</p></td>
+               <td>RANK_CNT > 2</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>11:8</td>
+               <td>GTr2</td>
+               <td> <p>Аналогично <b>GTr0</b> только для RANK-2.</p></td>
+               <td>RANK_CNT > 2</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>7:4</td>
+               <td>GTr1</td>
+               <td> <p>Аналогично <b>GTr0</b> только для RANK-1.</p></td>
+               <td>RANK_CNT > 1</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>3:0</td>
+               <td>GTr0</td>
+               <td>
+<!-- TODO: <p>Коэффициенты в регистре задают смещение (в градусах относительно периода частоты памяти) маски для строба DQS при чтении данных из памяти (<b>dfi_rdlvl_gate_delay</b>). Соответствие значений регистров коэффициентам смещения определяется используемым PHY. Значение регистров обновляется автоматически по окончании процедуры Gate Training (<b>DDR_CMD.RGT</b>).</p> -->
+                  <p>Смещение маски стробов DQS/DQS_N байта 0 для RANK-0. Управление сдвигом <b>dfi_rddata_en</b> на 1 такт для формирования маски при Gate Training определяется старшим разрядом <b>GTr0</b>.</p>
+                  <li>0000 - 0 градусов</li>
+                  <li>0001 - 45 градусов</li>
+                  <li>0010 - 90 градусов</li>
+                  <li>0011 - 135 градусов</li>
+                  <li>0100 - 180 градусов</li>
+                  <li>0101 - 225 градусов</li>
+                  <li>0110 - 270 градусов</li>
+                  <li>0111 - 315 градусов</li>
+                  <li>1000 - 360+0 градусов</li>
+                  <li>1001 - 360+45 градусов</li>
+                  <li>1010 - 360+90 градусов</li>
+                  <li>1011 - 360+135 градусов</li>
+                  <li>1100 - 360+180 градусов</li>
+                  <li>1101 - 360+225 градусов</li>
+                  <li>1110 - 360+270 градусов</li>
+                  <li>1111 - 360+315 градусов</li>
+               </td>
+               <td>всегда</td>
+               <td>R/W</td>
+               <td>0</td>
+            </tr>
+         </tbody>
+      </table>
+
+<!-- TODO: rewrite XML -->
+      <p><a name="ehl-DDR_BYTE1"></a><b style="color: #0000CC">DDR_BYTE1 [0x5c] : </b>Data Byte 1 Register. Регистр ассоциирован с параметрами байта 1 данных. Регистр присутствует только в конфигурации <b>PHY_TYPE</b> = 0 и при <b>SDRAM_WIDTH</b> > 8. Описание регистра аналогично описанию <b>DDR_BYTE0</b>.</p>
+      <p><a name="ehl-DDR_BYTE2"></a><b style="color: #0000CC">DDR_BYTE2 [0x60] : </b>Data Byte 2 Register. Регистр ассоциирован с параметрами байта 2 данных. Регистр присутствует только в конфигурации <b>PHY_TYPE</b> = 0 и при <b>SDRAM_WIDTH</b> > 16. Описание регистра аналогично описанию <b>DDR_BYTE0</b>.</p>
+      <p><a name="ehl-DDR_BYTE3"></a><b style="color: #0000CC">DDR_BYTE3 [0x64] : </b>Data Byte 3 Register. Регистр ассоциирован с параметрами байта 3 данных. Регистр присутствует только в конфигурации <b>PHY_TYPE</b> = 0 и при <b>SDRAM_WIDTH</b> > 16. Описание регистра аналогично описанию <b>DDR_BYTE0</b>.</p>
+      <p><a name="ehl-DDR_BYTE4"></a><b style="color: #0000CC">DDR_BYTE4 [0x68] : </b>Data Byte 4 Register. Регистр ассоциирован с параметрами байта 4 данных. Регистр присутствует только в конфигурации <b>PHY_TYPE</b> = 0 и при <b>SDRAM_WIDTH</b> > 32. Описание регистра аналогично описанию <b>DDR_BYTE0</b>.</p>
+      <p><a name="ehl-DDR_BYTE5"></a><b style="color: #0000CC">DDR_BYTE5 [0x6c] : </b>Data Byte 5 Register. Регистр ассоциирован с параметрами байта 5 данных. Регистр присутствует только в конфигурации <b>PHY_TYPE</b> = 0 и при <b>SDRAM_WIDTH</b> > 32. Описание регистра аналогично описанию <b>DDR_BYTE0</b>.</p>
+      <p><a name="ehl-DDR_BYTE6"></a><b style="color: #0000CC">DDR_BYTE6 [0x70] : </b>Data Byte 6 Register. Регистр ассоциирован с параметрами байта 6 данных. Регистр присутствует только в конфигурации <b>PHY_TYPE</b> = 0 и при <b>SDRAM_WIDTH</b> > 32. Описание регистра аналогично описанию <b>DDR_BYTE0</b>.</p>
+      <p><a name="ehl-DDR_BYTE7"></a><b style="color: #0000CC">DDR_BYTE7 [0x74] : </b>Data Byte 7 Register. Регистр ассоциирован с параметрами байта 7 данных. Регистр присутствует только в конфигурации <b>PHY_TYPE</b> = 0 и при <b>SDRAM_WIDTH</b> > 32. Описание регистра аналогично описанию <b>DDR_BYTE0</b>.</p>
+      <p><a name="ehl-DDR_BYTE8"></a><b style="color: #0000CC">DDR_BYTE8 [0x78] : </b>Data Byte 8 Register. Регистр ассоциирован с параметрами байта контрольных бит (кода Хэмминга). Регистр присутствует только в конфигурации <b>PHY_TYPE</b> = 0 и при <b>ECC_ENA</b> = 1. Описание регистра аналогично описанию <b>DDR_BYTE0</b>.</p>
+
+      <br class="table-break">
+      <p><a name="ehl-DDR_CFG"></a><b style="color: #0000CC">DDR_CFG [0x7c] : </b>Hardware Configuration Register (todo: add parameters descriptions here)</p>
+      <p>Регистр предназначен для определения статической конфигурации, с которой был реализован <b>ehl_ddr</b>. Он содержит значения одноименных параметров контроллера. Исходное состояние регистра зависит от параметров реализации.</p>
+      <table summary="Fields for Register: DDR_CFG" cellpadding="4" width="100%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Биты</th>
+               <th>Название</th>
+               <th>Описание</th>
+               <th>Доступ</th>
+               <th>Начальное значение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>31:27</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>26:24</td>
+               <td>PHY_TYPE</td>
+               <td>
+                  <b>Тип PHY</b>
+                  <li>0 - DDR PHY Simulation Model</li>
+                  <li>1 - Synopsys 40 nm PHY</li>
+                  <li>2 - Altera UniPHY</li>
+                  <li>3 - Synopsys 28 nm multiPHY</li>
+                  <li>4 - Fujitsu (Angstrem-M) 65 nm PHY</li>
+                  <li>5 - Xilinx</li>
+                  <li>6 - Synopsys 40 nm PHY2/3</li>
+               </td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>23:19</td>
+               <td>AXI_ID_WIDTH</td>
+               <td>
+                  <b>Разрядность сигнала AXI ID</b>
+               </td>
+               <td>R</td>
+               <td>4</td>
+            </tr>
+            <tr>
+               <td>18</td>
+               <td>AXI_4K_LIMIT</td>
+               <td>
+                  <b>Поведение контроллера при пересечении транзакцией AXI границы 4К</b>
+                  <li>0 - граница игноируется</li>
+                  <li>1 - при пересечении границы младшие 12 бит адреса обнуляются</li>
+               </td>
+               <td>R</td>
+               <td>1</td>
+            </tr>
+            <tr>
+               <td>17:16</td>
+               <td>SDRAM_WIDTH</td>
+               <td>
+                  <b>Разрядность шины памяти</b>
+                  <li>00 - AXI_WIDTH / 2</li>
+                  <li>01 - AXI_WIDTH / 4</li>
+                  <li>10 - AXI_WIDTH / 8</li>
+                  <li>11 - резерв</li>
+               </td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>15</td>
+               <td>SYNCHRONIZE_RESETS</td>
+               <td>
+                  <b>Использование синхронизаторов сброса</b>
+                  <li>0 - не использовать</li>
+                  <li>1 - использовать</li>
+               </td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>14:13</td>
+               <td>CDC_SYNC_STAGE</td>
+               <td>
+                  <b>Количество последовательно включенных триггеров в синхронизаторах контроллера</b>
+                  <li>00 - 0</li>
+                  <li>01 - 1</li>
+                  <li>10 - 2</li>
+                  <li>11 - 3</li>
+               </td>
+               <td>R</td>
+               <td>0x3</td>
+            </tr>
+            <tr>
+               <td>12:10</td>
+               <td>ERROR_FIFO_DEPTH</td>
+               <td>
+                  <b>Количество элементов в FIFO адресов ошибок</b>
+                  <li>000 - 0</li>
+                  <li>001 - 1</li>
+                  <li>010 - 2</li>
+                  <li>011 - 4</li>
+                  <li>100 - 8</li>
+                  <li>101 - 16</li>
+                  <li>110 - 32</li>
+                  <li>111 - Резерв</li>
+               </td>
+               <td>R</td>
+               <td>0x3</td>
+            </tr>
+            <tr>
+               <td>9:7</td>
+               <td>RAM_MODES</td>
+               <td>
+                  <b>Типы поддерживаемой памяти</b>
+                  <li>000 - резерв</li>
+                  <li>001 - ddr2</li>
+                  <li>010 - ddr3</li>
+                  <li>011 - ddr2, ddr3</li>
+                  <li>100 - ddr4</li>
+                  <li>101 - ddr2, ddr4</li>
+                  <li>110 - ddr3, ddr4</li>
+                  <li>111 - ddr2, ddr3, ddr4</li>
+               </td>
+               <td>R</td>
+               <td>0x3</td>
+            </tr>
+            <tr>
+               <td>6</td>
+               <td>AXI_QUEUE_DEPTH</td>
+               <td>
+                  <b>Глубина FIFO AXI</b>
+                  <li>0 - 2</li>
+                  <li>1 - 4</li>
+               </td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>5:4</td>
+               <td>RANK_CNT</td>
+               <td>
+                  <b>Количество чипов памяти</b>
+                  <li>00 - 1</li>
+                  <li>01 - 2</li>
+                  <li>резерв</li>
+                  <li>11 - 4</li>
+               </td>
+               <td>R</td>
+               <td>0x3</td>
+            </tr>
+            <tr>
+               <td>3</td>
+               <td>ECC_ENA</td>
+               <td>
+                  <b>Поддержка режима детектирования и коррекции ошибок</b>
+                  <li>0 - не поддерживается</li>
+                  <li>1 - поддерживается</li>
+               </td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>2</td>
+               <td>-</td>
+               <td><b>Резерв</b></td>
+               <td>R</td>
+               <td>0</td>
+            </tr>
+            <tr>
+               <td>1:0</td>
+               <td>AXI_WIDTH</td>
+               <td>
+                  <b>Разрядность шины AXI</b>
+                  <li>00 - резерв</li>
+                  <li>01 - 32</li>
+                  <li>10 - 64</li>
+                  <li>11 - 128</li>
+               </td>
+               <td>R</td>
+               <td>0x2</td>
+            </tr>
+         </tbody>
+      </table>
+
+<br class="table-break"></body></html>

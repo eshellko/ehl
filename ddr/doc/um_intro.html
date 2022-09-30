@@ -1,0 +1,131 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Введение</title>
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+      <div class="table">
+         <table summary="Reference" cellpadding="4" border="1" cellspacing="0" rules="all">
+            <colgroup><col><col></colgroup>
+            <tbody>
+               <tr> <td bgcolor="#C0C0C0">Версия</td> <td>3.0</td> </tr>
+               <tr> <td bgcolor="#C0C0C0">Дата</td> <td>2020.01.15</td> </tr>
+               <tr> <td bgcolor="#C0C0C0">Разработчик</td> <td>А.В. Корнюхин (kornukhin@mail.ru)</td> </tr>
+            </tbody>
+         </table>
+      </div>
+      <div class="article">
+         <div class="titlepage">
+            <h2 class="title">Введение</h2>
+         </div>
+      </div>
+      <p>В данном документе приводятся технические характеристики, функционал и инструкции по применению блока <b>ehl_ddr</b>.</p>
+      <h2 class="title">История изменений</h2>
+      <p></p>
+      <div class="table">
+         <table summary="Registers for Address Block: ehl_ddr" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+            <colgroup><col><col><col><col></colgroup>
+            <thead>
+               <tr bgcolor="#C0C0C0">
+                  <th>Версия</th>
+                  <th>Дата</th>
+                  <th>Разработчик</th>
+                  <th>Описание</th>
+               </tr>
+            </thead>
+            <tbody>
+
+               <tr>
+                  <td>1.0</td>
+                  <td>2016.11.22</td>
+                  <td>Корнюхин А.В.</td>
+                  <td>Первая публикация документа</td>
+               </tr>
+
+               <tr>
+                  <td>2.0</td>
+                  <td>2017.11.23</td>
+                  <td>Корнюхин А.В.</td>
+                  <td>
+                     <p>Добавлена поддержка режима DDR3.</p>
+                     <p>Контроллер переименован из DDR2_MCTRL в ehl_ddr.</p>
+                  </td>
+               </tr>
+
+               <tr>
+                  <td>3.0</td>
+                  <td>2020.01.15</td>
+                  <td>Корнюхин А.В.</td>
+                  <td>
+                     <p>Добавлена начальная поддержка режима DDR4.</p>
+                  </td>
+               </tr>
+
+            </tbody>
+         </table>
+      </div>
+
+      <h2 class="title">Справочные материалы</h2>
+      <div class="table">
+         <table summary="Reference" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+            <colgroup><col><col></colgroup>
+            <thead>
+               <tr bgcolor="#C0C0C0"> <th>Номер</th> <th>Наименование</th> </tr>
+            </thead>
+            <tbody>
+               <tr> <td>1</td> <td>JESD79-2F. DDR2 SDRAM Specification</td> </tr>
+               <tr> <td>2</td> <td>DDR PHY Interface (DFI) Specification, Version 2.1</td> </tr>
+               <tr> <td>3</td> <td>JESD8-15A. Stub Series Terminated Logic for 1.8 V (SSTL_18)</td> </tr>
+               <tr> <td>4</td> <td>AMBA Specification Rev. 2.0. ARM IHI 0011A</td> </tr>
+               <tr> <td>5</td> <td>AMBA AXI and ACE Protocol Specification. ARM IHI 0022E</td> </tr>
+               <tr> <td>6</td> <td>IEEE Standard for Verilog Hardware Description Language 1364-2005</td> </tr>
+               <tr> <td>7</td> <td>DDR2 PHY. Техническое задание</td> </tr>
+               <tr> <td>8</td> <td>JESD79-3F. DDR3 SDRAM Specification</td> </tr>
+               <tr> <td>9</td> <td>Functional Description - UniPHY. 2013.12.16.<b> (todo: get later version)</td> </tr>
+               <tr> <td>10</td> <td>DesignWare Cores DDR SDRAM PHY Utility Block "Lite" (PUBL) Databook, Version PUBL 2.10</td> </tr>
+               <tr> <td>11</td> <td>DesignWare Cores LPDDR4 multiPHY V2 Utility Block (PUB) Databook, Version PUBL 2.20a</td> </tr>
+               <tr> <td>12</td> <td>JESD79-4B. DDR4 SDRAM</td> </tr>
+               <tr> <td>13</td> <td>AMBA 3 APB Protocol. v1.0 Specification. ARM IHI 0024B</td> </tr>
+            </tbody>
+         </table>
+      </div>
+
+      <h2 class="title">Условные обозначения и сокращения</h2>
+      <div class="table">
+         <table summary="abbreviations" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+            <colgroup><col><col></colgroup>
+            <thead>
+               <tr bgcolor="#C0C0C0"> <th>Сокращение</th> <th>Расшифровка</th> </tr>
+            </thead>
+            <tbody>
+               <tr> <td>AHB</td> <td>Advanced High-performance Bus</td> </tr>
+               <tr> <td>APB</td> <td>Advanced Peripheral Bus</td> </tr>
+               <tr> <td>ATPG</td> <td>Automatic Test Pattern Generation</td> </tr>
+               <tr> <td>AXI</td> <td>Advanced eXtensible Interface</td> </tr>
+               <tr> <td>CDC</td> <td>Clock Domain Crossing</td> </tr>
+               <tr> <td>DDR</td> <td>Double Data Rate</td> </tr>
+               <tr> <td>DFI</td> <td>DDR PHY Interface</td> </tr>
+               <tr> <td>DFT</td> <td>Design For Testability</td> </tr>
+               <tr> <td>I/O</td> <td>Input / Output (блоки ввода / вывода)</td> </tr>
+               <tr> <td>PASR</td> <td>Partial Array Self-Refresh</td> </tr>
+               <tr> <td>PHY</td> <td>PHYsical (цифро-аналоговый модуль физического уровня)</td> </tr>
+               <tr> <td>RAM</td> <td>Random Access Memory</td> </tr>
+               <tr> <td>SDC</td> <td>Synopsys Design Constraints</td> </tr>
+               <tr> <td>SDR</td> <td>Single Data Rate</td> </tr>
+               <tr> <td>SDRAM</td> <td>Synchronous Dynamic RAM</td> </tr>
+               <tr> <td>СнК</td> <td>Система на кристалле</td> </tr>
+               <tr> <td>0x</td> <td>префикс шестнадцатеричных значений (например, 0xA7F5)</td> </tr>
+               <tr> <td>0b</td> <td>префикс двоичных значений (например, 0b0101)</td> </tr>
+            </tbody>
+         </table>
+      </div>
+
+      <h2 class="title">Функциональные возможности</h2>
+<!-- TODO: allow pslverr when access non-existing register, of write read-only register -->
+      <li> Интерфейс доступа к регистрам AMBA APB3 (без поддержки pslverr);</li>
+      <li> Поддержка памяти x8 / x16 (отсутствует поддержка памяти x4);</li>
+      <br> </br>
+      <p> </p>
+
+   </body>
+</html>

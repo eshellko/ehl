@@ -1,0 +1,303 @@
+<html>
+   <style> pre.small {line-height: 0.5; color: #0000FF; }</style>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Применение</title>
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+      <div class="article">
+         <div class="titlepage">
+            <h2 class="title">Применение</h2>
+         </div>
+      </div>
+      <p><b>ehl_ddr</b> реализован с помощью синтезируемого подмножества языка Verilog [6]. Вместе с модулем предоставляются временные ограничения в формате Synopsys Design Constraints (SDC) для использования в процессе логического синтеза. Контроллер не содержит примитивов, привязанных к конкретному технологическому процессу. Технология реализации <a href="um_appl.html#RAMS" class="olink">памяти</a> задается параметром <b>RAM_TECHNOLOGY</b>.</p>
+      <p><b style="color: #FF0000">Замечание</b>. Если не требуется поддержки 35-битного адресного пространства, то старшие биты адреса <b>awaddr</b>/<b>araddr</b> могут быть подключены к логическому 0. В этом случае неиспользуемая логика будет удалена в процессе синтеза. </p>
+      <p><b style="color: #FF0000">Замечание</b>. Если ширина интерфейса AXI равна 32 или 64, то старшие биты <b>arsize</b> и <b>awsize</b> следует подключить к 0b0 для сокращения количества логики.</p>
+      <p><b style="color: #FF0000">Замечание</b>. Если контроллер предназначен для работы с трансферами определенного размера, например, AXI 32 бита, то соответствующее ему значение следует установить на входах <b>awsize</b>/<b>arsize</b>.</p>
+      <p><b style="color: #FF0000">Замечание</b>. Если применение требует использования ограниченного количества режимов, то соответствующие режимам конфигурационные регистры могут быть заменены на константы (вручную в RTL или скриптом при синтезе). Например, если обращения к SDRAM должны поддерживать только транзакции с Burst Length, равной 8, то следует заменить <b>DDR_MR0.BL</b>[0] на 0b1. Другие примеры - использование ограниченного набора значений CAS Latency может позволить заменить биты <b>DDR_MR0.CL</b> на константы; поддержка ограниченного набора структур памяти (например, если не требуется поддерживать память с 8 банками, можно использовать set_logic_zero ddrc_inst/cmd_queue_inst/addr_dec_load_inst/bank_mask и set_logic_zero ddrc_inst/cmd_queue_inst/addr_dec_update_inst/bank_mask) позволяет сократить логику декодера адреса.</p>
+      <h3 style="color: #0000CC">Синтез</h3>
+      <p>
+         В состав СФ-блока контроллера памяти (и PHY) помимо Verilog описаний входят SDC представления, используемые для синтеза схемы.
+         При синтезе контроллера совместно с PHY следует провести настройку переменных TCL синтезатора перед использованием SDC.
+         Далее приведена пример процедуры настройки с комментариями.
+      </p>
+      <hr>
+<!--TODO: update to set_max_delay -combinational_from_to and later to -ignore_clock_latency-->
+      <pre>set cts_margin 0 ; # значение дополнительной задержки на CDC</pre>
+      <pre>                     путях между домаенами синхросигналов с высокой</pre>
+      <pre>                     нагрузкой (mctrl_clk) и доменами с низкой (DQS),</pre>
+      <pre>                     значение должно компенсировать разницу в длинах</pre>
+      <pre>                     деревьев синхросигналов и зависит от дизайна.</pre>
+      <pre>                     На первой итерации следует задать значение 0 и корректировать, как потребуется.</pre>
+      <pre>set ecc_ena 1 ; # следует устновить в соответствии с параметром ECC_ENA контроллера</pre>
+      <pre>set nbytes 2 ; # количество байт внешней памяти (включая ECC)</pre>
+      <pre>set SDRAM_CK    DDR_CK ; # имя внешнего вывода(например, DDR_CK), к которому подключен сигнал SDRAM_CK PHY, аналогично для других выводов</pre>
+      <pre>set SDRAM_CK_N  SDRAM_CK_N</pre>
+      <pre>set SDRAM_CKE   SDRAM_CKE</pre>
+      <pre>set SDRAM_CS_N  SDRAM_CS_N</pre>
+      <pre>set SDRAM_WE_N  SDRAM_WE_N</pre>
+      <pre>set SDRAM_RAS_N SDRAM_RAS_N</pre>
+      <pre>set SDRAM_CAS_N SDRAM_CAS_N</pre>
+      <pre>set SDRAM_DM    SDRAM_DM</pre>
+      <pre>set SDRAM_DQS   SDRAM_DQS</pre>
+      <pre>set SDRAM_DQS_N SDRAM_DQS_N</pre>
+      <pre>set SDRAM_BA    SDRAM_BA</pre>
+      <pre>set SDRAM_A     SDRAM_A</pre>
+      <pre>set SDRAM_DQ    SDRAM_DQ</pre>
+      <pre>set SDRAM_ODT   SDRAM_ODT</pre>
+      <pre>set ehl_sdc_hier_pfix "ddr2_inst/phy_inst/" ; # абсолютный иерархический путь до PHY в проекте</pre>
+      <pre>set use_io 0 ; # задать задержки на выводах PHY, не относящихся к SDRAM. Может быть полезно при синтезе PHY отдельно от других компонент</pre>
+      <pre>source src/sdc/ehl_ddr2_phy.sdc ; # чтение SDC</pre>
+      <pre>set ehl_sdc_hier_pfix "ddr2_inst/mctrl_inst/" ; # абсолютный иерархический путь до MCTRL в проекте</pre>
+      <pre>set ehl_clock_aclk CLK_CORE ; # имя синхросгнала, управляющего портом ACLK контроллера памяти</pre>
+      <pre>set ehl_clock_hclk CLK_CORE ; # имя синхросгнала, управляющего портом HCLK контроллера памяти</pre>
+      <pre>set ehl_clock_mctrl_clk mctrl_clk ; # имя синхросгнала, управляющего портом MCTRL_CLK контроллера памяти</pre>
+      <pre>source src/ddr2/ddr/src/sdc/ehl_ddr2_fp.sdc ; # чтение SDC для false_path</pre>
+      <hr>
+
+      <h3 style="color: #0000CC"><a name="CLOCKS"></a>Система доменов синхросигналов</h3>
+      <p>Все регистры, находящиеся на пересечении доменов тактовых сигналов (первые триггеры в синхронизаторах) специфицированы в       <a href="um_appl.html#CDC_FF" class="olink">таблице</a>. Эти триггеры следует исключить из генерации 'X' при возникновении на них временных нарушений при моделировании с SDF. Если все тактовые домены <b>ehl_ddr</b> синхронны между собой и параметр <b>CDC_SYNC_STAGE</b> равен 0, то указанные регистры не следует исключать из проверки временных нарушений при моделировании. Имена регистров могут отличаться в зависимости от настроек синтезатора. В таблице представлен наиболее распространенный стиль переименования в формате %s_reg.</p>
+      <p><b style="color: #FF0000">Замечание</b>. Данная таблица приведена в качестве справочной информации, актуальный перечень можно увидеть в начале отчета моделирования.</p>
+      <p><a name="CDC_FF"></a>Таблица 1. Регистры синхронизаторы</p>
+      <font face="Courier" size=+1>
+      <table summary="sync" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Иерархический путь</th>
+               <th>Домен данных</th>
+               <th>Домен регистра</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>axi_mux_inst/wfifo_ctrl_inst/rptr_cdc/shift_reg[0][*]</td> <td>mctrl_clk</td> <td>aclk</td> </tr>
+            <tr> <td>axi_mux_inst/wfifo_ctrl_inst/wptr_cdc/shift_reg[0][*]</td> <td>aclk</td> <td>mctrl_clk</td> </tr>
+            <tr> <td>axi_mux_inst/wfifo_data_inst/rptr_cdc/shift_reg[0][*]</td> <td>mctrl_clk</td> <td>aclk</td> </tr>
+            <tr> <td>axi_mux_inst/wfifo_data_inst/wptr_cdc/shift_reg[0][*]</td> <td>aclk</td> <td>mctrl_clk</td> </tr>
+            <tr> <td>axi_mux_inst/wfifo_cmds_inst/rptr_cdc/shift_reg[0][*]</td> <td>mctrl_clk</td> <td>aclk</td> </tr>
+            <tr> <td>axi_mux_inst/wfifo_cmds_inst/wptr_cdc/shift_reg[0][*]</td> <td>aclk</td> <td>mctrl_clk</td> </tr>
+            <tr> <td>axi_mux_inst/wfifo_resp_inst/rptr_cdc/shift_reg[0][*]</td> <td>aclk</td> <td>mctrl_clk</td> </tr>
+            <tr> <td>axi_mux_inst/wfifo_resp_inst/wptr_cdc/shift_reg[0][*]</td> <td>mctrl_clk</td> <td>aclk</td> </tr>
+            <tr> <td>axi_mux_inst/rfifo_ctrl_inst/rptr_cdc/shift_reg[0][*]</td> <td>mctrl_clk</td> <td>aclk</td> </tr>
+            <tr> <td>axi_mux_inst/rfifo_ctrl_inst/wptr_cdc/shift_reg[0][*]</td> <td>aclk</td> <td>mctrl_clk</td> </tr>
+            <tr> <td>axi_mux_inst/rfifo_data_inst/rptr_cdc/shift_reg[0][*]</td> <td>aclk</td> <td>mctrl_clk</td> </tr>
+            <tr> <td>axi_mux_inst/rfifo_data_inst/wptr_cdc/shift_reg[0][*]</td> <td>mctrl_clk</td> <td>aclk</td> </tr>
+            <tr> <td>csr_inst/bus_sync_inst/sync_ahb_req_wr_inst/shift_reg[0][0]</td> <td>hclk</td> <td>mctrl_clk</td> </tr>
+            <tr> <td>csr_inst/bus_sync_inst/sync_ahb_req_rd_inst/shift_reg[0][0]</td> <td>hclk</td> <td>mctrl_clk</td> </tr>
+            <tr> <td>csr_inst/bus_sync_inst/sync_ahb_done_wr_inst/shift_reg[0][0]</td> <td>mctrl_clk</td> <td>hclk</td> </tr>
+            <tr> <td>csr_inst/bus_sync_inst/sync_ahb_done_rd_inst/shift_reg[0][0]</td> <td>mctrl_clk</td> <td>hclk</td> </tr>
+            <tr> <td>csr_inst/ifg.sync_interrupt_inst/shift_reg[0][0] <sup>**</sup></td> <td>mctrl_clk</td> <td>hclk</td> </tr>
+            <tr> <td>ddrc_inst/sync_inst/shift_reg[0][75:0]</td> <td>aclk</td> <td>mctrl_clk</td> </tr>
+         </tbody>
+      </table>
+      </font>
+      <p><sup>*</sup> Количество триггеров в синхронизированных счетчиках Грея зависит от глубины FIFO и соотношения ширины портов данных записи и чтения.</p>
+      <p><sup>**</sup> Присутствует в конфигурации с корректирующим кодом.</p>
+      <p>Для исключения ложных ошибок при моделировании схемы с SDF рекомендуется следовать инструкции:</p>
+      <p>1. Во время моделирования при нарушении требований setup/hold на триггере-приемнике, располагающемся на границе асинхронных тактовых доменов, будет генерироваться сообщение о временном нарушении, а сам триггер будет переключаться в состояние 0bx.</p>
+      <p>2. Контроллер содержит 2 типа триггеров на границе доменов - флаги-синхронизаторы и данные <b>(todo: Добавить таблицу с перечнем указанных регистров. Третий тип - данные, захватываемые в момент стабильности.)</b>.</p>
+      <p>a. Флаги-синхронизаторы имеют <b>CDC_SYNC_STAGE</b> последовательно подключенных триггеров. При возникновении метастабильности на первом, следующие будут минимизировать этот эффект.</p>
+      <p>b. Триггеры данных будут переходить в неопределенное состояние при возникновении временных нарушений, но логика контроллера устроена таким образом, что данные будут обновлены на следующем такте корректным значением и не будут читаться, когда значение неопределенно.</p>
+      <p>3. В случае 2.а требуется отключить проверку setup/hold при моделировании и считать, что схема синхронизации корректирует любую возникшую ошибку.</p>
+      <p>4. В случае 2.б проверку временных нарушений можно оставить, или исключить. В первом случае следует предусмотреть возможность фильтрации сообщений об ошибках, чтобы не пропустить нарушения от источников, являющихся потенциально критичными.</p>
+      <p>5. Исключить триггер из проверки можно следующими способами (способы могут меняться в зависимости от используемых САПР):</p>
+      <p>a. Выгрузить SDF и netlist для моделирования с задержками. По умолчанию SDF будет содержать проверки и на путях, относящихся к схемам переключения между тактовыми доменами.</p>
+      <p>b. В случае с 2.а для первого триггера в синхронизаторе (Таблица 27) следует деактивировать проверку. Деактивация может быть выполнено вручную (или с помощью скрипта) в SDF, или автоматически в САПР. В случае с 2.б деактивация может (но не должна) быть выполнена для снижения количества сообщений о временных нарушениях при моделировании.</p>
+      <p>c. Деактивация с помощью обнуления проверки выполняется командой set_annotated_check. После выполнения команд следует выгрузить SDF командой write_sdf.</p>
+      <pre>set_annotated_check 0 -from sync_reg[0]/CP -to sync_reg[0]/D -setup</pre>
+      <pre>set_annotated_check 0 -from sync_reg[0]/CP -to sync_reg[0]/D -hold</pre>
+      <p>d. Деактивация с помощью удаления проверки выполняется командой set_disable_timing. После выполнения команд следует выгрузить SDF командой write_sdf -exclude_disabled_arcs.</p>
+      <pre>set_disable_timing -from CP -to D sync_reg[0]</pre>
+      <p><b style="color: #FF0000">Замечание</b>. Следует иметь в виду, что имена пинов (D и CP) могут отличаться для различных библиотек.</p>
+      <p><b style="color: #FF0000">Замечание</b>. В процессе Data Eye Training при использовании <b>ehl_ddr2_phy</b> могут возникать временные нарушения на регистрах FIFO в PHY. На время проведения DET следует отключить проверку нарушений на этих триггерах. При моделировании других типов PHY следует использовать рекомендации производителей.</p>
+<!-- TODO:      <h3 style="color: #0000CC">Модули синхронизаторов</h3> -->
+      <h3 style="color: #0000CC"><a name="RAMS"></a>Модули памяти</h3>
+      <p><b>ehl_ddr</b> позволяет использовать модули блочной двухпортовой памяти (1 порт записи, 1 порт чтения) для сокращения количества используемой логики. Пользователь может использовать блоки памяти, или реализовать контроллер с помощью триггеров. В ПЛИС синтезатор, обычно, автоматически определяет память и заменяет ее доступными ресурсами. Выбор реализации производится с помощью параметра <b>RAM_TECHNOLOGY</b>. Значение 0 (по умолчанию) приводит к реализации блоков памяти на триггерах (в ПЛИС синтезатор выбирает доступные ресурсы). Другие значения приводят к попытке реализовать память с помощью библиотечных элементов. Если требуемая конфигурация памяти отсутствует в <b>ehl_spram</b> / <b>ehl_dpram</b>, память будет заменена на генератор константы 0b0, а в консоль при моделировании будет выведено сообщение о том, что память заменена на "черный ящик".</p>
+      <table summary="rams" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Иерархический путь</th>
+               <th>Размер слова</th>
+               <th>Кол-во слов</th>
+               <th>Назначение</th>
+               <th>Синхросигнал</th>
+               <th>Конфигурация</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>ddrc_inst/rd_inst/ram.ram_inst</td> <td>4*<b>SDRAM_WIDTH</b>+1</td> <td>32</td> <td>Буфер чтения</td> <td>mctrl_clk</td> <td><b>AXI_WIDTH</b>/<b>SDRAM_WIDTH</b> != 2</td> </tr>
+            <tr> <td>ddrc_inst/rd_inst/ram.ram_even_inst</td> <td>2*<b>SDRAM_WIDTH</b>+1</td> <td>16</td> <td>Буфер чтения</td> <td>mctrl_clk</td> <td><b>AXI_WIDTH</b>/<b>SDRAM_WIDTH</b> = 2</td> </tr>
+            <tr> <td>ddrc_inst/rd_inst/ram.ram_odd_inst</td> <td>2*<b>SDRAM_WIDTH</b>+1</td> <td>16</td> <td>Буфер чтения</td> <td>mctrl_clk</td> <td><b>AXI_WIDTH</b>/<b>SDRAM_WIDTH</b> = 2</td> </tr>
+            <tr> <td>axi_wr_inst/wfifo_ctrl_inst/ram[0].bin_addr.dpram.dpram_inst</td> <td>39</td> <td><b>AXI_QUEUE_DEPTH</b></td> <td>Буфер команд записи</td> <td>aclk -> mctrl_clk</td> <td>-</td> </tr>
+            <tr> <td>axi_wr_inst/wfifo_data_inst/ram[0].bin_addr.dpram.dpram_inst</td> <td>73 (TODO: complex formulae)</td> <td>8</td> <td>Буфер данных</td> <td>aclk -> mctrl_clk</td> <td>-</td> </tr>
+            <tr> <td>axi_rd_inst/rfifo_ctrl_inst/ram[0].bin_addr.dpram.dpram_inst</td> <td>55</td> <td><b>AXI_QUEUE_DEPTH</b></td> <td>Буфер команд чтения</td> <td>aclk -> mctrl_clk</td> <td>-</td> </tr>
+         </tbody>
+      </table>
+      <h3 style="color: #0000CC">Используемые ресурсы</h3>
+      <p><b>ehl_ddr</b> синтезирован в базисе технологических библиотек для оценки требуемых ресурсов и достижимых тактовых частот.</p>
+      <table summary="resources" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Параметр</th>
+               <th>Требование</th>
+               <th>Mikron RT 90nm</th>
+               <th>Mikron RT 90nm</th>
+               <th>Mikron RT 90nm</th>
+               <th>Mikron RT 90nm</th>
+               <th>Единица измерения</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>Тактовая частота SDRAM FSDRAM</td> <td>125 - 400</td> <td>400</td> <td>400</td> <td>400</td> <td>400</td> <td>МГц</td> </tr>
+            <tr> <td>Тактовая частота APB FAPB</td> <td>50 - 200</td> <td>200</td> <td>200</td> <td>200</td> <td>200</td> <td>МГц</td> </tr>
+            <tr> <td>Тактовая частота AXI FAXI</td> <td>50 - 400</td> <td>400</td> <td>400</td> <td>400</td> <td>400</td> <td>МГц</td> </tr>
+            <tr> <td>Количество выводов</td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> </tr>
+            <tr> <td>Количество триггеров</td> <td></td> <td>11719</td> <td>6821</td> <td>4002</td> <td>11183</td> <td></td> </tr>
+            <tr> <td>Количество блоков памяти</td> <td></td> <td>0</td> <td>0</td> <td>0</td> <td>0</td> <td></td> </tr>
+            <tr> <td>Количество логических вентилей</td> <td></td> <td>27644</td> <td>16259</td> <td>10377</td> <td>26411</td> <td></td> </tr>
+            <tr> <td>Тестовое покрытие ATPG Stuck-at</td> <td>99 - 100</td> <td>100.00</td> <td>100.00</td> <td>100.00</td> <td>100.00</td> <td>%</td> </tr>
+            <tr bgcolor="#C0C0C0"> <td colspan="7">Параметры</td> </tr>
+            <tr> <td>AXI_WIDTH</td> <td></td> <td>128</td> <td>64</td> <td>32</td> <td>128</td> <td></td> </tr>
+            <tr> <td>SDRAM_WIDTH</td> <td></td> <td>64</td> <td>32</td> <td>8</td> <td>64</td> <td></td> </tr>
+            <tr> <td>ECC_ENA</td> <td></td> <td>1</td> <td>1</td> <td>1</td> <td>1</td> <td></td> </tr>
+            <tr> <td>RANK_CNT</td> <td></td> <td>2</td> <td>1</td> <td>1</td> <td>2</td> <td></td> </tr>
+            <tr> <td>AXI_QUEUE_DEPTH</td> <td></td> <td>2</td> <td>2</td> <td>2</td> <td>2</td> <td></td> </tr>
+            <tr> <td>ERROR_FIFO_DEPTH</td> <td></td> <td>4</td> <td>4</td> <td>4</td> <td>0</td> <td></td> </tr>
+            <tr> <td>CDC_SYNC_STAGE</td> <td></td> <td>2</td> <td>2</td> <td>2</td> <td>2</td> <td></td> </tr>
+            <tr> <td>SYNCHRONIZE_RESETS</td> <td></td> <td>0</td> <td>0</td> <td>0</td> <td>0</td> <td></td> </tr>
+<!--             <tr> <td>RAM_ADDR</td> <td></td> <td>0</td> <td>0</td> <td>0</td> <td>0</td> <td></td> </tr> -->
+            <tr> <td>AXI_4K_LIMIT</td> <td></td> <td>1</td> <td>1</td> <td>1</td> <td>1</td> <td></td> </tr>
+         </tbody>
+      </table>
+      <h3 style="color: #0000CC">Пропускная способность контроллера</h3>
+      <p>Пропускная способность <b>ehl_ddr</b> зависит от множества факторов, таких как: тактовая частота AXI, тактовая частота MCTRL, Burst Length, Refresh Period, CAS Latency, Additive Latency, соотношение ширины интерфейсов AXI и SDRAM.</p>
+      <p>В общем случае наблюдаемые значения максимальной пропускной способности, полученные для набора тестов, представлены в таблице. Значение вычисляется как отношение скорости передачи через DFI к минимальной (лимитирующей) из скоростей AXI и DFI.</p>
+      <table summary="bandwidth" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th></th>
+               <th>Мин.</th>
+               <th>Макс.</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>Запись, BL = 4</td> <td>94.32 %</td> <td>99.38 %</td> </tr>
+            <tr> <td>Запись, BL = 8</td> <td>89.84 %</td> <td>99.38 %</td> </tr>
+            <tr> <td>Чтение, BL = 4</td> <td>79.25 %</td> <td>95.20 %</td> </tr>
+            <tr> <td>Чтение, BL = 8</td> <td>79.25 %</td> <td>98.88 %</td> </tr>
+         </tbody>
+      </table>
+      <h3 style="color: #0000CC">Диагностика неисправностей</h3>
+      <p>При отладке контроллера могут возникнуть проблемы, связанные со сложностями реализации протокола DDR. Далее приведен перечень действий по поиску причины неисправностей.</p>
+      <table summary="bandwidth" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Симптом</th>
+               <th>Причина</th>
+               <th>Пути устранения</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>Зависание системы</td> <td>Отсутствие откликов от контроллера на системной шине. Ожидается, что контроллер шины обрабатывает ситуации долгих откликов от ведомых устройств на шине в соответствии с конфигурацией системы, т.е. независимо от IP используемых в системе.</td> <td>При отсутствии синхросигнала <b>mctrl_clk</b> контроллер будет принимать транзакции AXI и APB, но не будет отвечать на них. В случае с APB сигнал <b>pready</b> будет переведен в состояние 0, в случае с AXI не будет откликов по Read Response и Write Response Channel. Следует убедиться, что PHY пропускает корректную опорную частоту через DLL. При наличии данной неисправности в PHY контроллер не подлежит к использованию.</td> </tr>
+            <tr> <td></td> <td></td> <td>Некорректные результаты тренингов могут привести к генерации ложных стробов или маскированию ожидаемых стробов при чтении из памяти. В этом случае следует сбросить контроллер и провести тренинги вручную.</td> </tr>
+            <tr> <td>Нестабильная работа контроллера</td> <td>Регулярное возникновение ошибок в данных, некорректные значения регистров...</td> <td>При отсутствии повторяемости результатов на нескольких образцах, следует убедиться, что DFT тесты не выявляют производственных дефектов. Компоненты с дефектами следует исключить из использования.</td> </tr>
+            <tr> <td></td> <td></td> <td>При наличии ошибок в данных следует включить режим коррекции ошибок кодом Хэмминга. Если корректирующей способности кода не достаточно, следует исключить образец из использования.</td> </tr>
+            <tr> <td></td> <td></td> <td>При регулярном наличии ошибок следует проверить, что линии данных к памяти выровнены между собой. При обнаружении источника ошибок следует изменить топологию печатной платы.</td> </tr>
+            <tr> <td></td> <td></td> <td>При возникновении ошибок в данных на некоторых паттернах, провести анализ паттернов на предмет взаимного расположения переключающихся в момент возниквноения ошибки бит. Ошибки могут быть вызваны влиянием взаимной индуктивности выводов при большом количество одновременно переключающихся расположенных рядом выводов.</td> </tr>
+<!-- TODO: check GTR still exist -->
+            <tr> <td></td> <td></td> <td>Проверить значение <b>DDR2_GTR.DRV</b>. Если значение отлично от нуля, это указывает на невыровненность стробов и большую задержку в линии стробов по сравнению с линией синхросигналов. Следует проверить повторяемость результатов на меньшей частоте <b>mctrl_clk</b> из рабочего диапазона контроллера. Если ошибка пропадает при понижении частоты, это может свидетельствовать о несбалансированности стробов и синхрсоигналов.</td> </tr>
+            <tr> <td></td> <td></td> <td>Нестабильная частота <b>mctrl_clk</b> может приводить к сбоям в обработке данных. Следует убедиться, что <b>PHY_DLL_CTRL.DL</b>[0] равен 1 перед началом работы с PHY.</td> </tr>
+         </tbody>
+      </table>
+      <h3 style="color: #0000CC">Тестовое покрытие</h3>
+      <p>Для верификации <b>ehl_ddr</b> используется тест ehl_ddr_tb. В зависимости от выбранной конфигурации контроллера он имеет различное тестовое покрытие. В таблице представлено значение для различных видов тестового покрытия для некоторых конфигураций.</p>
+      <table summary="coverage" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Тип покрытия</th>
+               <th></th>
+               <th></th>
+               <th></th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>block</td>        <td>1790 / 1907 (94%)</td> <td>1806 / 1907 (95%)</td> <td>1833 / 1929 (95%)</td> </tr>
+            <tr> <td>expression</td>   <td>136 / 160 (85%)</td> <td>138 / 160 (86%)</td> <td>140 / 160 (87%)</td> </tr>
+            <tr> <td>toggle</td>       <td>12013 / 14151 (85%)</td> <td>12254 / 14388 (85%)</td> <td>14244 / 16238 (88%)</td> </tr>
+            <tr> <td>Конфигурация</td> <td><p>AXI_WIDTH = 32</p><p>AXI_QUEUE_DEPTH = 2</p><p>DDR2-533</p><p>SDRAM_WIDTH = 8</p><p>ECC_ENA = 1</p><p>AXI 400 MHz</p><p>APB 167 MHz</p></td> <td><p>AXI_WIDTH = 32</p><p>AXI_QUEUE_DEPTH = 4</p><p>DDR2-533</p><p>SDRAM_WIDTH = 8</p><p>ECC_ENA = 1</p><p>AXI 400 MHz</p><p>APB 167 MHz</p></td> <td><p>AXI_WIDTH = 64</p><p>AXI_QUEUE_DEPTH = 4</p><p>DDR2-533</p><p>SDRAM_WIDTH = 16</p><p>ECC_ENA = 1</p><p>AXI 400 MHz</p><p>APB 167 MHz</p></td> </tr>
+         </tbody>
+      </table>
+      <p><a href="test_req.html" class="olink">Тестовый план.</a></p>
+      <p></p>
+      <h3 style="color: #0000CC">Реализация</h3>
+      <p><b>ehl_ddr</b> был реализован с использованием различных технологий. Далее приведен перечень реализаций.</p>
+
+      <table summary="implementation" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th></th>
+               <th>2018.03.05</th>
+               <th>2018.04</th>
+               <th>2018.09</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>Технология</td> <td>TSMC 90 nm LP</td> <td>FPGA Altera SoCKit</td> <td>TSMC 90 nm LP</td> </tr>
+            <tr> <td>PHY</td> <td>ehl_ddr2_phy</td> <td>Altera UniPHY (Cyclone V)</td> <td>ehl_ddr2_phy</td> </tr>
+            <tr> <td>aclk</td> <td><= 200 MHz</td> <td></td> <td><= 200 MHz</td> </tr>
+            <tr> <td>hclk</td> <td><= 200 MHz</td> <td></td> <td><= 200 MHz</td> </tr>
+            <tr> <td>mctrl_clk</td> <td><= 200 MHz</td> <td>150 MHz</td> <td><=200 MHz</td> </tr>
+            <tr> <td>DDR MODE</td> <td>DDR2-250, DDR2-400</td> <td>DDR3-600</td> <td>DDR2-250 - DDR2-800</td> </tr>
+            <tr> <td>AXI_WIDTH</td> <td>32</td> <td>64</td> <td>32</td> </tr>
+            <tr> <td>AXI4_SUPPORT</td> <td>0</td> <td>0</td> <td>0</td> </tr>
+            <tr> <td>AXI_ID_WIDTH</td> <td>1</td> <td>8</td> <td>1</td> </tr>
+            <tr> <td>RANK_CNT</td> <td>1</td> <td>1</td> <td>1</td> </tr>
+            <tr> <td>ECC_ENA</td> <td>1</td> <td>0</td> <td>1</td> </tr>
+            <tr> <td>SDRAM_WIDTH</td> <td>8</td> <td>32</td> <td>8</td> </tr>
+            <tr> <td>AXI_CHAN_CNT -> AXI_QUEUE_DEPTH</td> <td>2</td> <td>4</td> <td>2</td> </tr>
+            <tr> <td>ERROR_FIFO_DEPTH</td> <td>4</td> <td>0</td> <td>4</td> </tr>
+            <tr> <td>CDC_SYNC_STAGE</td> <td>2</td> <td>3</td> <td>3</td> </tr>
+            <tr> <td>SYNCHRONIZE_RESETS</td> <td>0</td> <td>0</td> <td>0</td> </tr>
+<!--             <tr> <td>RAM_ADDR</td> <td>0</td> <td>0</td> <td>0</td> </tr> -->
+            <tr> <td>IMPL_REGISTER_RDDATA</td> <td>1</td> <td>1</td> <td>1</td> </tr>
+            <tr> <td>AXI_4K_LIMIT</td> <td>1</td> <td></td> <td>1</td> </tr>
+            <tr> <td>IMPL_AXI_BYPASS_WRAPPER</td> <td>0</td> <td>0</td> <td>0</td> </tr>
+            <tr> <td>IMPL_AXI_BYPASS_CORE</td> <td></td> <td>1</td> <td>1</td> </tr>
+            <tr> <td>TECHNOLOGY</td> <td>1</td> <td></td> <td>-</td> </tr>
+            <tr> <td>RAM_TECHNOLOGY</td> <td></td> <td>0</td> <td>0</td> </tr>
+            <tr> <td>RAM_MODES</td> <td>-</td> <td>2</td> <td>1</td> </tr>
+            <tr> <td>PHY_TYPE</td> <td>-</td> <td>2</td> <td>0</td> </tr>
+            <tr> <td>DLL_TECHNOLOGY</td> <td>-</td> <td>-</td> <td>1</td> </tr>
+            <tr> <td>HDR_MODE</td> <td>-</td> <td>-</td> <td>1</td> </tr>
+         </tbody>
+      </table>
+
+      <h3><a name="PHY_SUPPORT"></a>Применение контроллера памяти совместно с PHY</h3>
+      <table summary="sync" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>PHY</th>
+               <th>Моделирование</th>
+               <th>Синтез</th>
+               <th>Кристалл</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>TSMC 90 nm</td>               <td bgcolor="#00FF00"></td> <td bgcolor="#00FF00"></td> <td bgcolor="#00FF00"></td> </tr>
+            <tr> <td>Synopsys TSMC 40 nm</td>      <td bgcolor="#00FF00"></td> <td bgcolor="#00FF00"></td> <td bgcolor="#FF0000"></td> </tr>
+            <tr> <td>Altera UniPHY</td>            <td bgcolor="#00FF00"></td> <td bgcolor="#00FF00"></td> <td bgcolor="#00FF00"></td> </tr>
+            <tr> <td>Synopsys TSMC 28 nm</td>      <td bgcolor="#00FF00"></td> <td bgcolor="#FF0000"></td> <td bgcolor="#FF0000"></td> </tr>
+            <tr> <td>Angstrem-M Fujitsu 65 nm</td> <td bgcolor="#00FF00"></td> <td bgcolor="#FF0000"></td> <td bgcolor="#FF0000"></td> </tr>
+            <tr> <td>Xilinx</td>                   <td bgcolor="#00FF00"></td> <td bgcolor="#FF0000"></td> <td bgcolor="#FF0000"></td> </tr>
+         </tbody>
+      </table>
+
+   </body>
+</html>

@@ -1,0 +1,392 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Архитектура</title>
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+      <div class="article">
+         <div class="titlepage">
+            <h2 class="title">Архитектура</h2>
+         </div>
+      </div>
+      <p><b>ehl_ddr</b> является контроллером динамической памяти, совместимой со стандартами DDR [1, 8, 12]. Блок может быть параметризован под задачи пользователя для обеспечения оптимального использования ресурсов и достижения заданной тактовой частоты (раздел "<a href="um_params.html" class="olink">Параметры</a>"). Управление <b>ehl_ddr</b> осуществляется с помощью порта APB [13]. Обмен данными с помощью порта AXI4 [5]. Коммуникация с PHY с помощью порта DFI [2] и конфигурационных сигналов. Структурная схема <b>ehl_ddr</b> представлена на рисунке 1.</p>
+      <img src="um_arch.png"></a>
+      <p>Рисунок 1. Структурная схема ehl_ddr</p>
+      <p><b>ehl_ddr</b> совместим со следующими видами PHY ("<a href="um_appl.html#PHY_SUPPORT" class="olink">перечень поддерживаемых PHY</a>").</p>
+      <p>Все триггеры в схеме тактируются нарастающим фронтом соответствующих синхросигналов. Все тактовые домены синхронизированы между собой внутри <b>ehl_ddr</b> (раздел "<a href="um_appl.html#CLOCKS" class="olink">Система доменов синхросигналов</a>").</p>
+      <p>Далее представлено описание основных структурных модулей <b>ehl_ddr</b>.</p>
+      <h2><a name="AXI"></a>AXI</h2>
+      <p>Передача данных между процессором и контроллером памяти происходит через интерфейс AXI [5]. <b>ehl_ddr</b> является ведомым интерфейса AXI. Ширина шины данных определяется параметром <b>AXI_WIDTH</b>. Синхронизация данных между контроллером и шиной AXI происходит в FIFO (Рисунок 2).</p>
+      <img src="um_axi.png"></a>
+      <p>Рисунок 2. Схема взаимодействия контроллера и AXI</p>
+      <p><b>Ограничение. </b>Не поддерживаются сигналы LOCK, CACHE, PROT стандарта AXI3.</p>
+      <p><b>Ограничение. </b>Не поддерживаются сигналы USER, QOS, REGION стандарта AXI4.</p>
+      <p><b>Ограничение. </b>Контроллер не проводит проверку поля ID транзакций AXI для WRITE DATA CHANNEL. Таким образом, interleave AXI транзакции не поддерживаются.</p>
+      <p><b>Ограничение. </b>Сигнал BURST поддерживает только значение INCR [5, раздел 4.4].</p>
+      <p>Шина AXI позволяет проводить транзакции с длиной до 256 трансферов и шириной отличной от ширины шины AXI (narrow transfer). Также поддерживается смещение начальных данных (unaligned transfer) относительно границы трансфера.</p>
+      <p>Хотя использование длинных narrow transfer не эффективно с точки зрения пропускной способности AXI, оно допустимо (например, трансфер типа int для 64-битной шины).</p>
+      <p><b>Ограничение. </b>Контроллер генерирует отклики двух типов OKAY и SLVERR [5, раздел 7.1] (SLVERR в случае обнаружения в данных неисправимой ошибки). </p>
+      <p><b style="color: #FF0000">Замечание. </b>Если система не поддерживает сигналы AXI <b>bresp</b>/<b>rresp</b>, то их следует оставить неподключенными, а сигнализацию ошибок производить с помощью прерывания.</p>
+      <p>Интерфейс AXI имеет разделение на каналы, представленные далее:</p>
+      <h3 style="color: #0000CC">Global signals</h3>
+      <table summary="axi_globals" cellpadding="4" width="40%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Количество</th>
+               <th>Тип</th>
+               <th>Назначение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>aclk</td> <td>1</td> <td>I</td> <td>Синхросигнал AXI.</td> </tr>
+            <tr> <td>aresetn</td> <td>1</td> <td>I</td> <td>Асинхронный сброс AXI.</td> </tr>
+         </tbody>
+      </table>
+      <h3 style="color: #0000CC">Write Address Channel</h3>
+      <p>Контроллер принимает транзакцию по данному каналу, если в WRITE CHANNEL COMMAND FIFO имеется свободное место. Размер FIFO определяется параметром <b>AXI_QUEUE_DEPTH</b>. Транзакции обрабатываются последовательно в порядке поступления.</p>
+      <p><b>ehl_ddr</b> инициирует исполнение записи в память, если в FIFO находятся записи и арбитраж на стороне операции записи. Запись в память инициируется после поступления во WRITE CHANNEL DATA FIFO данных, достаточных для проведения SDRAM Burst, или поступления всех данных (в случае, если их меньше, чем требуется для SDRAM Burst).</p>
+      <table summary="axi_wac" cellpadding="4" width="70%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Количество</th>
+               <th>Тип</th>
+               <th>Назначение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>awaddr</td> <td>39</td> <td>I</td> <td>Адрес канала записи.</td> </tr>
+            <tr> <td>awlen</td> <td>8</td> <td>I</td> <td>Длина транзакции записи. Не используется контроллером, транзакции разграничиваются с помощью <b>wlast</b>.</td> </tr>
+            <tr> <td>awsize</td> <td>3</td> <td>I</td> <td>Ширина транзакции записи. Поддерживаемые значения зависят от параметра <b>AXI_WIDTH</b>.</td> </tr>
+            <tr> <td>awvalid</td> <td>1</td> <td>I</td> <td>Запрос команды записи.</td> </tr>
+            <tr> <td>awid</td> <td><b>AXI_ID_WIDTH</b></td> <td>I</td> <td>Идентификатор транзакции.</td> </tr>
+            <tr> <td>awready</td> <td>1</td> <td>O</td> <td>Подтверждение команды записи.</td> </tr>
+         </tbody>
+      </table>
+      <h3 style="color: #0000CC">Write Data Channel</h3>
+      <p>Контроллер принимает данные в WRITE CHANNEL DATA FIFO, если в нем имеется место и для данной транзакции имеется запись в WRITE CHANNEL COMMAND FIFO. На основании управляющих сигналов происходит упаковка данных в соответствии с их размером <b>awsize</b>. Как только данные с шириной <b>AXI_WIDTH</b> получены через AXI, они могут быть направлены на запись, если соответствующая им транзакция записи направлена на исполнение. Для <b>awsize</b> равной ширине шины запись происходит за 1 такт, для транзакций меньшей ширины (narrow transfer) запись занимает больше тактов в зависимости от размера и начального смещения (aligned transfer). Данные в данном канале должны поступать в соответствии с порядком адресов во Write Address Channel. Ядро контроллера принимает данные только после того, как получен соответствующий им адрес (с точки зрения мастеров, регистры коммутаторов могут принимать данные до адреса).</p>
+      <p>Если часть данных записана с маской (<b>wstrb</b>), то контроллер будет выполнять процедуру Read-Modify-Write, если включен режим коррекции ошибок (<b>ECC_ENA</b>=0b1, и <b>DDR2_EC.MODE</b>=0b01), и маска накладывается на часть данных соответствующих <b>SDRAM_WIDTH</b>.</p>
+      <table summary="axi_wdc" cellpadding="4" width="70%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Количество</th>
+               <th>Тип</th>
+               <th>Назначение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>wdata</td> <td><b>AXI_WIDTH</b></td> <td>I</td> <td>Данные для записи.</td> </tr>
+            <tr> <td>wstrb</td> <td><b>AXI_WIDTH/8</b></td> <td>I</td> <td>Стробы данных.</td> </tr>
+            <tr> <td>wlast</td> <td>1</td> <td>I</td> <td>Признак последних данных в транзакции.</td> </tr>
+            <tr> <td>wvalid</td> <td>1</td> <td>I</td> <td>Запрос передачи данных.</td> </tr>
+<!--             <tr> <td>wid</td> <td><b>AXI_ID_WIDTH</b></td> <td>I</td> <td>Идентификатор транзакции. Не используется контроллером, присутствует только для полноты подключения.</td> </tr> -->
+            <tr> <td>wready</td> <td>1</td> <td>O</td> <td>Подтверждение записи данных.</td> </tr>
+         </tbody>
+      </table>
+      <h3 style="color: #0000CC">Write Response Channel</h3>
+      <p>Контроллер помещает в WRITE CHANNEL RESPONSE FIFO информацию о статусе данных по мере их передачи на запись. Статус записывается, только после того, как данные переданы из WRITE CHANNEL DATA FIFO в контроллер. В конфигурации с проверочным кодом (<b>ECC_ENA</b>=0b1) при наличии неисправляемых ошибок при Read-Modify-Write, контроллер записывает статус SLVERR. При наличии данных во WRITE CHANNEL RESPONSE FIFO контроллер инициирует транзакцию на шине AXI. Значение <b>bid</b> соответствует awid транзакции на WRITE ADDRESS CHANNEL. Отклики поступают в том же порядке, что и транзакции по Write Address Channel.</p>
+      <table summary="axi_wrc" cellpadding="4" width="70%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Количество</th>
+               <th>Тип</th>
+               <th>Назначение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>bresp</td> <td>2</td> <td>O</td> <td>Статус записи. Младший разряд всегда равен 0.</td> </tr>
+            <tr> <td>bvalid</td> <td>1</td> <td>O</td> <td>Запрос передачи статуса.</td> </tr>
+            <tr> <td>bid</td> <td><b>AXI_ID_WIDTH</b></td> <td>O</td> <td>Идентификатор транзакции.</td> </tr>
+            <tr> <td>bready</td> <td>1</td> <td>I</td> <td>Подтверждение передачи статуса.</td> </tr>
+         </tbody>
+      </table>
+      <h3 style="color: #0000CC">Read Address Channel</h3>
+      <p>Контроллер принимает транзакцию по данному каналу, если в READ CHANNEL COMMAND FIFO имеется свободное место. Размер FIFO определяется параметром <b>AXI_QUEUE_DEPTH</b>. Транзакции обрабатываются последовательно в порядке поступления.</p>
+      <p><b>ehl_ddr</b> инициирует чтение из памяти, если в FIFO находятся записи и арбитраж на стороне операции чтения. Арбитраж производится между записью и чтением по мере поступления с равной вероятностью.</p>
+      <p>Чтение на шине инициируется в виде SDRAM Burst, если в READ CHANNEL DATA/RESPONSE FIFO достаточно места для приема SDRAM Burst.</p>
+      <table summary="axi_rac" cellpadding="4" width="70%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Количество</th>
+               <th>Тип</th>
+               <th>Назначение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>araddr</td> <td>39</td> <td>I</td> <td>Адрес канала чтения.</td> </tr>
+            <tr> <td>arlen</td> <td>8</td> <td>I</td> <td>Длина транзакции чтения.</td> </tr>
+            <tr> <td>arsize</td> <td>3</td> <td>I</td> <td>Ширина транзакции чтения. Поддерживаемые значения зависят от параметра <b>AXI_WIDTH</b>.</td> </tr>
+            <tr> <td>arvalid</td> <td>1</td> <td>I</td> <td>Запрос команды чтения.</td> </tr>
+            <tr> <td>arid</td> <td><b>AXI_ID_WIDTH</b></td> <td>I</td> <td>Идентификатор транзакции.</td> </tr>
+            <tr> <td>arready</td> <td>1</td> <td>O</td> <td>Подтверждение команды чтения.</td> </tr>
+         </tbody>
+      </table>
+      <h3 style="color: #0000CC">Read Data/Response Channel</h3>
+      <p>По мере чтения данных контроллер помещает их в READ CHANNEL DATA/RESPONSE FIFO. Глубина FIFO определяется соотношением 16*(<b>AXI_WIDTH</b>/<b>SDRAM_WIDTH</b>). При наличии записей в FIFO контроллер инициирует запрос к шине AXI, устанавливая значения <b>rdata</b>, <b>rresp</b>, <b>rlast</b>, <b>rvalid</b>. Значение <b>rid</b> соответствует <b>arid</b> транзакции на READ ADDRESS CHANNEL. Отклики поступают в том же порядке, что и транзакции по Read Address Channel.</p>
+      <table summary="axi_rdc" cellpadding="4" width="70%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Количество</th>
+               <th>Тип</th>
+               <th>Назначение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>rdata</td> <td><b>AXI_WIDTH</b></td> <td>O</td> <td>Данные для чтения.</td> </tr>
+            <tr> <td>rresp</td> <td>2</td> <td>O</td> <td>Статус данных. Младший разряд всегда равен 0.</td> </tr>
+            <tr> <td>rlast</td> <td>1</td> <td>O</td> <td>Признак последних данных в транзакции.</td> </tr>
+            <tr> <td>rvalid</td> <td>1</td> <td>O</td> <td>Запрос чтения данных.</td> </tr>
+            <tr> <td>rid</td> <td><b>AXI_ID_WIDTH</b></td> <td>O</td> <td>Идентификатор транзакции.</td> </tr>
+            <tr> <td>rready</td> <td>1</td> <td>I</td> <td>Подтверждение чтения данных.</td> </tr>
+         </tbody>
+      </table>
+      <h2><a name="CSR"></a>Control Status Registers</h2>
+      <p>Конфигурация <b>ehl_ddr</b> задается через интерфейс APB [13]. <b>ehl_ddr</b> является ведомым устройством интерфейса APB. Интерфейс позволяет процессору получить доступ по записи и чтению к регистрам управления и состояния, которые задают настраиваемые параметры и режимы контроллера и PHY. Описание регистров представлено в разделе "<a href="um_func.html" class="olink">Функционирование</a>".</p>
+      <p>Интерфейс APB имеет разделение на группы сигналов, представленные далее:</p>
+      <h3 style="color: #0000CC">Global signals</h3>
+      <table summary="apb_globals" cellpadding="4" width="70%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Количество</th>
+               <th>Тип</th>
+               <th>Назначение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>pclk</td> <td>1</td> <td>I</td> <td>Синхросигнал APB.</td> </tr>
+            <tr> <td>presetn</td> <td>1</td> <td>I</td> <td>Асинхронный сброс APB.</td> </tr>
+            <tr> <td>interrupt</td> <td>1</td> <td>O</td> <td>Асинхронное прерывание на частоте mctrl_clk. <p style="color: #FF0000">Следует синхронизовать с частотой контроллера прерываний.<p></td> </tr>
+         </tbody>
+      </table>
+      <h3 style="color: #0000CC">Master signals</h3>
+      <table summary="apb_mst" cellpadding="4" width="70%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Количество</th>
+               <th>Тип</th>
+               <th>Назначение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>paddr</td> <td>32</td> <td>I</td> <td>Адрес APB. 2 младших бита должны быть равны 0. Биты 31:7 не используются контроллером.</td> </tr>
+            <tr> <td>penable</td> <td>2</td> <td>I</td> <td>Сигнализация фазы данных APB.</td> </tr>
+            <tr> <td>pwrite</td> <td>1</td> <td>I</td> <td>Тип команды.</td> </tr>
+            <tr> <td>pwdata</td> <td>32</td> <td>I</td> <td>Данные для записи.</td> </tr>
+         </tbody>
+      </table>
+      <h3 style="color: #0000CC">Slave signals</h3>
+      <table summary="apb_slv" cellpadding="4" width="70%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Количество</th>
+               <th>Тип</th>
+               <th>Назначение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>prdata</td> <td>32</td> <td>O</td> <td>Данные для чтения.</td> </tr>
+            <tr> <td>pready</td> <td>1</td> <td>O</td> <td>Валидность данных.</td> </tr>
+            <tr> <td>pslverr</td> <td>2</td> <td>O</td> <td>Статус команды. Всегда равен 0b00.</td> </tr>
+         </tbody>
+      </table>
+      <h3 style="color: #0000CC">Decoder signals</h3>
+      <table summary="apb_decoder" cellpadding="4" width="70%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Количество</th>
+               <th>Тип</th>
+               <th>Назначение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>psel</td> <td>1</td> <td>I</td> <td>Выбор контроллера памяти на шине APB.</td> </tr>
+         </tbody>
+      </table>
+      <h3 style="color: #0000CC">Misc signals</h3>
+<!-- TODO: and others!!! -->
+      <p>Данные сигналы относятся к управлению Elvees PHY.</p>
+      <table summary="misc" cellpadding="4" width="70%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Количество</th>
+               <th>Тип</th>
+               <th>Назначение</th>
+            </tr>
+         </thead>
+         <tbody>
+<!--             <tr> <td>dll_locked</td> <td>1</td> <td>I</td> <td>Признак перехода DLL PHY в рабочий режим.</td> </tr> -->
+<!--             <tr> <td>dll_bypass</td> <td>1</td> <td>O</td> <td>Перевод DLL в режим bypass.</td> </tr> -->
+<!--             <tr> <td>enable_dqs</td> <td>1</td> <td>O</td> <td>Управление использованием дифференциального режима стробов sdram_dqs.</td> </tr> -->
+<!--             <tr> <td>odt</td> <td>2</td> <td>O</td> <td>Управление входным импедансом контактных площадок.</td> </tr> -->
+<!--             <tr> <td>hf</td> <td>1</td> <td>O</td> <td>Задание диапазона частот для DLL.</td> </tr> -->
+<!--             <tr> <td>turn_off_inactive_io</td> <td>1</td> <td>O</td> <td>Разрешение перевода неактивных КП в высокоимпедансное состояние.</td> </tr> -->
+<!--             <tr> <td>sstl_pwd</td> <td>1</td> <td>O</td> <td>Перевод КП в режим пониженного энергопотребления.</td> </tr> -->
+            <tr> <td>dll_reset_n</td> <td>1</td> <td>O</td> <td>Управление сбросом DLL.</td> </tr>
+         </tbody>
+      </table>
+      <p>Регистры <b>ehl_ddr</b> тактируются синхросигналом памяти <b>mctrl_clk</b>. Доступ к ним через APB осуществляется по следующему алгоритму (Рисунок 3):</p>
+      <li> Мастер инициирует транзакцию на шине APB;</li>
+      <li> <b>ehl_ddr</b> получает транзакцию и переводит <b>pready</b> в состояние 0;</li>
+      <li> Запрос (write_req) синхронизируется с <b>mctrl_clk</b> (количество тактов <b>mctrl_clk</b> определяется параметром <b>CDC_SYNC_STAGE</b>), в случае записи происходит обновление регистра;</li>
+      <li> Ответ на запрос синхронизируется с <b>pclk</b> (количество тактов <b>pclk</b> определяется параметром <b>CDC_SYNC_STAGE</b>);</li>
+      <li> При получении запроса обновляется значение <b>prdata</b> (если запрос на чтение), и устанавливается <b>pready</b>.</li>
+      <img src="um_ahb_sync.png"></a>
+      <p>Рисунок 3. Синхронизация между pclk и mctrl_clk. Параметр CDC_SYNC_STAGE = 2.</p>
+      <h2><a name="SDRAM"></a>SDRAM CORE</h2>
+      <p>Контроллер динамической памяти имеет интерфейс DFI [2] с PHY. Временные характеристики DFI (<!--tCTRL_DELAY, -->tPHY_WRLAT, <!--tPHY_RDLAT, -->tRDDATA_EN, tPHY_RDCSLAT, tPHY_WRCSLAT, tRDCSGAP, tWRCSGAP) динамически настраиваются в соответствии с требованиями PHY (<a href="reg_desc.html#ehl-DDR_PHY" class="olink">регистр <b>DDR_PHY</b></a>). Интерфейс DFI имеет разделение на группы, представленные далее:</p>
+      <h3 style="color: #0000CC">Global signals</h3>
+      <table summary="dfi_globals" cellpadding="4" width="70%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Количество</th>
+               <th>Тип</th>
+               <th>Назначение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>mctrl_clk</td> <td>1</td> <td>I</td> <td>Синхросигнал контроллера памяти, DFI и PHY. Частота синхросигнала равна половине частоты памяти.</td> </tr>
+            <tr> <td>reset_n</td> <td>1</td> <td>I</td> <td>Асинхронный сброс.</td> </tr>
+         </tbody>
+      </table>
+      <h3 style="color: #0000CC">Control signals</h3>
+      <table summary="dfi_control" cellpadding="4" width="70%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Количество</th>
+               <th>Тип</th>
+               <th>Назначение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>dfi_address</td> <td>32</td> <td>O</td> <td>Адресная шина.</td> </tr>
+            <tr> <td>dfi_bank</td> <td>6</td> <td>O</td> <td>Адрес банка.</td> </tr>
+            <tr> <td>dfi_cas_n</td> <td>2</td> <td>O</td> <td>Строб адреса столбца.</td> </tr>
+            <tr> <td>dfi_cke</td> <td>2*<b>RANK_CNT</b></td> <td>O</td> <td>Разрешение синхросигнала.</td> </tr>
+            <tr> <td>dfi_cs_n</td> <td>2*<b>RANK_CNT</b></td> <td>O</td> <td>Выбор чипа.</td> </tr>
+            <tr> <td>dfi_odt</td> <td>2*<b>RANK_CNT</b></td> <td>O</td> <td>Управление прерывающими резисторами.</td> </tr>
+            <tr> <td>dfi_ras_n</td> <td>2</td> <td>O</td> <td>Строб адреса строки.</td> </tr>
+            <tr> <td>dfi_we_n</td> <td>2</td> <td>O</td> <td>Разрешение записи.</td> </tr>
+            <tr> <td>dfi_reset_n</td> <td>2</td> <td>O</td> <td>Синхросигнал сброса DDR3.</td> </tr>
+         </tbody>
+      </table>
+      <h3 style="color: #0000CC">Write Data Interface</h3>
+      <table summary="dfi_write" cellpadding="4" width="70%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Количество</th>
+               <th>Тип</th>
+               <th>Назначение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>dfi_wrdata</td> <td>4*<b>SDRAM_WIDTH</b>+32*<b>ECC_ENA</b></td> <td>O</td> <td>Данные для записи.</td> </tr>
+            <tr> <td>dfi_wrdata_en</td> <td>2</td> <td>O</td> <td>Валидность данных.</td> </tr>
+            <tr> <td>dfi_wrdata_mask</td> <td><b>SDRAM_WIDTH</b>/2+<b>ECC_ENA</b>*4</td> <td>O</td> <td>Байтовая маска данных.</td> </tr>
+            <tr> <td>dfi_wrdata_cs_n</td> <td>2*<b>RANK_CNT</b></td> <td>O</td> <td>Адресуемый чип.</td> </tr>
+         </tbody>
+      </table>
+      <h3 style="color: #0000CC">Read Data Interface</h3>
+      <table summary="dfi_read" cellpadding="4" width="70%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Количество</th>
+               <th>Тип</th>
+               <th>Назначение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>dfi_rddata</td> <td>4*<b>SDRAM_WIDTH</b>+32*<b>ECC_ENA</b></td> <td>I</td> <td>Читаемые данные.</td> </tr>
+            <tr> <td>dfi_rddata_en</td> <td>2</td> <td>O</td> <td>Разрешение чтения данных.</td> </tr>
+            <tr> <td>dfi_rddata_cs_n</td> <td>2*<b>RANK_CNT</b></td> <td>O</td> <td>Адресуемый чип.</td> </tr>
+            <tr> <td>dfi_rddata_valid</td> <td><b>SDRAM_WIDTH</b>/4+<b>ECC_ENA</b>*2</td> <td>I</td> <td>Валидность данных.</td> </tr>
+         </tbody>
+      </table>
+      <h3 style="color: #0000CC">Training Interface</h3>
+      <table summary="dfi_trng" cellpadding="4" width="70%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Количество</th>
+               <th>Тип</th>
+               <th>Назначение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>dfi_rdlvl_resp</td> <td><b>SDRAM_WIDTH</b>/8+<b>ECC_ENA</b></td> <td>I</td> <td>Результат Gate Training для каждого байта.</td> </tr>
+            <tr> <td>dfi_rdlvl_gate_en</td> <td>1</td> <td>O</td> <td>Признак проведения Gate Training.</td> </tr>
+            <tr> <td>dfi_rdlvl_delay_0</td> <td>3*<b>RANK_CNT</b></td> <td>O</td> <td>Коэффициент смещения строба относительно данных (байт 0).</td> </tr>
+            <tr> <td>dfi_rdlvl_delay_1</td> <td>3*<b>RANK_CNT</b></td> <td>O</td> <td>Коэффициент смещения строба относительно данных (байт 1).</td> </tr>
+            <tr> <td>dfi_rdlvl_delay_2</td> <td>3*<b>RANK_CNT</b></td> <td>O</td> <td>Коэффициент смещения строба относительно данных (байт 2).</td> </tr>
+            <tr> <td>dfi_rdlvl_delay_3</td> <td>3*<b>RANK_CNT</b></td> <td>O</td> <td>Коэффициент смещения строба относительно данных (байт 3).</td> </tr>
+            <tr> <td>dfi_rdlvl_delay_4</td> <td>3*<b>RANK_CNT</b></td> <td>O</td> <td>Коэффициент смещения строба относительно данных (байт 4).</td> </tr>
+            <tr> <td>dfi_rdlvl_delay_5</td> <td>3*<b>RANK_CNT</b></td> <td>O</td> <td>Коэффициент смещения строба относительно данных (байт 5).</td> </tr>
+            <tr> <td>dfi_rdlvl_delay_6</td> <td>3*<b>RANK_CNT</b></td> <td>O</td> <td>Коэффициент смещения строба относительно данных (байт 6).</td> </tr>
+            <tr> <td>dfi_rdlvl_delay_7</td> <td>3*<b>RANK_CNT</b></td> <td>O</td> <td>Коэффициент смещения строба относительно данных (байт 7).</td> </tr>
+            <tr> <td>dfi_rdlvl_delay_ecc</td> <td>3*<b>RANK_CNT</b></td> <td>O</td> <td>Коэффициент смещения строба относительно данных (байт контрольных бит).</td> </tr>
+            <tr> <td>dfi_rdlvl_gate_delay_0</td> <td>4*<b>RANK_CNT</b></td> <td>O</td> <td>Коэффициент смещения маски строба (байт 0).</td> </tr>
+            <tr> <td>dfi_rdlvl_gate_delay_1</td> <td>4*<b>RANK_CNT</b></td> <td>O</td> <td>Коэффициент смещения маски строба (байт 1).</td> </tr>
+            <tr> <td>dfi_rdlvl_gate_delay_2</td> <td>4*<b>RANK_CNT</b></td> <td>O</td> <td>Коэффициент смещения маски строба (байт 2).</td> </tr>
+            <tr> <td>dfi_rdlvl_gate_delay_3</td> <td>4*<b>RANK_CNT</b></td> <td>O</td> <td>Коэффициент смещения маски строба (байт 3).</td> </tr>
+            <tr> <td>dfi_rdlvl_gate_delay_4</td> <td>4*<b>RANK_CNT</b></td> <td>O</td> <td>Коэффициент смещения маски строба (байт 4).</td> </tr>
+            <tr> <td>dfi_rdlvl_gate_delay_5</td> <td>4*<b>RANK_CNT</b></td> <td>O</td> <td>Коэффициент смещения маски строба (байт 5).</td> </tr>
+            <tr> <td>dfi_rdlvl_gate_delay_6</td> <td>4*<b>RANK_CNT</b></td> <td>O</td> <td>Коэффициент смещения маски строба (байт 6).</td> </tr>
+            <tr> <td>dfi_rdlvl_gate_delay_7</td> <td>4*<b>RANK_CNT</b></td> <td>O</td> <td>Коэффициент смещения маски строба (байт 7).</td> </tr>
+            <tr> <td>dfi_rdlvl_gate_delay_ecc</td> <td>4*<b>RANK_CNT</b></td> <td>O</td> <td>Коэффициент смещения маски строба (байт контрольных бит).</td> </tr>
+         </tbody>
+      </table>
+      <h3 style="color: #0000CC">Status Interface</h3>
+      <table summary="dfi_status" cellpadding="4" width="70%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Количество</th>
+               <th>Тип</th>
+               <th>Назначение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>dfi_dram_clk_disable</td> <td>1</td> <td>O</td> <td>Управление блокировкой синхросигнала памяти. Блокировка допускается только в режиме SELF-REFRESH.</td> </tr>
+            <tr> <td>dfi_init_start</td> <td>1</td> <td>O</td> <td>Запрос на инициализацию PHY.</td> </tr>
+            <tr> <td>dfi_init_complete</td> <td>1</td> <td>I</td> <td>Признак завершения инициализации со стороны PHY.</td> </tr>
+         </tbody>
+      </table>
+      <p>Контроллер производит управление динамической памятью и выполняет следующие функции:</p>
+      <p>1. Арбитраж запросов на чтение и запись, поступающих от AXI, и преобразование их в команды READ и WRITE на DFI;</p>
+      <p>2. Исполнение команд, поступивших по APB и трансляция их в последовательности команд для записи управляющих регистров SDRAM, инициализации памяти, переходов в режим пониженного энергопотребления Power-Down и Self-Refresh, тренинга положения маски стробов, тренинга положения стробов;</p>
+      <p>3. Генерация периодических команд REFRESH обновления памяти;</p>
+      <p>4. Генерация команд открытия и закрытия страниц;</p>
+      <p>5. Выполенение периодических запросов на калибровку драйверов (ZQCS);</p>
+      <p>6. Детектирование и исправление ошибок данных, хранимых во внешней памяти.</p>
+   </body>
+</html>
