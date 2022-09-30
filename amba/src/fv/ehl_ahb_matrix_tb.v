@@ -161,10 +161,10 @@ module ehl_ahb_matrix_tb;
 
             repeat(12) @(posedge hclk);
 
-            @(posedge hclk); hwhtrans <= 2; hwhwrite <= 0; hwhaddr <= 32'h10001000; @(posedge hclk);
+            @(posedge hclk); hwhtrans <= 2; hwhwrite <= 0; hwhaddr <= 32'h40001000; @(posedge hclk);
             while(hwhready == 1'b0) @(posedge hclk);
 
-            hwhtrans <= 2; hwhwrite <= 0; hwhaddr <= 32'h10002000; @(posedge hclk);
+            hwhtrans <= 2; hwhwrite <= 0; hwhaddr <= 32'h40002000; @(posedge hclk);
             while(hwhready == 1'b0) @(posedge hclk);
             hwhtrans <= 0;
          end

@@ -110,7 +110,9 @@ module ehl_ahb_matrix
 
    wire [(SNUM+1)*32-1:0] int_hrdata;
    wire [(SNUM+1)*2-1:0]  int_hresp;
-   wire [(SNUM+1)*1-1:0]  int_hready;
+
+   wire [MNUM-1:0]       slv_hready [(SNUM+1)*1-1:0];
+   wire [(SNUM+1)*1-1:0] mst_hready [MNUM-1:0];
 
    genvar gen_j;
    for(gen_i = 0; gen_i < MNUM; gen_i = gen_i + 1)
@@ -165,7 +167,7 @@ module ehl_ahb_matrix
          .os_htrans ( mst_htrans[gen_i]       ),
 
          .is_hrdata ( int_hrdata              ),
-         .is_hready ( int_hready              ),
+         .is_hready ( mst_hready[gen_i]       ),
          .is_hresp  ( int_hresp               )
       );
       // Note: rotate matrix to provide vector to slave
@@ -196,7 +198,7 @@ module ehl_ahb_matrix
          .im_hwdata ( im_hwdata                ),
 // Outputs to masters
          .om_hrdata ( int_hrdata[gen_o*32+:32] ),
-         .om_hready ( int_hready[gen_o]        ),
+         .om_hready ( slv_hready[gen_o]        ),
          .om_hresp  ( int_hresp[gen_o*2+:2]    ),
 
          .os_haddr  ( s_haddr[32*gen_o+:32]    ),
@@ -212,6 +214,11 @@ module ehl_ahb_matrix
          .is_hready ( s_hready[gen_o]          ),
          .is_hresp  ( s_hresp[2*gen_o+:2]      )
       );
+      // Note: rotate matrix to provide vector to master
+      for(gen_j = 0; gen_j < MNUM; gen_j = gen_j + 1)
+      begin : remap
+         assign mst_hready [gen_j] [gen_o] = slv_hready [gen_o] [gen_j];
+      end
    end
 //============================================
 // default slave
@@ -222,7 +229,7 @@ module ehl_ahb_matrix
       .hresetn,
       .htrans     ( dflt_htrans ),
       .hsel       ( dflt_hsel   ),
-      .hready_in  ( 1'b1        ), // Q: it's own ready? but there will no be transactions if current one not completed? Q: next HADDR on input!?
+      .hready_in  ( dflt_hready/*1'b1*/        ), // Q: it's own ready? but there will no be transactions if current one not completed? Q: next HADDR on input!?
       .hwrite     ( dflt_hwrite ),
       .hwdata     ( dflt_hwdata ),
       .hready     ( dflt_hready ),
