@@ -21,7 +21,6 @@ module ehl_ahb_default_slave
    localparam [1:0] ST_ERR1 = 2'h1;
    localparam [1:0] ST_ERR2 = 2'h2;
 
-
    always@(posedge hclk or negedge hresetn)
    if(!hresetn)
    begin

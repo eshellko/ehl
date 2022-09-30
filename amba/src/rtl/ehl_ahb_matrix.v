@@ -44,31 +44,31 @@ module ehl_ahb_matrix
    SLV15_MASK = 32'h00000000
 )
 (
-   input                hclk, hresetn,
+   input                 hclk, hresetn,
 // Inputs from master
-   input [MNUM*32-1:0]  im_haddr,
-   input [MNUM*2-1:0]   im_htrans,
-   input [MNUM-1:0]     im_hwrite,
-   input [MNUM*3-1:0]   im_hsize, im_hburst,
-   input [MNUM*4-1:0]   im_hprot,
-   input [MNUM*32-1:0]  im_hwdata,
+   input [MNUM*32-1:0]   im_haddr,
+   input [MNUM*2-1:0]    im_htrans,
+   input [MNUM-1:0]      im_hwrite,
+   input [MNUM*3-1:0]    im_hsize, im_hburst,
+   input [MNUM*4-1:0]    im_hprot,
+   input [MNUM*32-1:0]   im_hwdata,
+   input [MNUM*SNUM-1:0] im_route, // allows (1) master to access selected slave - should be static (or modified when IDLE with gap)
 // Outputs to masters
-   output [MNUM*32-1:0] om_hrdata,
-   output [MNUM-1:0]    om_hready,
-   output [MNUM*2-1:0]  om_hresp,
+   output [MNUM*32-1:0]  om_hrdata,
+   output [MNUM-1:0]     om_hready,
+   output [MNUM*2-1:0]   om_hresp,
 // Inputs to Slaves
-   // Note: shared/dedicated configurable buses of different type to reduce fanout and toggling - but increase flops count
-   output [SNUM*32-1:0] os_haddr,
-   output [SNUM*2-1:0]  os_htrans,
-   output [SNUM-1:0]    os_hwrite,
-   output [SNUM*3-1:0]  os_hsize, os_hburst,
-   output [SNUM*4-1:0]  os_hprot,
-   output [SNUM*32-1:0] os_hwdata,
-   output [SNUM-1:0]    os_hsel,
+   output [SNUM*32-1:0]  os_haddr,
+   output [SNUM*2-1:0]   os_htrans,
+   output [SNUM-1:0]     os_hwrite,
+   output [SNUM*3-1:0]   os_hsize, os_hburst,
+   output [SNUM*4-1:0]   os_hprot,
+   output [SNUM*32-1:0]  os_hwdata,
+   output [SNUM-1:0]     os_hsel,
 // Outputs from Slaves
-   input [SNUM*32-1:0]  is_hrdata,
-   input [SNUM-1:0]     is_hready,
-   input [SNUM*2-1:0]   is_hresp
+   input [SNUM*32-1:0]   is_hrdata,
+   input [SNUM-1:0]      is_hready,
+   input [SNUM*2-1:0]    is_hresp
 );
    wire [1:0]  dflt_htrans;
    wire        dflt_hsel;
@@ -157,18 +157,20 @@ module ehl_ahb_matrix
          .hclk,
          .hresetn,
 
-         .haddr     ( im_haddr[32*gen_i+:32]  ),
-         .htrans    ( im_htrans[2*gen_i+:2]   ),
+         .haddr     ( im_haddr[32*gen_i+:32]     ),
+         .htrans    ( im_htrans[2*gen_i+:2]      ),
 
-         .om_hrdata ( om_hrdata[32*gen_i+:32] ),
-         .om_hready ( om_hready[gen_i]        ),
-         .om_hresp  ( om_hresp[2*gen_i+:2]    ),
+         .route     ( im_route[SNUM*gen_i+:SNUM] ),
 
-         .os_htrans ( mst_htrans[gen_i]       ),
+         .om_hrdata ( om_hrdata[32*gen_i+:32]    ),
+         .om_hready ( om_hready[gen_i]           ),
+         .om_hresp  ( om_hresp[2*gen_i+:2]       ),
 
-         .is_hrdata ( int_hrdata              ),
-         .is_hready ( mst_hready[gen_i]       ),
-         .is_hresp  ( int_hresp               )
+         .os_htrans ( mst_htrans[gen_i]          ),
+
+         .is_hrdata ( int_hrdata                 ),
+         .is_hready ( mst_hready[gen_i]          ),
+         .is_hresp  ( int_hresp                  )
       );
       // Note: rotate matrix to provide vector to slave
       for(gen_j = 0; gen_j <= SNUM; gen_j = gen_j + 1)
@@ -188,7 +190,7 @@ module ehl_ahb_matrix
       (
          .hclk,
          .hresetn,
-// Inputs from master
+
          .im_haddr  ( im_haddr                 ),
          .im_htrans ( slv_htrans[gen_o]        ),
          .im_hwrite ( im_hwrite                ),
@@ -196,7 +198,7 @@ module ehl_ahb_matrix
          .im_hburst ( im_hburst                ),
          .im_hprot  ( im_hprot                 ),
          .im_hwdata ( im_hwdata                ),
-// Outputs to masters
+
          .om_hrdata ( int_hrdata[gen_o*32+:32] ),
          .om_hready ( slv_hready[gen_o]        ),
          .om_hresp  ( int_hresp[gen_o*2+:2]    ),
@@ -229,13 +231,13 @@ module ehl_ahb_matrix
       .hresetn,
       .htrans     ( dflt_htrans ),
       .hsel       ( dflt_hsel   ),
-      .hready_in  ( dflt_hready/*1'b1*/        ), // Q: it's own ready? but there will no be transactions if current one not completed? Q: next HADDR on input!?
+      .hready_in  ( dflt_hready ),
       .hwrite     ( dflt_hwrite ),
       .hwdata     ( dflt_hwdata ),
       .hready     ( dflt_hready ),
       .hresp      ( dflt_hresp  ),
       .hrdata     ( dflt_hrdata ),
-// configuration
+
       .resp_delay ( 8'h0        ),
       .resp_val   ( 1'b1        )
    );

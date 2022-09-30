@@ -21,7 +21,6 @@ module ehl_matrix_out
 // Outputs to masters
    output reg [31:0]       om_hrdata,
    output reg [MNUM-1:0]   om_hready,
-//   output reg [MNUM*2-1:0] om_hresp,
    output reg [1:0]        om_hresp,
 // Inputs to Slave
    output reg [31:0]       os_haddr,
@@ -68,15 +67,10 @@ endgenerate
    reg [3:0]      hprot_r  [MNUM-1:0];
    reg [31:0]     hwdata_r [MNUM-1:0];
 
-
-wire [1:0] d0 = htrans[0];
-wire [1:0] d1 = htrans[1];
-
    // request master access
-   reg [MNUM-1:0]  ahb_req;        // pulsed when MASTER requests the bus
-   wire [MNUM-1:0] ahb_ack;        // asserted when MASTER granted SLAVE bus
-   reg [MNUM-1:0]  ahb_req_data;   // asserted when MASTER moves into DATA phase at SLAVE bus
-   reg [MNUM-1:0]  ahb_done;       // pulsed when transfer at SLAVE will be completed (at the next cycle - pipeline to start new transaction)
+   reg [MNUM-1:0]  ahb_req;  // pulsed when MASTER requests the bus
+   wire [MNUM-1:0] ahb_ack;  // asserted when MASTER granted SLAVE bus
+   reg [MNUM-1:0]  ahb_done; // pulsed when transfer at SLAVE will be completed (at the next cycle - pipeline to start new transaction)
    wire [MNUM-1:0] ahb_gnt;
 
    ehl_arbiter
@@ -100,19 +94,18 @@ wire [1:0] d1 = htrans[1];
    begin
       ahb_req[j]  = is_hready && htrans[j];
 // Note: arbiter allows next transaction to be captured while previous is not finished yet!??? no response ready yet!!!
-      ahb_done[j] = is_hready && ahb_ack[j]/*ahb_req_data[j]*/; // slave completes
+      ahb_done[j] = is_hready && ahb_ack[j]; // slave completes
    end
 
    integer i;
+   reg [MNUM-1:0] write_trx; // set if command is write to route write data with 1 cycle delay
    always@(posedge hclk or negedge hresetn)
    if(!hresetn)
    begin
-//      ahb_req_data <= {MNUM{1'b0}};
-
-      om_hrdata    <= 32'h0;
-      om_hresp     <= 2'h0;
-
-      hwrite_r <= {MNUM{1'h0}};
+      om_hrdata <= 32'h0;
+      om_hresp  <= 2'h0;
+      hwrite_r  <= {MNUM{1'h0}};
+      write_trx <= {MNUM{1'b0}};
       for(i=0; i<MNUM; i=i+1)
       begin
          htrans_r [i] <= 2'h0;
@@ -129,29 +122,25 @@ wire [1:0] d1 = htrans[1];
 
       for(i=0; i<MNUM; i=i+1)
       begin
-//         if(ahb_gnt[i] & is_hready)
-//            ahb_req_data[i] <= 1'b1; // transaction accepted at slave port - move to data stage
-//         else if(ahb_req_data[i] & is_hready)
-//            ahb_req_data[i] <= 1'b0;
-
          // capture master transaction (if not granted)
          if(ahb_req[i])
          begin
             // Note: no need to capture if transaction already granted (with exception to 'hwrite' which is used to capture data at the next cycle)
-            if(!ahb_gnt[i]) // TODO: clear them upon reset to avoid X's
+            if(!ahb_gnt[i])
             begin
-               haddr_r  [i] <= haddr[i]; // TODO: preserve registers to avoid merging of equivalent registers
+               haddr_r  [i] <= haddr[i];
                hsize_r  [i] <= hsize[i];
                hburst_r [i] <= hburst[i];
                hprot_r  [i] <= hprot[i];
+               hwrite_r [i] <= hwrite[i];
             end
-               htrans_r [i] <= ahb_gnt[i] ? 2'h0 : htrans[i];
-            hwrite_r [i] <= hwrite[i];
+            htrans_r [i] <= ahb_gnt[i] ? 2'h0 : htrans[i];
+            write_trx[i] <= hwrite[i];
          end
          else if(ahb_ack[i])
             htrans_r [i] <= 1'b0;
 
-         if(ahb_ack[i] & is_hready & hwrite_r[i])
+         if(ahb_ack[i] & is_hready & write_trx[i])
             hwdata_r [i] <= hwdata[i];
 
          // route response channel
@@ -169,19 +158,8 @@ wire [1:0] d1 = htrans[1];
       om_hready <= {MNUM{1'b1}};
       for(g=0; g<MNUM; g=g+1)
          if(ahb_ack[g])
-            om_hready[g] <= is_hready;//1'b1;
+            om_hready[g] <= is_hready;
    end
-/*
-   always@(posedge hclk or negedge hresetn)
-   if(!hresetn)
-      om_hready <= {MNUM{1'b1}};
-   else
-   begin
-      for(g=0; g<MNUM; g=g+1)
-         if(ahb_req[g] & !ahb_gnt[g]) om_hready[g] <= 1'b0;
-         else if(ahb_ack[g])          om_hready[g] <= is_hready;//1'b1;
-   end
-*/
 
    integer k;
    always@*
@@ -195,7 +173,7 @@ wire [1:0] d1 = htrans[1];
       os_hwdata = 32'h0;
       for(k=0; k<MNUM; k=k+1)
       begin
-         if(ahb_gnt[k]) // grant -> bus IDLE direct drivers (Q: hready independent?)
+         if(ahb_gnt[k]) // grant -> bus IDLE direct drivers
          begin
             os_haddr  = haddr  [k];
             os_htrans = htrans [k];
@@ -213,11 +191,8 @@ wire [1:0] d1 = htrans[1];
             os_hwrite = hwrite_r [k];
             os_hburst = hburst_r [k];
             os_hprot  = hprot_r  [k];
-            os_hwdata = hwdata/*_r*/ [k];
+            os_hwdata = hwdata_r [k];
          end
-
-         //if(ahb_req_data[k])
-            //os_hwdata = hwdata/*_r*/ [k];
       end
    end
 

@@ -61,20 +61,21 @@ module ehl_ahb_matrix_tb;
       .im_hburst ( {hwhburst,hburst}   ),
       .im_hprot  ( {MASTER_CNT{4'h0}}  ),
       .im_hwdata ( {hwhwdata,hwdata}   ),
+
+      .im_route  ( {2'b01, 2'b11}      ), // HW master only allowed to access Slave0
 // Outputs to masters
       .om_hrdata ( om_hrdata           ),
       .om_hready ( om_hready           ),
       .om_hresp  ( om_hresp            ),
 // Inputs to Slaves
-      .os_haddr  ( {ahb_haddr[1],ahb_haddr[0]}           ),
-      .os_htrans ( {ahb_htrans[1],ahb_htrans[0]}          ),
-      .os_hwrite ( {ahb_hwrite[1],ahb_hwrite[0]}          ),
-      .os_hsize  ( {ahb_hsize[1],ahb_hsize[0]}           ),
-      .os_hburst ( {ahb_hburst[1],ahb_hburst[0]}          ),
-      .os_hprot  ( {ahb_hprot[1],ahb_hprot[0]}           ),
-      .os_hwdata ( {ahb_hwdata[1],ahb_hwdata[0]}          ),
+      .os_haddr  ( {ahb_haddr[1], ahb_haddr[0]}  ),
+      .os_htrans ( {ahb_htrans[1],ahb_htrans[0]} ),
+      .os_hwrite ( {ahb_hwrite[1],ahb_hwrite[0]} ),
+      .os_hsize  ( {ahb_hsize[1], ahb_hsize[0]}  ),
+      .os_hburst ( {ahb_hburst[1],ahb_hburst[0]} ),
+      .os_hprot  ( {ahb_hprot[1], ahb_hprot[0]}  ),
+      .os_hwdata ( {ahb_hwdata[1],ahb_hwdata[0]} ),
       .os_hsel   ( ahb_hsel            ),
-///      .hready_in ( ahb_hready_in       ),
 // Outputs from Slaves
       .is_hrdata ( {s1_ahb_hrdata,s0_ahb_hrdata} ),
       .is_hready ( {s1_ahb_hready,s0_ahb_hready} ),
@@ -149,6 +150,12 @@ module ehl_ahb_matrix_tb;
       TEST_CHECK(0);
 
       TEST_INIT("READ");
+         AHB_READ(32'hx, 32'h10000000, 3'd2, 1'b0);
+         AHB_READ(32'hx, 32'h20000000, 3'd2, 1'b0);
+         AHB_READ(32'hx, 32'h30000000, 3'd2, 1'b0);
+         AHB_READ(32'hx, 32'h40000000, 3'd2, 1'b0);
+         AHB_READ(32'hx, 32'h40000000, 3'd2, 1'b0);
+         AHB_READ(32'hx, 32'h10000000, 3'd2, 1'b0);
       TEST_CHECK(0);
 
 // TODO: MA->S0, MB->S0 in a row
@@ -181,6 +188,33 @@ module ehl_ahb_matrix_tb;
             AHB_WRITE(32'hA00000bc, 32'h12060000, 3'd2);
          end
       join
+      TEST_CHECK(0);
+
+      TEST_INIT("ROUTE_MASK");
+      // HW Master access to Slave 1 is prohibited
+         @(posedge hclk) hwhtrans <= 2; hwhwrite <= 0; hwhaddr <= 32'h30000000;
+         while(hwhready == 1'b0) @(posedge hclk);
+         @(posedge hclk) hwhtrans <= 0;
+
+         @(posedge hclk) hwhtrans <= 2; hwhwrite <= 1; hwhaddr <= 32'h30000000;
+         while(hwhready == 1'b0) @(posedge hclk);
+         @(posedge hclk) hwhtrans <= 0;
+      // HW Master access to Slave 0
+         @(posedge hclk) hwhtrans <= 2; hwhwrite <= 0; hwhaddr <= 32'h10000000;
+         while(hwhready == 1'b0) @(posedge hclk);
+         @(posedge hclk) hwhtrans <= 0;
+
+         @(posedge hclk) hwhtrans <= 2; hwhwrite <= 1; hwhaddr <= 32'h10000010;
+         while(hwhready == 1'b0) @(posedge hclk);
+         @(posedge hclk) hwhtrans <= 2; hwhwrite <= 1; hwhaddr <= 32'h10000020;
+         while(hwhready == 1'b0) @(posedge hclk);
+         @(posedge hclk); hwhtrans <= 2; hwhwrite <= 1; hwhaddr <= 32'h10000030;
+         while(hwhready == 1'b0) @(posedge hclk);
+         @(posedge hclk); hwhtrans <= 2; hwhwrite <= 0; hwhaddr <= 32'h10000040; hwhwdata <= 32'hdada1234;
+         while(hwhready == 1'b0) @(posedge hclk);
+         @(posedge hclk); hwhtrans <= 2; hwhwrite <= 1; hwhaddr <= 32'h10000050;
+         while(hwhready == 1'b0) @(posedge hclk);
+         @(posedge hclk) hwhtrans <= 0;
       TEST_CHECK(0);
 
       TEST_SUMMARY;

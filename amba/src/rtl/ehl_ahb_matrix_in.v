@@ -47,6 +47,7 @@ module ehl_ahb_matrix_in
 // Inputs from master
    input [31:0]                haddr,
    input [1:0]                 htrans,
+   input [SNUM-1:0]            route,
 // Outputs to masters
    output reg [31:0]           om_hrdata,
    output reg                  om_hready,
@@ -63,23 +64,25 @@ module ehl_ahb_matrix_in
 // mask htrans to every output, other controls (except for write data) provided externally 1-to-SNUM
 //============================================
    wire [SNUM:0] slv_sel; // MSB is default slave
+   wire [SNUM-1:0] slv_sel_raw;
+   assign slv_sel[SNUM-1:0] = slv_sel_raw[SNUM-1:0] & route;
    assign slv_sel[SNUM] = ~|slv_sel[SNUM-1:0];
-   if(SNUM>0) assign slv_sel[0]  = (haddr & SLV0_MASK)  == SLV0_BASE;
-   if(SNUM>1) assign slv_sel[1]  = (haddr & SLV1_MASK)  == SLV1_BASE;
-   if(SNUM>2) assign slv_sel[2]  = (haddr & SLV2_MASK)  == SLV2_BASE;
-   if(SNUM>3) assign slv_sel[3]  = (haddr & SLV3_MASK)  == SLV3_BASE;
-   if(SNUM>4) assign slv_sel[4]  = (haddr & SLV4_MASK)  == SLV4_BASE;
-   if(SNUM>5) assign slv_sel[5]  = (haddr & SLV5_MASK)  == SLV5_BASE;
-   if(SNUM>6) assign slv_sel[6]  = (haddr & SLV6_MASK)  == SLV6_BASE;
-   if(SNUM>7) assign slv_sel[7]  = (haddr & SLV7_MASK)  == SLV7_BASE;
-   if(SNUM>8) assign slv_sel[8]  = (haddr & SLV8_MASK)  == SLV8_BASE;
-   if(SNUM>9) assign slv_sel[9]  = (haddr & SLV9_MASK)  == SLV9_BASE;
-   if(SNUM>10) assign slv_sel[10] = (haddr & SLV10_MASK) == SLV10_BASE;
-   if(SNUM>11) assign slv_sel[11] = (haddr & SLV11_MASK) == SLV11_BASE;
-   if(SNUM>12) assign slv_sel[12] = (haddr & SLV12_MASK) == SLV12_BASE;
-   if(SNUM>13) assign slv_sel[13] = (haddr & SLV13_MASK) == SLV13_BASE;
-   if(SNUM>14) assign slv_sel[14] = (haddr & SLV14_MASK) == SLV14_BASE;
-   if(SNUM>15) assign slv_sel[15] = (haddr & SLV15_MASK) == SLV15_BASE;
+   if(SNUM>0)  assign slv_sel_raw[0]  = (haddr & SLV0_MASK)  == SLV0_BASE;
+   if(SNUM>1)  assign slv_sel_raw[1]  = (haddr & SLV1_MASK)  == SLV1_BASE;
+   if(SNUM>2)  assign slv_sel_raw[2]  = (haddr & SLV2_MASK)  == SLV2_BASE;
+   if(SNUM>3)  assign slv_sel_raw[3]  = (haddr & SLV3_MASK)  == SLV3_BASE;
+   if(SNUM>4)  assign slv_sel_raw[4]  = (haddr & SLV4_MASK)  == SLV4_BASE;
+   if(SNUM>5)  assign slv_sel_raw[5]  = (haddr & SLV5_MASK)  == SLV5_BASE;
+   if(SNUM>6)  assign slv_sel_raw[6]  = (haddr & SLV6_MASK)  == SLV6_BASE;
+   if(SNUM>7)  assign slv_sel_raw[7]  = (haddr & SLV7_MASK)  == SLV7_BASE;
+   if(SNUM>8)  assign slv_sel_raw[8]  = (haddr & SLV8_MASK)  == SLV8_BASE;
+   if(SNUM>9)  assign slv_sel_raw[9]  = (haddr & SLV9_MASK)  == SLV9_BASE;
+   if(SNUM>10) assign slv_sel_raw[10] = (haddr & SLV10_MASK) == SLV10_BASE;
+   if(SNUM>11) assign slv_sel_raw[11] = (haddr & SLV11_MASK) == SLV11_BASE;
+   if(SNUM>12) assign slv_sel_raw[12] = (haddr & SLV12_MASK) == SLV12_BASE;
+   if(SNUM>13) assign slv_sel_raw[13] = (haddr & SLV13_MASK) == SLV13_BASE;
+   if(SNUM>14) assign slv_sel_raw[14] = (haddr & SLV14_MASK) == SLV14_BASE;
+   if(SNUM>15) assign slv_sel_raw[15] = (haddr & SLV15_MASK) == SLV15_BASE;
 
    reg [SNUM:0] slv_sel_cpt;
    always@(posedge hclk or negedge hresetn)
@@ -121,6 +124,5 @@ module ehl_ahb_matrix_in
          if(slv_sel[j])
             os_htrans[j*2+:2] = htrans;
    end
-//   assign os_hsel = slv_sel;
 
 endmodule
