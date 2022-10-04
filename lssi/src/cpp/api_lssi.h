@@ -46,7 +46,7 @@ struct EHL_LSSI
 //   API_LSSI_RX_BUFFER         -- read buffer from LSSI
 //   API_LSSI_RX_BUFFER_BLOCK   -- read buffer from LSSI (wait for success read from FIFO)
 //   API_UART_TX_BUSY           -- wait UART completes transmission
-//   API_SPI_M_BUSY             -- wait SPI Master completes transmission
+//   API_SPI_M_BUSY             -- wait SPI Controller completes transmission
 //   API_LSSI_RX_FLUSH          -- flush data in LSSI receive FIFO
 //   API_LSSI_SET_FIFO_LEVEL    -- set LSSI interrupt generation FIFO level
 //   API_LSSI_DISABLE_IRQ       -- disable IRQs
@@ -58,9 +58,9 @@ void API_LSSI_SET_UART(struct EHL_LSSI* dev_id)
 {
    dev_id->CFG |= 0x1;
 }
-void API_LSSI_SET_SPI(struct EHL_LSSI* dev_id, int phase, int polarity, int slv_m)
+void API_LSSI_SET_SPI(struct EHL_LSSI* dev_id, int phase, int polarity, int trgt_m)
 {
-   dev_id->CFG = (dev_id->CFG & 0xFFFFFF1E) | ((polarity & 1) << 5) | ((phase & 1) << 6) | ((slv_m & 1) << 7);
+   dev_id->CFG = (dev_id->CFG & 0xFFFFFF1E) | ((polarity & 1) << 5) | ((phase & 1) << 6) | ((trgt_m & 1) << 7);
 }
 void API_UART_ENABLE(struct EHL_LSSI* dev_id)
 {
@@ -220,3 +220,61 @@ unsigned int API_LSSI_GET_IRQ(struct EHL_LSSI* dev_id)
 {
    return dev_id->IFR;
 }
+/*
+void sw_uart_clear_rx_overrun(struct sw_uart_reg* base_adr)
+{
+   unsigned int tmp = read_generic_reg((ehl_ptr_t)&base_adr->ucr);
+   write_generic_reg((ehl_ptr_t)&base_adr->ucr, tmp | 0x10);
+}
+
+//
+// 0 - LSB first
+// 1 - MSB first
+void sw_uart_set_bit_order(struct sw_uart_reg* base_adr, unsigned int value)
+{
+   unsigned int tmp = read_generic_reg((ehl_ptr_t)&base_adr->ucr);
+   write_generic_reg((ehl_ptr_t)&base_adr->ucr, (tmp&0xFB) | (value<<1));
+}
+*/
+/*
+// SSR
+void sw_spi_set_cs(struct sw_spi_reg* base_adr, unsigned char cs)
+{
+   write_generic_reg((ehl_ptr_t)&base_adr->ssr, cs);
+}
+void sw_spi_cs_set_bit(struct sw_spi_reg* base_adr, int bit_num)
+{
+   unsigned int tmp = read_generic_reg((ehl_ptr_t)&base_adr->ssr);
+   switch(bit_num)
+   {
+      case 0 : write_generic_reg((ehl_ptr_t)&base_adr->ssr, tmp | 0x1); break;
+      case 1 : write_generic_reg((ehl_ptr_t)&base_adr->ssr, tmp | 0x2); break;
+      case 2 : write_generic_reg((ehl_ptr_t)&base_adr->ssr, tmp | 0x4); break;
+      case 3 : write_generic_reg((ehl_ptr_t)&base_adr->ssr, tmp | 0x8); break;
+      case 4 : write_generic_reg((ehl_ptr_t)&base_adr->ssr, tmp | 0x10); break;
+      case 5 : write_generic_reg((ehl_ptr_t)&base_adr->ssr, tmp | 0x20); break;
+      case 6 : write_generic_reg((ehl_ptr_t)&base_adr->ssr, tmp | 0x40); break;
+      case 7 : write_generic_reg((ehl_ptr_t)&base_adr->ssr, tmp | 0x80); break;
+   }
+}
+void sw_spi_cs_clear_bit(struct sw_spi_reg* base_adr, int bit_num)
+{
+   unsigned int tmp = read_generic_reg((ehl_ptr_t)&base_adr->ssr);
+   switch(bit_num)
+   {
+      case 0 : write_generic_reg((ehl_ptr_t)&base_adr->ssr, tmp & 0xFE); break;
+      case 1 : write_generic_reg((ehl_ptr_t)&base_adr->ssr, tmp & 0xFD); break;
+      case 2 : write_generic_reg((ehl_ptr_t)&base_adr->ssr, tmp & 0xFB); break;
+      case 3 : write_generic_reg((ehl_ptr_t)&base_adr->ssr, tmp & 0xF7); break;
+      case 4 : write_generic_reg((ehl_ptr_t)&base_adr->ssr, tmp & 0xEF); break;
+      case 5 : write_generic_reg((ehl_ptr_t)&base_adr->ssr, tmp & 0xDF); break;
+      case 6 : write_generic_reg((ehl_ptr_t)&base_adr->ssr, tmp & 0xBF); break;
+      case 7 : write_generic_reg((ehl_ptr_t)&base_adr->ssr, tmp & 0x7F); break;
+   }
+}
+unsigned char sw_spi_get_cs(struct sw_spi_reg* base_adr)
+{
+   unsigned int tmp = read_generic_reg((ehl_ptr_t)&base_adr->ssr);
+   return tmp & 0xFF;
+}
+*/

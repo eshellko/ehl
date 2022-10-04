@@ -31,7 +31,7 @@
                   <li>2 - бит данных стробируется 16 тактами <b>RCLK</b>.</li>
                </td>
             </tr>
-            <tr> <td>SS_WIDTH</td>     <td>32</td> <td>8</td>  <td>1-8</td> <td>Количество бит в регистре <b>SSR</b> - количество управляемых контроллером сигналов SPI Slave Select.</td> </tr>
+            <tr> <td>TS_WIDTH</td>     <td>32</td> <td>8</td>  <td>1-8</td> <td>Количество бит в регистре <b>TSR</b> - количество управляемых контроллером сигналов SPI Target Select.</td> </tr>
             <tr> <td>ECC_ENA</td>      <td>1</td>  <td>0</td>  <td>0, 1</td> <td>Применение Single Error Correction логики в FIFO приемо-передатчиков. 1 - добавляет SEC в буферы при записи и исправляет (без сигнализации) при чтении.</td> </tr>
             <tr> <td>TECHNOLOGY</td>   <td>32</td> <td>0</td>  <td>см. techmap/doc/readme*</td> <td>Технологический базис для отдельных элементов дизайна - CDC синхронизаторов, clock gating.</td> </tr>
             <tr> <td>USE_CG</td>       <td>1</td>  <td>1</td>  <td>0, 1</td> <td>Разрешение использования Clock Gating элементов в контроллере.<li>1 - применять clock gating и регистр <b>CDR</b>;</li><li>0 - не использовать clock gating для технологий не поддерживающих указанные элементы.</li></td> </tr>

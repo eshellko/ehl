@@ -32,6 +32,7 @@ module ehl_ddr_phy_csr
    input [SDRAM_BYTE_COUNT:0] dll_locked,
    output reg                 dll_bypass,
 //   output reg                 read_deskew,
+   output reg                 dm_off_state,
    output reg                 enable_dqs,
    output reg [1:0]           odt,
    output reg                 turn_off_inactive_io,
@@ -152,7 +153,8 @@ module ehl_ddr_phy_csr
 //============================
 // 0x04: IO_CTRL
 //============================
-   assign csr[1] = {26'h0,
+   assign csr[1] = {25'h0,
+      dm_off_state,
       wr_1tck_preamble,
       odt,
       enable_dqs,
@@ -167,6 +169,7 @@ module ehl_ddr_phy_csr
       enable_dqs           <= 1'b0;
       odt                  <= 2'd0;
       wr_1tck_preamble     <= 1'b0;
+      dm_off_state         <= 1'b0;
    end
    else if(ctrl_wr & ctrl_addr == 32'h4)
    begin
@@ -175,6 +178,7 @@ module ehl_ddr_phy_csr
       enable_dqs           <= ctrl_wdata[2];
       odt                  <= ctrl_wdata[4:3];
       wr_1tck_preamble     <= ctrl_wdata[5];
+      dm_off_state         <= ctrl_wdata[6];
    end
 //============================
 // 0x08: CTRL
