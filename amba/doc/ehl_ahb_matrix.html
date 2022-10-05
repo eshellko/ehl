@@ -1,0 +1,124 @@
+<html>
+   <style> pre.small {line-height: 0.5; font-weight:bold; }</style>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>AHB Matrix</title>
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+
+      <h2>AMBA AHB Matrix</h2>
+      <hr>
+      <table cellpadding="4" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col></colgroup>
+         <tbody>
+            <tr> <td bgcolor="#C0C0C0">Версия</td>      <td>1.0</td> </tr>
+            <tr> <td bgcolor="#C0C0C0">Дата</td>        <td>2022.10.02</td> </tr>
+            <tr> <td bgcolor="#C0C0C0">Разработчик</td> <td>А.В. Корнюхин (kornukhin@mail.ru)</td> </tr>
+         </tbody>
+      </table>
+
+      <h3>Введение</h3>
+      <p>
+         В данной спецификации описываются структура, порядок использования и технические характеристики неблокирующего коммутатора шины AMBA AHB.
+         Коммутатор производит арбитраж на доступ к шине между мастерами и перенаправляет их запросы к устройствам. Мастера могут обращатся к различным устройствам без влияния на трафик других мастеров - арбитраж происходит на выходных портах устройств.
+      </p>
+      <p>
+         Контроллер позволяет маскировать доступ отдельным мастерам к выбранным устройствам, а также имеет 2 режима адресации, позволяя задавать 2 карты адресов в зависимости от режима использования коммутатора.
+      </p>
+
+      <h3>Параметры</h3>
+      <p><b>ehl_ahb_matrix</b> может быть настроен под задачу пользователя. За настройку отвечают параметры, представленные в таблице.</p>
+      <table cellpadding="4" width="80%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Значение по умолчанию</th>
+               <th>Допустимые значения</th>
+               <th>Описание</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>SNUM</td>             <td>8</td> <td>1-16</td>         <td>Количество подключенных AHB Slave устройств.</td> </tr>
+            <tr> <td>MNUM</td>             <td>8</td> <td>1-16</td>         <td>Количество подключенных AHB Master устройств.</td> </tr>
+            <tr> <td>SLV0_BASE</td>        <td>0x00000000</td> <td>0x00000000-0xFFFFFFFF</td> <td>Базовый адрес Slave 0.</td> </tr>
+            <tr> <td>SLV0_MASK</td>        <td>0x00000000</td> <td>0x00000000-0xFFFFFFFF</td> <td>Маска адреса Slave 0. Значение 1 в любом бите исключает его из проверки адреса при перенаправлениии транзакций Master в выбранный Slave.</td> </tr>
+            <tr> <td>RSLV0_BASE</td>       <td>0x00000000</td> <td>0x00000000-0xFFFFFFFF</td> <td>Базовый адрес Slave 0 в режиме REMAP.</td> </tr>
+            <tr> <td>RSLV0_MASK</td>       <td>0x00000000</td> <td>0x00000000-0xFFFFFFFF</td> <td>Маска адреса Slave 0 в режиме REMAP. Значение 1 в любом бите исключает его из проверки адреса при перенаправлениии транзакций Master в выбранный Slave.</td> </tr>
+         </tbody>
+      </table>
+      <p>Параметры <b>SLV1_BASE</b>-<b>SLV15_BASE</b> и <b>SLV1_MASK</b>-<b>SLV15_MASK</b> аналогичны параметрам <b>SLV0_BASE</b> и <b>SLV0_MASK</b> для соответствующих Slave.</p>
+      <p>Параметры <b>RSLV1_BASE</b>-<b>RSLV15_BASE</b> и <b>RSLV1_MASK</b>-<b>RSLV15_MASK</b> аналогичны параметрам <b>RSLV0_BASE</b> и <b>RSLV0_MASK</b> для соответствующих Slave.</p>
+
+      <h3>Интерфейс</h3>
+      <pre class="small">    _______________________</pre>
+      <pre class="small">   |                       |</pre>
+      <pre class="small">---| hclk                  |</pre>
+      <pre class="small">---| hresetn               |</pre>
+      <pre class="small">   | . . . . . . . . . . . |</pre>
+      <pre class="small">---| im_haddr    om_hrdata |---</pre>
+      <pre class="small">---| im_htrans   om_hready |---</pre>
+      <pre class="small">---| im_hwrite    om_hresp |---</pre>
+      <pre class="small">---| im_hsize              |</pre>
+      <pre class="small">---| im_hburst             |</pre>
+      <pre class="small">---| im_hprot              |</pre>
+      <pre class="small">---| im_hwdata             |</pre>
+      <pre class="small">   | . . . . . . . . . . . |</pre>
+      <pre class="small">---| im_route              |</pre>
+      <pre class="small">---| remap                 |</pre>
+      <pre class="small">   | . . . . . . . . . . . |</pre>
+      <pre class="small">---| is_hrdata    os_haddr |---</pre>
+      <pre class="small">---| is_hready   os_htrans |---</pre>
+      <pre class="small">---| is_hresp    os_hwrite |---</pre>
+      <pre class="small">   |              os_hsize |---</pre>
+      <pre class="small">   |             os_hburst |---</pre>
+      <pre class="small">   |              os_hprot |---</pre>
+      <pre class="small">   |             os_hwdata |---</pre>
+      <pre class="small">   |               os_hsel |---</pre>
+      <pre class="small">   |_______________________|</pre>
+
+      <table summary="ahb_globals" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Количество</th>
+               <th>Тип</th>
+               <th>Назначение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>hclk</td>    <td>1</td> <td>I</td> <td>Синхросигнал. Все регистры в контроллере тактируются нарастающим фронтом.</td> </tr>
+            <tr> <td>hresetn</td> <td>1</td> <td>I</td> <td>Асинхронный сброс - активный уровень 0.</td> </tr>
+            <tr bgcolor="#F0F0F0"> <td colspan="4">Входы от Masters</td> </tr>
+            <tr> <td>im_haddr</td>  <td>MNUM * 32</td> <td>I</td> <td>Сигнал HADDR AHB.</td> </tr>
+            <tr> <td>im_htrans</td> <td>MNUM * 2</td>  <td>I</td> <td>Сигнал HTRANS AHB.</td> </tr>
+            <tr> <td>im_hwrite</td> <td>MNUM</td>      <td>I</td> <td>Сигнал HWRITE AHB.</td> </tr>
+            <tr> <td>im_hsize</td>  <td>MNUM * 3</td>  <td>I</td> <td>Сигнал HSIZE AHB.</td> </tr>
+            <tr> <td>im_hburst</td> <td>MNUM * 3</td>  <td>I</td> <td>Сигнал HBURST AHB.</td> </tr>
+            <tr> <td>im_hprot</td>  <td>MNUM * 4</td>  <td>I</td> <td>Сигнал HPROT AHB.</td> </tr>
+            <tr> <td>im_hwdata</td> <td>MNUM * 32</td> <td>I</td> <td>Сигнал HWDATA AHB.</td> </tr>
+            <tr bgcolor="#F0F0F0"> <td colspan="4">Выходы к Masters</td> </tr>
+            <tr> <td>om_hrdata</td> <td>32</td>       <td>O</td> <td>Сигнал HRDATA AHB.</td> </tr>
+            <tr> <td>om_hready</td> <td>MNUM</td>     <td>O</td> <td>Сигнал HREADY AHB.</td> </tr>
+            <tr> <td>om_hresp</td>  <td>MNUM * 2</td> <td>O</td> <td>Сигнал HRESP AHB.</td> </tr>
+            <tr bgcolor="#F0F0F0"> <td colspan="4">Конфигурация</td> </tr>
+            <tr> <td>im_route</td> <td>MNUM * SNUM</td> <td>I</td> <td>Разрешение доступа мастеров к устройствам. 1 в разряде соответсвует разрешению доступа. Биты [SNUM-1:0] соответствуют мастеру 0. Биты [2*SNUM-1:SNUM] соответствуют мастеру 1 (если <b>MNUM</b> > 1) и так далее.</td> </tr>
+            <tr> <td>remap</td>    <td>1</td>           <td>I</td> <td>Режим альтернативной адресации (REMAP).<li>0 - адресация согласно параметрам <b>SLVx</b>;</li> <li>1 - альтернативная адресация согласно параметрам <b>RSLVx</b>;</li></td> </tr>
+            <tr bgcolor="#F0F0F0"> <td colspan="4">Выходы к Slaves</td> </tr>
+            <tr> <td>os_haddr</td>  <td>SNUM * 32</td> <td>O</td> <td>Сигнал HADDR AHB.</td> </tr>
+            <tr> <td>os_htrans</td> <td>SNUM * 2</td>  <td>O</td> <td>Сигнал HTRANS AHB.</td> </tr>
+            <tr> <td>os_hwrite</td> <td>SNUM * 1</td>  <td>O</td> <td>Сигнал HWRITE AHB.</td> </tr>
+            <tr> <td>os_hsize</td>  <td>SNUM * 3</td>  <td>O</td> <td>Сигнал HSIZE AHB.</td> </tr>
+            <tr> <td>os_hburst</td> <td>SNUM * 3</td>  <td>O</td> <td>Сигнал HBURST AHB.</td> </tr>
+            <tr> <td>os_hprot</td>  <td>SNUM * 4</td>  <td>O</td> <td>Сигнал HPROT AHB.</td> </tr>
+            <tr> <td>os_hwdata</td> <td>SNUM * 32</td> <td>O</td> <td>Сигнал HWDATA AHB.</td> </tr>
+            <tr> <td>os_hsel</td>   <td>SNUM</td>      <td>O</td> <td>Сигнал HSEL AHB.</td> </tr>
+            <tr bgcolor="#F0F0F0"> <td colspan="4">Входы от Slaves</td> </tr>
+            <tr> <td>is_hrdata</td> <td>SNUM * 32</td> <td>I</td> <td>Сигнал HRDATA AHB.</td> </tr>
+            <tr> <td>is_hready</td> <td>SNUM</td>      <td>I</td> <td>Сигнал HREADY AHB.</td> </tr>
+            <tr> <td>is_hresp</td>  <td>SNUM * 2</td>  <td>I</td> <td>Сигнал HRESP AHB.</td> </tr>
+         </tbody>
+      </table>
+   </body>
+</html>
