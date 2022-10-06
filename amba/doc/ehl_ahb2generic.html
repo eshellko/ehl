@@ -1,0 +1,98 @@
+<html>
+   <style> pre.small {line-height: 0.5; font-weight:bold; }</style>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>AHB2Generic</title>
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+
+      <h2>AMBA AHB2Generic</h2>
+	  <hr>
+      <table cellpadding="4" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col></colgroup>
+         <tbody>
+            <tr> <td bgcolor="#C0C0C0">Версия</td>      <td>1.0</td> </tr>
+            <tr> <td bgcolor="#C0C0C0">Дата</td>        <td>2015.12.22</td> </tr>
+            <tr> <td bgcolor="#C0C0C0">Разработчик</td> <td>А.В. Корнюхин (kornukhin@mail.ru)</td> </tr>
+         </tbody>
+      </table>
+
+      <h3>Введение</h3>
+	  <p>В данной спецификации описываются структура, порядок использования и технические характеристики интерфейса устройства на шине AMBA AHB.</p>
+	  <p><b>ehl_ahb2generic</b> представляет собой конвертор сигналов AHB в сигналы Generic шины и обратно. <b>ehl_ahb2generic</b> имеет набор параметров, позволяющих настроить его под требования проекта.</p>
+
+      <h3>Параметры</h3>
+	  <p><b>ehl_ahb2generic</b> может быть настроен под задачу пользователя. За настройку отвечают параметры, представленные в таблице.</p>
+      <table cellpadding="4" width="80%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Значение по умолчанию</th>
+               <th>Допустимые значения</th>
+               <th>Описание</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>WIDTH</td>                    <td>32</td> <td>8, 16, 32, 64</td> <td>Ширина данных интерфейсов AHB/generic.</td> </tr>
+            <tr> <td>REPLICATE_TRUNCATED_DATA</td> <td>0</td>  <td>0, 1</td>          <td>Использование режима репликации данных при суб-<b>WIDTH</b> обращениях.</td> </tr>
+         </tbody>
+      </table>
+      <p>Параметр <b>WIDTH</b> может принимать значения от 8, 16, 32 или 64. Этот параметр определяет ширину данных интерфейсов generic/AHB.</p>
+      <p>Параметр <b>REPLICATE_TRUNCATED_DATA</b> применяется для реализации совместимости между устройствами на шине, поддерживающими различные ширины шин данных. Например:</p>
+      <p>К шине подключено несколько мастеров с различными ширинами интерфейса данных. 64-битный CPU, 32-битный контроллер PCI, 32-битный контроллер Ethernet. Не все мастера могут получить 32 бита данных из 64-битного вектора. Чтение из адреса 0x4 вернет значение VVVVVVVV_xxxxxxxx (или xxxxxxxx_VVVVVVVV в зависимости от Endianess шины). 64-битный мастер получить корректные VVVVVVVV из вектора, но 32-битный подключен только к 32 битам xxxxxxxx. Установка параметра <b>REPLICATE_TRUNCATED_DATA</b> в значение b’1 приведет к тому, что <b>ehl_ahb2generic</b> вернет значение VVVVVVVV_VVVVVVVV.
+
+      <h3>Интерфейс</h3>
+      <pre class="small">    _______________________</pre>
+      <pre class="small">   |                       |</pre>
+      <pre class="small">---| hclk                  |</pre>
+      <pre class="small">---| hresetn               |</pre>
+      <pre class="small">   | . . . . . . . . . . . |</pre>
+      <pre class="small">---| haddr          hrdata |---</pre>
+      <pre class="small">---| htrans         hready |---</pre>
+      <pre class="small">---| hwrite          hresp |---</pre>
+      <pre class="small">---| hsize                 |</pre>
+      <pre class="small">---| hburst                |</pre>
+      <pre class="small">---| hprot                 |</pre>
+      <pre class="small">---| hwdata                |</pre>
+      <pre class="small">---| hsel                  |</pre>
+      <pre class="small">---| hready_in             |</pre>
+      <pre class="small">   | . . . . . . . . . . . |</pre>
+      <pre class="small">---| rdata             adr |---</pre>
+      <pre class="small">---| hready             rd |---</pre>
+      <pre class="small">---| error              wr |---</pre>
+      <pre class="small">   |                    be |---</pre>
+      <pre class="small">   |                 wdata |---</pre>
+      <pre class="small">   |_______________________|</pre>
+
+      <table summary="ahb_globals" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <thead>
+            <tr bgcolor="#C0C0C0">
+               <th>Название</th>
+               <th>Количество</th>
+               <th>Тип</th>
+               <th>Назначение</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr> <td>rdata</td> <td>32</td>       <td>I</td> <td>Выходная шина данных.</td> </tr>
+            <tr> <td>ready</td> <td>1</td>        <td>I</td> <td>Признак завершения предыдущей операции записи или чтения.</td> </tr>
+            <tr> <td>error</td> <td>1</td>        <td>I</td> <td>Сигнал обнаружения ошибки при обращении к модулю.</td> </tr>
+            <tr> <td>adr</td>   <td>32</td>       <td>O</td> <td>Шина адреса для доступа к данным.</td> </tr>
+            <tr> <td>rd</td>    <td>1</td>        <td>O</td> <td>Запрос на чтение. Активный уровень ‘b1.</td> </tr>
+            <tr> <td>wr</td>    <td>1</td>        <td>O</td> <td>Запрос на запись. Активный уровень ‘b1.</td> </tr>
+            <tr> <td>be</td>    <td>WIDTH/8</td>  <td>O</td> <td>Маска данных wdata.</td> </tr>
+            <tr> <td>wdata</td> <td>WIDTH</td>    <td>O</td> <td>Шина данных для записи.</td> </tr>
+         </tbody>
+      </table>
+
+      <h3>Ограничения</h3>
+      <p><b>ehl_ahb2generic</b> преобразует команды интерфейса AHB в аналогичные команды generic интерфейса. В связи с этим не все опции поддерживаются:</p>
+      <li><b>hresp</b> может принимать только значения ERROR и OKAY.</li>
+      <li><b>hburst</b> не поддерживается.</li>
+      <li><b>hprot</b> игнорируется.</li>
+      <li><b>htrans</b> поддерживается только для SEQUENTIAL и NON-SEQUENTIAL транзакций.</li>
+
+   </body>
+</html>

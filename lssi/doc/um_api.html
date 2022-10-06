@@ -1,0 +1,126 @@
+<html>
+   <style> pre.small {line-height: 0.5; font-weight:bold; color: #0000FF; }</style>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>API</title>
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+      <h3>Базовые функции</h3>
+      <hr>
+      <p><b>API_LSSI_SET_UART</b>: перевести устройство в режим UART</p>
+      <pre class="small">void API_LSSI_SET_UART(struct EHL_LSSI* dev_id);</pre>
+      <pre class="small">   dev_id - указатель на структуру LSSI</pre>
+      <hr>
+      <p><b>API_LSSI_SET_SPI</b>: перевести устройство в режим SPI с заданием фазы, полярности и режима Controller/Target</p>
+      <pre class="small">void API_LSSI_SET_SPI(struct EHL_LSSI* dev_id, int phase, int polarity, int trgt_m);</pre>
+      <pre class="small">   dev_id   - указатель на структуру LSSI</pre>
+      <pre class="small">   phase    - фаза (0 или 1)</pre>
+      <pre class="small">   polarity - полярность (0 или 1)</pre>
+      <pre class="small">   trgt_m   - Target(1) или Controller(0)</pre>
+      <hr>
+      <p><b>API_UART_ENABLE</b>: разрешение обмена данными через UART</p>
+      <pre class="small">void API_UART_ENABLE(struct EHL_LSSI* dev_id);</pre>
+      <pre class="small">   dev_id - указатель на структуру LSSI</pre>
+      <hr>
+      <p><b>API_UART_DISABLE</b>: запрет обмена данными через UART с ожиданием окончания текущей передачи и сбросом FIFO</p>
+      <pre class="small">void API_UART_DISABLE(struct EHL_LSSI* dev_id);</pre>
+      <pre class="small">   dev_id - указатель на структуру LSSI</pre>
+      <hr>
+      <p><b>API_UART_SET_WORD_LENGTH</b>: установка количества бит данных в слове UART</p>
+      <pre class="small">int API_UART_SET_WORD_LENGTH(struct EHL_LSSI* dev_id, int value);</pre>
+      <pre class="small">   dev_id - указатель на структуру LSSI</pre>
+      <pre class="small">   value  - количество бит данных (5-8). В случае задания некорретного значения функция возвращает значение 1, в случае успеха - 0.</pre>
+      <hr>
+      <p><b>API_UART_SET_PARITY</b>: устновка режима бита четности UART</p>
+      <pre class="small">int API_UART_SET_PARITY(struct EHL_LSSI* dev_id, int value);</pre>
+      <pre class="small">   dev_id - указатель на структуру LSSI</pre>
+      <pre class="small">   value  - режим четности (0 - без четности, 1 - even, 2 - odd, остальные значения приводят к ошибке: возвразщаемое значение 1). В случае успеха возвращается 0.</pre>
+      <hr>
+      <p><b>API_LSSI_CHARS_AVAIL</b>: проверка наличия данных в FIFO приемника. Возвращает 0 если FIFO пустое и 1, если есть данные.</p>
+      <pre class="small">int API_LSSI_CHARS_AVAIL(struct EHL_LSSI* dev_id);</pre>
+      <pre class="small">   dev_id - указатель на структуру LSSI</pre>
+      <hr>
+      <p><b>API_LSSI_SPACE_AVAIL</b>: проверка наличия свободного места в FIFO передатчика. Возвращает 0, если FIFO полное, и 1 если в FIFO есть свободное место.</p>
+      <pre class="small">int API_LSSI_SPACE_AVAIL(struct EHL_LSSI* dev_id);</pre>
+      <pre class="small">   dev_id - указатель на структуру LSSI</pre>
+      <hr>
+      <p><b>API_LSSI_TX_CHAR</b>: запись байта данных в буфер LSSI. Возвращает 1, если в FIFO нет места. В противном случае возвроащает 0.</p>
+      <pre class="small">int API_LSSI_TX_CHAR(struct EHL_LSSI* dev_id, char value);</pre>
+      <pre class="small">   dev_id - указатель на структуру LSSI</pre>
+      <pre class="small">   value  - данные для записи</pre>
+      <hr>
+      <p><b>API_LSSI_TX_CHAR_BLOCK</b>: блокирующая запись байта данных в буфер LSSI (функция ожидает освобождение места перед записью в FIFO). Может приводить к зависанию, при записи в полное FIFO с выключенным передатчиком.</p>
+      <pre class="small">void API_LSSI_TX_CHAR_BLOCK(struct EHL_LSSI* dev_id, char value);</pre>
+      <pre class="small">   dev_id - указатель на структуру LSSI</pre>
+      <pre class="small">   value  - данные для записи</pre>
+      <hr>
+      <p><b>API_LSSI_TX_BUFFER</b>: запись буфера данных в FIFO при наличии свободного места. Возвращает 0, если все данные были записаны в буфер. В противном случае возвращает количество записанных байт +1.</p>
+      <pre class="small">int API_LSSI_TX_BUFFER(struct EHL_LSSI* dev_id, char* buffer, int len);</pre>
+      <pre class="small">   dev_id - указатель на структуру LSSI</pre>
+      <pre class="small">   buffer - указатель на буфер</pre>
+      <pre class="small">   len    - размер буфера</pre>
+      <hr>
+      <p><b>API_LSSI_TX_BUFFER_BLOCK</b>: блокирующая запись буфера данных в FIFO (функция ожидает освобождение места перед записью в FIFO). Может приводить к зависанию, при записи в полное FIFO с выключенным передатчиком.</p>
+      <pre class="small">void API_LSSI_TX_BUFFER_BLOCK(struct EHL_LSSI* dev_id, char* buffer, int len);</pre>
+      <pre class="small">   dev_id - указатель на структуру LSSI</pre>
+      <pre class="small">   buffer - указатель на буфер</pre>
+      <pre class="small">   len    - размер буфера</pre>
+      <hr>
+      <p><b>API_LSSI_RX_CHAR</b>: прочитать байт из буфера приемника LSSI. Возвращает 1, если в буфере нет данных.</p>
+      <pre class="small">int API_LSSI_RX_CHAR(struct EHL_LSSI* dev_id, char* data);</pre>
+      <pre class="small">   dev_id - указатель на структуру LSSI</pre>
+      <pre class="small">   data   - указатель на буфер для хранения прочитанного байта</pre>
+      <hr>
+      <p><b>API_LSSI_RX_CHAR_BLOCK</b>: блокирующее чтение байта из буфера приемника LSSI. Функция ожидает появления данных в буфере приемника и может приводить к зависанию системы при отсутсвии принимаемых данных или выкюченном передатчике.</p>
+      <pre class="small">char API_LSSI_RX_CHAR_BLOCK(struct EHL_LSSI* dev_id);</pre>
+      <pre class="small">   dev_id - указатель на структуру LSSI</pre>
+      <hr>
+      <p><b>API_LSSI_RX_BUFFER</b>: прочитать буфер из FIFO приемника LSSI. Возвращает 1, если в FIFO нет данных.</p>
+      <pre class="small">int API_LSSI_RX_BUFFER(struct EHL_LSSI* dev_id, char* buffer, int len);</pre>
+      <pre class="small">   dev_id - указатель на структуру LSSI</pre>
+      <pre class="small">   buffer - указатель на буфер</pre>
+      <pre class="small">   len    - размер буфера</pre>
+      <hr>
+      <p><b>API_LSSI_RX_BUFFER_BLOCK</b>: блокирующее чтение буфера из FIFO приемника. Функция ожидает появления данных в буфере приемника и может приводить к зависанию системы при отсутсвии принимаемых данных или выкюченном передатчике.</p>
+      <pre class="small">void API_LSSI_RX_BUFFER_BLOCK(struct EHL_LSSI* dev_id, char* buffer, int len);</pre>
+      <pre class="small">   dev_id - указатель на структуру LSSI</pre>
+      <pre class="small">   buffer - указатель на буфер</pre>
+      <pre class="small">   len    - размер буфера</pre>
+      <hr>
+      <p><b>API_UART_TX_BUSY</b>: ожидать завершения передачи буфера через UART</p>
+      <pre class="small">void API_UART_TX_BUSY(struct EHL_LSSI* dev_id);</pre>
+      <pre class="small">   dev_id - указатель на структуру LSSI</pre>
+      <hr>
+      <p><b>API_SPI_M_BUSY</b>: ожидать завершения передачи буфера Controller SPI</p>
+      <pre class="small">void API_SPI_M_BUSY(struct EHL_LSSI* dev_id);</pre>
+      <pre class="small">   dev_id - указатель на структуру LSSI</pre>
+      <hr>
+      <p><b>API_LSSI_RX_FLUSH</b>: сбросить содержимое FIFO приемника LSSI</p>
+      <pre class="small">void API_LSSI_RX_FLUSH(struct EHL_LSSI* dev_id);</pre>
+      <pre class="small">   dev_id - указатель на структуру LSSI</pre>
+      <hr>
+      <p><b>API_LSSI_SET_FIFO_LEVEL</b>: задать пороги генерации прерываний в FIFO</p>
+      <pre class="small">void API_LSSI_SET_FIFO_LEVEL(struct EHL_LSSI* dev_id, int txfifo_level, int rxfifo_level);</pre>
+      <pre class="small">   dev_id       - указатель на структуру LSSI</pre>
+      <pre class="small">   txfifo_level - уровень генерации прерываний передающего FIFO</pre>
+      <pre class="small">   rxfifo_level - уровень генерации прерываний принимающего FIFO</pre>
+      <hr>
+      <p><b>API_LSSI_DISABLE_IRQ</b>: запрещает прерывания записью 0 в IER</p>
+      <pre class="small">void API_LSSI_DISABLE_IRQ(struct EHL_LSSI* dev_id);</pre>
+      <pre class="small">   dev_id - указатель на структуру LSSI</pre>
+      <hr>
+      <p><b>API_LSSI_ENABLE_IRQ</b>: разрешает выбранные прерывания записью в IER</p>
+      <pre class="small">void API_LSSI_ENABLE_IRQ(struct EHL_LSSI* dev_id, int value);</pre>
+      <pre class="small">   dev_id - указатель на структуру LSSI</pre>
+      <pre class="small">   value  - разрешенные прерывания, записываемые в IER</pre>
+      <hr>
+      <p><b>API_LSSI_CLEAR_IRQ</b>: сбрасывает выбранные флаги прерываний в IFR</p>
+      <pre class="small">void API_LSSI_CLEAR_IRQ(struct EHL_LSSI* dev_id, int value);</pre>
+      <pre class="small">   dev_id - указатель на структуру LSSI</pre>
+      <pre class="small">   value  - сбрасываемые прерывания</pre>
+      <hr>
+      <p><b>API_LSSI_GET_IRQ</b>: возвращает текущие флаги прерываний - значение регистра IFR</p>
+      <pre class="small">unsigned int API_LSSI_GET_IRQ(struct EHL_LSSI* dev_id);</pre>
+      <pre class="small">   dev_id - указатель на структуру LSSI</pre>
+   </body>
+</html>

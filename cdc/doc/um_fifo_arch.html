@@ -57,27 +57,27 @@
             </tr>
          </thead>
          <tbody>
-            <tr> <td>wclk</td>           <td>1</td> <td>I</td> <td>Тактовый сигнал интерфейса записи в буфер. Все триггеры в fifo_wc и fifo_buf тактируются нарастающим фронтом этого синхросигнала.</td> </tr>
-            <tr> <td>rclk</td>           <td>1</td> <td>I</td> <td>Тактовый сигнал интерфейса чтения из буфера. Все триггера в fifo_rc тактируются нарастающим фронтом этого синхросигнала.</td> </tr>
-            <tr> <td>w_reset_n</td>      <td>1</td> <td>I</td> <td>Активный низким уровнем сигнал асинхронного сброса в тактовом домене wclk.</td> </tr>
-            <tr> <td>r_reset_n</td>      <td>1</td> <td>I</td> <td>Активный низким уровнем сигнал асинхронного сброса в тактовом домене rclk.</td> </tr>
-            <tr> <td>clr_of</td>         <td>1</td> <td>I</td> <td>Активный высоким уровнем сигнал синхронного сброса флага w_overflow.</td> </tr>
-            <tr> <td>clr_uf</td>         <td>1</td> <td>I</td> <td>Активный высоким уровнем сигнал синхронного сброса флага r_underflow.</td> </tr>
-            <tr> <td>rd</td>             <td>1</td> <td>I</td> <td>Активный высоким уровнем запрос чтения буфера.</td> </tr>
-            <tr> <td>wr</td>             <td>1</td> <td>I</td> <td>Активный высоким уровнем запрос записи в буфер.</td> </tr>
-            <tr> <td>wdat</td>           <td>WIDTH_DIN</td> <td>I</td> <td>Данные, записываемые в буфер.</td> </tr>
-            <tr> <td>r_empty</td>        <td>1</td> <td>O</td> <td>Флаг опустошения буфера, синхронизованный с rclk.</td> </tr>
-            <tr> <td>w_empty</td>        <td>1</td> <td>O</td> <td>Флаг опустошения буфера, синхронизованный с wclk.</td> </tr>
-            <tr> <td>r_full</td>         <td>1</td> <td>O</td> <td>Флаг заполнения буфера, синхронизованный с rclk.</td> </tr>
-            <tr> <td>w_full</td>         <td>1</td> <td>O</td> <td>Флаг заполнения буфера, синхронизованный с wclk.</td> </tr>
-            <tr> <td>r_almost_empty</td> <td>1</td> <td>O</td> <td>Флаг заполнения одной ячейки буфера, синхронизованный с rclk.</td> </tr>
-            <tr> <td>w_almost_empty</td> <td>1</td> <td>O</td> <td>Флаг заполнения одной ячейки буфера, синхронизованный с wclk.</td> </tr>
-            <tr> <td>r_almost_full</td>  <td>1</td> <td>O</td> <td>Флаг наличия одной свободной ячейки в буфере, синхронизованный с rclk.</td> </tr>
-            <tr> <td>w_almost_full</td>  <td>1</td> <td>O</td> <td>Флаг наличия одной свободной ячейки в буфере, синхронизованный с wclk.</td> </tr>
-            <tr> <td>w_overflow</td>     <td>1</td> <td>O</td> <td>Флаг ошибки записи буфера.</td> </tr>
-            <tr> <td>r_underflow</td>    <td>1</td> <td>O</td> <td>Флаг ошибки чтения буфера.</td> </tr>
-            <tr> <td>rdat</td>           <td>WIDTH_DOUT</td> <td>O</td> <td>Данные, читаемые из  буфера.</td> </tr>
-            <tr> <td>write_credit</td>   <td>log2(WIDTH_DIN<=WIDTH_DOUT ? DEPTH/(WIDTH_DOUT/WIDTH_DIN) : DEPTH)</td> <td>O</td> <td>Количество свободных ячеек в буфере.</td> </tr>
+            <tr> <td>wclk</td>         <td>1</td> <td>I</td> <td>Тактовый сигнал интерфейса записи в буфер. Все триггеры в fifo_wc и fifo_buf тактируются нарастающим фронтом этого синхросигнала.</td> </tr>
+            <tr> <td>rclk</td>         <td>1</td> <td>I</td> <td>Тактовый сигнал интерфейса чтения из буфера. Все триггера в fifo_rc тактируются нарастающим фронтом этого синхросигнала.</td> </tr>
+            <tr> <td>w_reset_n</td>    <td>1</td> <td>I</td> <td>Активный низким уровнем сигнал асинхронного сброса в тактовом домене wclk.</td> </tr>
+            <tr> <td>r_reset_n</td>    <td>1</td> <td>I</td> <td>Активный низким уровнем сигнал асинхронного сброса в тактовом домене rclk.</td> </tr>
+            <tr> <td>clr_of</td>       <td>1</td> <td>I</td> <td>Активный высоким уровнем сигнал синхронного сброса флага w_overflow.</td> </tr>
+            <tr> <td>clr_uf</td>       <td>1</td> <td>I</td> <td>Активный высоким уровнем сигнал синхронного сброса флага r_underflow.</td> </tr>
+            <tr> <td>rd</td>           <td>1</td> <td>I</td> <td>Активный высоким уровнем запрос чтения буфера.</td> </tr>
+            <tr> <td>wr</td>           <td>1</td> <td>I</td> <td>Активный высоким уровнем запрос записи в буфер.</td> </tr>
+            <tr> <td>wdat</td>         <td>WIDTH_DIN</td> <td>I</td> <td>Данные, записываемые в буфер.</td> </tr>
+            <tr> <td>r_empty</td>      <td>1</td> <td>O</td> <td>Флаг опустошения буфера, синхронизованный с rclk.</td> </tr>
+            <tr> <td>w_empty</td>      <td>1</td> <td>O</td> <td>Флаг опустошения буфера, синхронизованный с wclk.</td> </tr>
+            <tr> <td>r_full</td>       <td>1</td> <td>O</td> <td>Флаг заполнения буфера, синхронизованный с rclk.</td> </tr>
+            <tr> <td>w_full</td>       <td>1</td> <td>O</td> <td>Флаг заполнения буфера, синхронизованный с wclk.</td> </tr>
+            <tr> <td>r_aempty</td>     <td>1</td> <td>O</td> <td>Флаг заполнения одной ячейки буфера, синхронизованный с rclk.</td> </tr>
+            <tr> <td>w_aempty</td>     <td>1</td> <td>O</td> <td>Флаг заполнения одной ячейки буфера, синхронизованный с wclk.</td> </tr>
+            <tr> <td>r_afull</td>      <td>1</td> <td>O</td> <td>Флаг наличия одной свободной ячейки в буфере, синхронизованный с rclk.</td> </tr>
+            <tr> <td>w_afull</td>      <td>1</td> <td>O</td> <td>Флаг наличия одной свободной ячейки в буфере, синхронизованный с wclk.</td> </tr>
+            <tr> <td>w_overflow</td>   <td>1</td> <td>O</td> <td>Флаг ошибки записи буфера.</td> </tr>
+            <tr> <td>r_underflow</td>  <td>1</td> <td>O</td> <td>Флаг ошибки чтения буфера.</td> </tr>
+            <tr> <td>rdat</td>         <td>WIDTH_DOUT</td> <td>O</td> <td>Данные, читаемые из  буфера.</td> </tr>
+            <tr> <td>write_credit</td> <td>log2(WIDTH_DIN<=WIDTH_DOUT ? DEPTH : DEPTH*(WIDTH_DOUT/WIDTH_DIN))</td> <td>O</td> <td>Количество свободных ячеек в буфере (количество возможных операций записи в буфер).</td> </tr>
          </tbody>
       </table>
       <p></p>
