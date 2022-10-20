@@ -183,7 +183,7 @@ module ehl_ahb_matrix
 //============================================
    for(gen_o = 0; gen_o <= SNUM; gen_o = gen_o + 1)
    begin : outstage
-      ehl_matrix_out
+      ehl_ahb_matrix_out
       #(
          .MNUM ( MNUM )
       ) mux_inst

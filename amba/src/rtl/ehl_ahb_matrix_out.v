@@ -5,7 +5,7 @@
 // Designer:         A.Kornukhin (kornukhin@mail.ru)
 // Last modified by: 1.0 2022-09-29 A.Kornukhin: initial release
 
-module ehl_matrix_out
+module ehl_ahb_matrix_out
 #(
    parameter MNUM = 8
 )
