@@ -72,26 +72,24 @@ module ehl_ahb_matrix
 );
    wire [1:0]  dflt_htrans;
    wire        dflt_hsel;
-   wire        dflt_hwrite;
-   wire [31:0] dflt_hwdata;
    wire        dflt_hready;
    wire [1:0]  dflt_hresp;
    wire [31:0] dflt_hrdata;
 
    wire [(SNUM+1)*32-1:0] s_haddr;
-   assign {dflt_haddr, os_haddr} = s_haddr;
+   assign os_haddr = s_haddr[SNUM*32-1:0]; // Note: signal not used by default slave
    wire [(SNUM+1)*2-1:0]  s_htrans;
    assign {dflt_htrans, os_htrans} = s_htrans;
    wire [(SNUM+1)-1:0]    s_hwrite;
-   assign {dflt_hwrite, os_hwrite} = s_hwrite;
+   assign os_hwrite = s_hwrite[SNUM-1:0]; // Note: signal not used by default slave
    wire [(SNUM+1)*3-1:0]  s_hsize;
-   assign {dflt_hsize, os_hsize} = s_hsize;
+   assign os_hsize = s_hsize[SNUM*3-1:0]; // Note: signal not used by default slave
    wire [(SNUM+1)*3-1:0]  s_hburst;
-   assign {dflt_hburst, os_hburst} = s_hburst;
+   assign os_hburst = s_hburst[SNUM*3-1:0]; // Note: signal not used by default slave
    wire [(SNUM+1)*4-1:0]  s_hprot;
-   assign {dflt_hprot, os_hprot} = s_hprot;
+   assign os_hprot = s_hprot[SNUM*4-1:0]; // Note: signal not used by default slave
    wire [(SNUM+1)*32-1:0] s_hwdata;
-   assign {dflt_hwdata, os_hwdata} = s_hwdata;
+   assign os_hwdata = s_hwdata[SNUM*32-1:0]; // Note: signal not used by default slave
    wire [(SNUM+1)-1:0]    s_hsel;
    assign {dflt_hsel, os_hsel} = s_hsel;
 
@@ -232,8 +230,6 @@ module ehl_ahb_matrix
       .htrans     ( dflt_htrans ),
       .hsel       ( dflt_hsel   ),
       .hready_in  ( dflt_hready ),
-      .hwrite     ( dflt_hwrite ),
-      .hwdata     ( dflt_hwdata ),
       .hready     ( dflt_hready ),
       .hresp      ( dflt_hresp  ),
       .hrdata     ( dflt_hrdata ),
