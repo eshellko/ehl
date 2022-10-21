@@ -9,10 +9,17 @@ module ehl_ahb_default_slave
 (
 // AHB
 // haddr, hsize... hburst, hprot, hwrite, hwdata
+<<<<<<< HEAD
    input wire        hclk, hresetn,
    input wire [1:0]  htrans,
    input wire        hsel,
    input wire        hready_in,
+=======
+   input hclk, hresetn,
+   input [1:0] htrans,
+   input hsel,
+   input hready_in,
+>>>>>>> 11549ce70e79a2427c3b44838efa7d37b71ecff0
    output reg        hready,
    output reg [1:0]  hresp,
    output reg [31:0] hrdata,
