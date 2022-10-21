@@ -41,8 +41,8 @@ module ehl_fifo_rc
    localparam LSB_AWIDTH = $clog2(FIFO_CNT);
    localparam MSB_AWIDTH = $clog2(FIFO_DEPTH);
 
-   wire [FIFO_CNT-1:0] fptr = (FIFO_CNT==1) ? 1'b1 : (FIFO_CNT == RC_CNT) ? 1 << raddr_bin[LSB_AWIDTH-1:0] : {FIFO_CNT{1'b1}}; // Note: integer used with gap at the moment
-   assign cs_cnt = LSB_AWIDTH==0 ? 1'b0 : raddr_bin[LSB_AWIDTH-1:0]; // Q: LSB_AWIDTH==0?
+   wire [FIFO_CNT-1:0] fptr = (FIFO_CNT==1) ? 1'b1 : (FIFO_CNT == RC_CNT) ? 1 << raddr_bin[(LSB_AWIDTH==0)?0:LSB_AWIDTH-1:0] : {FIFO_CNT{1'b1}}; // Note: integer used with gap at the moment
+   assign cs_cnt = LSB_AWIDTH==0 ? 1'b0 : raddr_bin[(LSB_AWIDTH==0)?0:LSB_AWIDTH-1:0];
 
    wire [GRAY_AWIDTH:0] wptr_bin;
    wire [$clog2(FIFO_CNT*FIFO_DEPTH):0] read_credit;

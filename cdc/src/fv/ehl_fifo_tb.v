@@ -18,7 +18,7 @@ module ehl_fifo_tb;
              DEPTH      = 16,
              SYNC_STAGE = 2;
 //timing parameters
-   parameter HALF_PERIOD_POP  = 65;
+   parameter HALF_PERIOD_POP  = 65; // Note: fixed value of POP parameter, PUSH tested as: much bigger, 2x bigger, 1.01x bigger, equal, 0.99x smaller, 2x smaller, much smaller
    integer   HALF_PERIOD_PUSH = 65;
    parameter delay=3;
 //generated parameters
@@ -127,8 +127,7 @@ module ehl_fifo_tb;
 
 // Buffer section
    reg [2*WIDTH_DIN*DEPTH-1:0] TX;
-//   localparam WC_WIDTH = 1 + $clog2(WIDTH_DIN<=WIDTH_DOUT ? DEPTH/(WIDTH_DOUT/WIDTH_DIN) : DEPTH);
-   localparam WC_WIDTH = 1 + $clog2(WIDTH_DIN<=WIDTH_DOUT ? DEPTH : DEPTH*(WIDTH_DOUT/WIDTH_DIN));
+   localparam WC_WIDTH = 1 + $clog2(WIDTH_DIN > WIDTH_DOUT ? DEPTH * (WIDTH_DIN/WIDTH_DOUT) : DEPTH);
    wire [WC_WIDTH - 1:0] write_credit;
 
 
@@ -189,13 +188,15 @@ module ehl_fifo_tb;
       TEST_TITLE("EHL FIFO IP Core","global test","global test");
       #0 res=0; wclk=0; rclk=0; test_pass=0; tests_success=0; tests_num=0;
       clr_of=0; clr_uf=0; test_fail_toggle=0;   d_wr=0; wr=0; rd=0;
-      $display("FIFO TEST STARTED WITH FOLLOWING PARAMETERS:");
-      $display("WIDTH_DIN        = %0d",WIDTH_DIN);
-      $display("WIDTH_DOUT       = %0d",WIDTH_DOUT);
-      $display("DEPTH            = %0d",DEPTH);
-      $display("DPRAM            = %0d",USE_DPRAM);
-      $display("SYNC_STAGE       = %0d",SYNC_STAGE);
-      $display("delay            = %0d",delay);
+      $display("##################################");
+      $display("# FIFO TEST STARTED WITH FOLLOWING PARAMETERS:");
+      $display("# WIDTH_DIN        = %0d",WIDTH_DIN);
+      $display("# WIDTH_DOUT       = %0d",WIDTH_DOUT);
+      $display("# DEPTH            = %0d",DEPTH);
+      $display("# DPRAM            = %0d",USE_DPRAM);
+      $display("# SYNC_STAGE       = %0d",SYNC_STAGE);
+      $display("# delay            = %0d",delay);
+      $display("##################################");
 
       TEST_1;//TEST 1. Initial outputs test.
       #delay res=1;
@@ -250,16 +251,16 @@ module ehl_fifo_tb;
    task TEST_BURST_RW;
    begin
       TEST_INIT("Burst RW");
-      #(2*HALF_PERIOD_POP) FillTXBuffer(4'd5); WriteBurst; CheckFull(1'b1); ReadBurst; CheckEmpty(1'b1); CheckFull(1'b0);
-      #(2*HALF_PERIOD_POP) FillTXBuffer(4'd1); WriteBurst; CheckFull(1'b1); ReadBurst; CheckEmpty(1'b1); CheckFull(1'b0);
-      #(2*HALF_PERIOD_POP) FillTXBuffer(4'd2); WriteBurst; CheckFull(1'b1); ReadBurst; CheckEmpty(1'b1); CheckFull(1'b0);
-      #(2*HALF_PERIOD_POP) FillTXBuffer(4'd3); WriteBurst; CheckFull(1'b1); ReadBurst; CheckEmpty(1'b1); CheckFull(1'b0);
-      #(2*HALF_PERIOD_POP) FillTXBuffer(4'd4); WriteBurst; CheckFull(1'b1); ReadBurst; CheckEmpty(1'b1); CheckFull(1'b0);
-      #(2*HALF_PERIOD_POP) FillTXBuffer(4'd0); WriteBurst; CheckFull(1'b1); ReadBurst; CheckEmpty(1'b1); CheckFull(1'b0);
-      #(2*HALF_PERIOD_POP) FillTXBuffer(4'd6); WriteBurst; CheckFull(1'b1); ReadBurst; CheckEmpty(1'b1); CheckFull(1'b0);
-      #(2*HALF_PERIOD_POP) FillTXBuffer(4'd7); WriteBurst; CheckFull(1'b1); ReadBurst; CheckEmpty(1'b1); CheckFull(1'b0);
-      #(2*HALF_PERIOD_POP) FillTXBuffer(4'd8); WriteBurst; CheckFull(1'b1); ReadBurst; CheckEmpty(1'b1); CheckFull(1'b0);
-      #(2*HALF_PERIOD_POP) FillTXBuffer(4'd9); WriteBurst; CheckFull(1'b1); ReadBurst; CheckEmpty(1'b1); CheckFull(1'b0);
+      @(negedge rclk) FillTXBuffer(4'd5); WriteBurst; CheckFull(1'b1); ReadBurst; CheckEmpty(1'b1); CheckFull(1'b0);
+      @(negedge rclk) FillTXBuffer(4'd1); WriteBurst; CheckFull(1'b1); ReadBurst; CheckEmpty(1'b1); CheckFull(1'b0);
+      @(negedge rclk) FillTXBuffer(4'd2); WriteBurst; CheckFull(1'b1); ReadBurst; CheckEmpty(1'b1); CheckFull(1'b0);
+      @(negedge rclk) FillTXBuffer(4'd3); WriteBurst; CheckFull(1'b1); ReadBurst; CheckEmpty(1'b1); CheckFull(1'b0);
+      @(negedge rclk) FillTXBuffer(4'd4); WriteBurst; CheckFull(1'b1); ReadBurst; CheckEmpty(1'b1); CheckFull(1'b0);
+      @(negedge rclk) FillTXBuffer(4'd0); WriteBurst; CheckFull(1'b1); ReadBurst; CheckEmpty(1'b1); CheckFull(1'b0);
+      @(negedge rclk) FillTXBuffer(4'd6); WriteBurst; CheckFull(1'b1); ReadBurst; CheckEmpty(1'b1); CheckFull(1'b0);
+      @(negedge rclk) FillTXBuffer(4'd7); WriteBurst; CheckFull(1'b1); ReadBurst; CheckEmpty(1'b1); CheckFull(1'b0);
+      @(negedge rclk) FillTXBuffer(4'd8); WriteBurst; CheckFull(1'b1); ReadBurst; CheckEmpty(1'b1); CheckFull(1'b0);
+      @(negedge rclk) FillTXBuffer(4'd9); WriteBurst; CheckFull(1'b1); ReadBurst; CheckEmpty(1'b1); CheckFull(1'b0);
       TEST_CHECK(10*3);
    end
    endtask
@@ -329,6 +330,7 @@ module ehl_fifo_tb;
             end
          end
       join
+// TODO: add test where part of FIFO_CNT are read/written
       TEST_CHECK(0);
    end
    endtask

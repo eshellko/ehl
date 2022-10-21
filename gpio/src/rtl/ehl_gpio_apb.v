@@ -53,28 +53,28 @@ module ehl_gpio_apb
 )
 (
 // AMBA APB interface
-   input              pclk,
-                      presetn,
-   input [5:0]        paddr,
-   input              pwrite,
-   input              psel,
-   input              penable,
-   input [WIDTH-1:0]  pwdata,
-   output             pready,
-                      pslverr,
-   output [WIDTH-1:0] prdata,
+   input wire              pclk,
+                           presetn,
+   input wire [5:0]        paddr,
+   input wire              pwrite,
+   input wire              psel,
+   input wire              penable,
+   input wire [WIDTH-1:0]  pwdata,
+   output wire             pready,
+                           pslverr,
+   output wire [WIDTH-1:0] prdata,
 // GPIO interface
-   input [WIDTH-1:0]  gpio_in,
-   output [WIDTH-1:0] gpio_out,
-                      gpio_oe,
-                      gpio_pd,
-                      gpio_pu,
-                      gpio_en,
-   output             ifg
+   input wire [WIDTH-1:0]  gpio_in,
+   output wire [WIDTH-1:0] gpio_out,
+                           gpio_oe,
+                           gpio_pd,
+                           gpio_pu,
+                           gpio_en,
+   output wire             ifg,
+   input wire              test_mode
 );
    wire [5:0] adr;
-   wire wr,
-   rd;
+   wire wr, rd, err;
    wire [WIDTH-1:0] wdata;
    wire [WIDTH-1:0] rdata;
 
@@ -97,14 +97,15 @@ module ehl_gpio_apb
       .pslverr   ( pslverr ),
       .prdata    ( prdata  ),
       // Generic
-      .adr       ( adr     ),
-      .wr        ( wr      ),
-      .rd        ( rd      ),
-      .wdata     ( wdata   ),
-      .rdata     ( rdata   ),
+      .clk_gated ( pclk_g  ),
+      .adr,
+      .wr,
+      .rd,
+      .wdata,
+      .err,
+      .rdata,
       .ready     ( 1'b1    ),
-      .test_mode ( 1'b0    ),
-      .clk_gated ( pclk_g  )
+      .test_mode
    );
 
    ehl_gpio_top
@@ -152,8 +153,9 @@ module ehl_gpio_apb
       .clk      ( pclk_g   ),
       .clk_ug   ( pclk     ),
       .reset_n  ( presetn  ),
-      .wr       ( wr       ),
-      .rd       ( rd       ),
+      .wr,
+      .rd,
+      .err,
       .data_in  ( wdata    ),
       .gpio_in  ( gpio_in  ),
       .addr     ( adr      ),
@@ -163,7 +165,7 @@ module ehl_gpio_apb
       .gpio_pd  ( gpio_pd  ),
       .gpio_pu  ( gpio_pu  ),
       .gpio_en  ( gpio_en  ),
-      .ifg      ( ifg      )
+      .ifg
    );
 
 endmodule

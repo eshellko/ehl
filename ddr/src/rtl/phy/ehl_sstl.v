@@ -463,24 +463,24 @@ module ehl_sstl
       .TECHNOLOGY ( TECHNOLOGY )
    ) io_dm_inst[RAM_WIDTH/8-1:0] (
 `ifdef __io_spice__
-      .vdd       ( vdd                                              ),
-      .gnd       ( gnd                                              ),
-      .pvdd      ( pvdd                                             ),
-      .pgnd      ( pgnd                                             ),
+      .vdd       ( vdd                                        ),
+      .gnd       ( gnd                                        ),
+      .pvdd      ( pvdd                                       ),
+      .pgnd      ( pgnd                                       ),
 `endif
-      .oe        ( dm_off_state ? sdram_dm_oe : {RAM_WIDTH/8{1'b0}} ),
-      .dat       ( sdram_dm_di                                      ),
-      .pad       ( sdram_dm                                         ),
-      .y         (                                                  ),
-      .vref      ( vref_wire                                        ),
-      .odt       ( odt                                              ),
-      .pwd       ( pwd                                              ),
-      .test_oe   ( test_oe[DM_IDX+:RAM_WIDTH/8]                     ),
-      .test_di   ( test_di[DM_IDX+:RAM_WIDTH/8]                     ),
-      .test_mode ( test_mode                                        ),
-      .loopback  ( loopback[DM_IDX+:RAM_WIDTH/8]                    ),
-      .test_dv   ( test_dv[DM_IDX+:RAM_WIDTH/8]                     ),
-      .test_do   ( test_do[DM_IDX+:RAM_WIDTH/8]                     )
+      .oe        ( sdram_dm_oe | ~{RAM_WIDTH/8{dm_off_state}} ),
+      .dat       ( sdram_dm_di                                ),
+      .pad       ( sdram_dm                                   ),
+      .y         (                                            ),
+      .vref      ( vref_wire                                  ),
+      .odt       ( odt                                        ),
+      .pwd       ( pwd                                        ),
+      .test_oe   ( test_oe[DM_IDX+:RAM_WIDTH/8]               ),
+      .test_di   ( test_di[DM_IDX+:RAM_WIDTH/8]               ),
+      .test_mode ( test_mode                                  ),
+      .loopback  ( loopback[DM_IDX+:RAM_WIDTH/8]              ),
+      .test_dv   ( test_dv[DM_IDX+:RAM_WIDTH/8]               ),
+      .test_do   ( test_do[DM_IDX+:RAM_WIDTH/8]               )
    );
 //=========================
 // DQ
@@ -549,12 +549,10 @@ module ehl_sstl
    genvar gen_i;
    for(gen_i =0; gen_i < RAM_WIDTH/8; gen_i = gen_i + 1)
    begin : remap
-      assign test_oe[DQS_IDX+2*gen_i]  = dqs_oe[gen_i];
-      assign loopback[DQS_IDX+2*gen_i] = dqs_lb[gen_i];
-      assign test_dv[DQS_IDX+2*gen_i]  = dqs_dv[gen_i];
-      assign test_oe[DQS_IDX+2*gen_i+1]  = 1'b0;
-      assign loopback[DQS_IDX+2*gen_i+1] = 1'b0;
-      assign test_dv[DQS_IDX+2*gen_i+1]  = 1'b0;
+      assign dqs_oe[gen_i] = test_oe[DQS_IDX+2*gen_i];
+      assign dqs_lb[gen_i] = loopback[DQS_IDX+2*gen_i];
+      assign dqs_dv[gen_i] = test_dv[DQS_IDX+2*gen_i];
+      // Note: unused inputs test_oe[DQS_IDX+2*gen_i+1], loopback[DQS_IDX+2*gen_i+1], test_dv[DQS_IDX+2*gen_i+1]
    end
 //=========================
 // VREF

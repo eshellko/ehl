@@ -5,7 +5,6 @@
    <title>Eshell Hardware Library (EHL) User Guide</title>
    <h2 class="title">Eshell Hardware Library (EHL) User Guide</h2>
    <hr>
-
    <h3>Введение</h3>
    <p>
       В данном документе представлено описание основных положений, связанных с применением репозитория и средств унификации разработки.
@@ -28,7 +27,18 @@
    <pre class="small">   Makefile             - скрипт с перечнем задача для выполнения общих действий над проектом</pre>
    <pre class="small">   makefile.inc         - скрипт запуска САПР</pre>
    <pre class="small">   env.sh               - скрипт с настройками САПР</pre>
+   <hr>
+   <h3>Организация работы</h3>
+   <p><b>ehl</b> организована как библиотека. Каждому компоненту или группе компонентов выделен свой каталог. Внутри библиотеки компоненты могут использовать составные части друг друга. Для проведения одного или нескольких видов проверок компонентов с использованием САПР библиотека содержит набор тестовых скриптов, управляемых корневым Makefile. Все манипуляции запускается из корня библиотеки (переход в каталоги выполняется скриптами автоматически). Полный перечень поддерживаемых проверок можно посмотреть, выполнив:</p>
+   <pre class="small">   make</pre>
+   <p>Следует иметь в виду, что не все проверки доступны для каждого компонента.</p>
+   <p>Для запуска функционального теста блока таймера следует выполнить:</p>
+   <pre class="small">   make icarus ip=timer</pre>
+   <p>Поскольку одному компоненту могут соответствовать несколько тестов, что может потребовать дополнительного указания теста:</p>
+   <pre class="small">   make icarus ip=timer test=wdt</pre>
+   <p>Перечень тестов для каждой проверки зависит от компонента и специфицирован в соответствующий скриптах в $(IP_NAME_x)/scripts/*.</p>
 
+   <hr>
    <h3>Состав репозитория</h3>
    <table cellpadding="4" width="90%" border="1" cellspacing="0" rules="all">
       <colgroup><col><col></colgroup>
@@ -45,6 +55,8 @@
       <tr> <td>AMBA</td>      <td>
                                  <li><a href="amba/doc/ehl_ahb_arbiter.html" target="Frame_data" class="olink">AHB Arbiter</a></li>
                                  <li><a href="amba/doc/ehl_axi_trgen.html" target="Frame_data" class="olink">AXI Traffic Generator</a></li>
+                                 <li><a href="amba/doc/ehl_axi_matrix.html" target="Frame_data" class="olink">AHB Commutator</a></li>
+                                 <li><a href="amba/doc/ehl_ahb2generic.html" target="Frame_data" class="olink">AHB устройство</a></li>
                               </td> </tr>
       <tr> <td>CDC</td>       <td>
                                  <li><a href="cdc/doc/ehl_fifo.html" target="_blank" class="olink">FIFO</a></li>
@@ -76,7 +88,7 @@
                                  <li><a href="logic/doc/ehl_arbiter.html" target="Frame_data" class="olink">Арбитр</a></li>
                               </td> </tr>
       <tr> <td>LSSI</td>      <td>
-                                 <li><a href="lssi/doc/ehl_lssi.html" target="_blank" class="olink">Low Speed Serial Interface - UART + SPI</a></li>
+                                 <li><a href="lssi/doc/ehl_lssi.html" target="_blank" class="olink">Low Speed Serial Interface: UART, SPI</a></li>
                               </td> </tr>
       <tr> <td>MEMORY</td>    <td>
                                  <li><a href="memory/doc/mscrub.html" target="Frame_data" class="olink">Memory Scrubber</a></li>

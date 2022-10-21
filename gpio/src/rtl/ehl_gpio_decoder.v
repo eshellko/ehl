@@ -24,17 +24,18 @@ module ehl_gpio_decoder
    READ_GDIR_ENA = 1
 )
 (
-   input wr, rd,
-   input [5:0] addr,
-   input [WIDTH-1:0]  data_in,
-   output [WIDTH-1:0]
+   input wire wr, rd,
+   output wire err,
+   input wire [5:0] addr,
+   input wire [WIDTH-1:0]  data_in,
+   output wire [WIDTH-1:0]
    set_gdor, set_goer, set_gafr, set_gper,
    set_gptr, set_gier, set_gisr, set_gcmr, set_gfmr,
    clr_gdor, clr_goer, clr_gafr, clr_gper,
    clr_gptr, clr_gier, clr_gisr, clr_gifr, clr_gcmr, clr_gfmr,
    inv_gdor, inv_goer, inv_gafr, inv_gper,
    inv_gptr, inv_gier, inv_gisr, inv_gcmr, inv_gfmr,
-   output write_gdor, write_goer, write_gafr, write_gper,
+   output wire write_gdor, write_goer, write_gafr, write_gper,
    write_gptr, write_gier, write_gisr, write_gcmr, write_gfmr,
    read_gdor, read_goer, read_gafr, read_gper,
    read_gptr, read_gier, read_gisr, read_gifr, read_gdir, read_gcmr, read_gfmr
@@ -105,5 +106,61 @@ module ehl_gpio_decoder
    assign read_gdir = READ_GDIR_ENA && addr=={4'd8,2'h0} && rd;
    assign read_gcmr = GCMR_ENA[1] && addr=={4'd9,2'h0} && rd;
    assign read_gfmr = GCMR_ENA[1] && addr=={4'ha,2'h0} && rd;
+//----------------------------
+// decode error
+//----------------------------
+   // Note: asserted when attempt to access to register with non-existent command
+   wire unsupported_access =
+      (!GDOR_ENA[0] && addr == {4'h0,2'h0} && wr) |
+      (!GOER_ENA[0] && addr == {4'h1,2'h0} && wr) |
+      (!GAFR_ENA[0] && addr == {4'h2,2'h0} && wr) |
+      (!GPER_ENA[0] && addr == {4'h3,2'h0} && wr) |
+      (!GPTR_ENA[0] && addr == {4'h4,2'h0} && wr) |
+      (!GIER_ENA[0] && addr == {4'h5,2'h0} && wr) |
+      (!GISR_ENA[0] && addr == {4'h6,2'h0} && wr) |
+      (!GCMR_ENA[0] && addr == {4'h9,2'h0} && wr) |
+      (!GCMR_ENA[0] && addr == {4'ha,2'h0} && wr) |
 
+      (wr && !GDOR_ENA[4] && addr == {4'd0, 2'h1}) |
+      (wr && !GOER_ENA[4] && addr == {4'd1, 2'h1}) |
+      (wr && !GAFR_ENA[4] && addr == {4'd2, 2'h1}) |
+      (wr && !GPER_ENA[4] && addr == {4'd3, 2'h1}) |
+      (wr && !GPTR_ENA[4] && addr == {4'd4, 2'h1}) |
+      (wr && !GIER_ENA[4] && addr == {4'd5, 2'h1}) |
+      (wr && !GISR_ENA[4] && addr == {4'd6, 2'h1}) |
+      (wr && !GCMR_ENA[4] && addr == {4'd9, 2'h1}) |
+      (wr && !GCMR_ENA[4] && addr == {4'ha, 2'h1}) |
+      (wr && !GDOR_ENA[3] && addr == {4'd0, 2'h2}) |
+      (wr && !GOER_ENA[3] && addr == {4'd1, 2'h2}) |
+      (wr && !GAFR_ENA[3] && addr == {4'd2, 2'h2}) |
+      (wr && !GPER_ENA[3] && addr == {4'd3, 2'h2}) |
+      (wr && !GPTR_ENA[3] && addr == {4'd4, 2'h2}) |
+      (wr && !GIER_ENA[3] && addr == {4'd5, 2'h2}) |
+      (wr && !GISR_ENA[3] && addr == {4'd6, 2'h2}) |
+      (wr && !CLR_GIFR_ENA && addr == {4'd7, 2'h2}) |
+      (wr && !GCMR_ENA[3] && addr == {4'd9, 2'h2}) |
+      (wr && !GCMR_ENA[3] && addr == {4'ha, 2'h2}) |
+      (wr && !GDOR_ENA[2] && addr == {4'd0, 2'h3}) |
+      (wr && !GOER_ENA[2] && addr == {4'd1, 2'h3}) |
+      (wr && !GAFR_ENA[2] && addr == {4'd2, 2'h3}) |
+      (wr && !GPER_ENA[2] && addr == {4'd3, 2'h3}) |
+      (wr && !GPTR_ENA[2] && addr == {4'd4, 2'h3}) |
+      (wr && !GIER_ENA[2] && addr == {4'd5, 2'h3}) |
+      (wr && !GISR_ENA[2] && addr == {4'd6, 2'h3}) |
+      (wr && !GCMR_ENA[2] && addr == {4'd9, 2'h3}) |
+      (wr && !GCMR_ENA[2] && addr == {4'ha, 2'h3}) |
+
+      (!GDOR_ENA[1] && addr=={4'd0,2'h0} && rd) |
+      (!GOER_ENA[1] && addr=={4'd1,2'h0} && rd) |
+      (!GAFR_ENA[1] && addr=={4'd2,2'h0} && rd) |
+      (!GPER_ENA[1] && addr=={4'd3,2'h0} && rd) |
+      (!GPTR_ENA[1] && addr=={4'd4,2'h0} && rd) |
+      (!GIER_ENA[1] && addr=={4'd5,2'h0} && rd) |
+      (!GISR_ENA[1] && addr=={4'd6,2'h0} && rd) |
+      (!READ_GIFR_ENA && addr=={4'd7,2'h0} && rd) |
+      (!READ_GDIR_ENA && addr=={4'd8,2'h0} && rd) |
+      (!GCMR_ENA[1] && addr=={4'd9,2'h0} && rd) |
+      (!GCMR_ENA[1] && addr=={4'ha,2'h0} && rd);
+
+   assign err = unsupported_access;
 endmodule

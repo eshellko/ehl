@@ -9,10 +9,11 @@
 //--------------------------------------------
 // Structure definition
 //--------------------------------------------
-struct EHL_EMAC
+struct EHL_EMAC // TODO: update when map will be completed...
 {
    volatile unsigned int TX_CTRL;
    volatile unsigned int FCVR;
+   volatile unsigned int CFG;
 
    volatile unsigned int TX_STAT_TFTO;
    volatile unsigned int TX_STAT_TSCF;
@@ -45,12 +46,26 @@ struct EHL_EMAC
    volatile unsigned int RX_STAT_RFLDTIMRE;
 
    volatile unsigned int MAC[2];
+   volatile unsigned int MCASTA[2];
+   volatile unsigned int MCASTM[2];
 
    volatile unsigned int MINMAX;
 
    volatile unsigned int MCR;
    volatile unsigned int MDR;
+
+   volatile unsigned int TXBDPTR[4];
 };
+
+struct EMAC_BD
+{
+    long            flags;
+    char*           bp;      // buffer pointer
+    short unsigned  bsize;   // buffer size
+    short unsigned  psize;   // packet size
+    struct EMAC_BD* pnext;   // Pointer to next descriptor
+};
+
 //--------------------------------------------
 // APIs for 32-bit wide systems
 // DESCRIPTION
@@ -60,6 +75,26 @@ struct EHL_EMAC
 //   API_EMAC_CLEAR_IRQ          -- clear selected IRQ flags
 //   API_EMAC_GET_IRQ            -- get IRQ vector
 //--------------------------------------------
+/*
+unsigned char RbufBase[BUF_SIZE * RX_DESCRIPTOR_COUNT];
+struct  rdesc RdescBase[RX_DESCRIPTOR_COUNT];
+
+void API_EMAC_INIT_BD()
+{
+   for(int i=0; i<RX_DESCRIPTOR_CNT; i++)
+   {
+      RdescBase[i].flags = DEVICE_IS_IDLE;
+      RdescBase[i].bsize = BUF_SIZE;
+      RdescBase[i].psize = 0;
+      RdescBase[i].bp = (uchar *)&RbufBase[i * BUF_SIZE];
+      if(i == RX_DESCRIPTOR_CNT-1)
+         RdescBase[i].pnext = RdescBase; // NULL  -- Q: we can use single allocated list... this list can be filled by SW and traversed by HW... i.e. it is single circullar list processed by the core... TODO:
+      else
+         RdescBase[i].pnext = &RdescBase[i+1];
+   }
+}
+*/
+
 void API_EMAC_INIT(struct EHL_EMAC* dev_id)
 {
 }

@@ -55,15 +55,10 @@ module ehl_ddr_phyc
                              dft_test_clock
 );
    wire clk_0, clk_270, clk_180, clk_90;
-   wire test_clk_0, test_clk_270, test_clk_180, test_clk_90;
+   wire test_clk_0, test_clk_180;
    assign mctrl_clk = test_clk_0;
 
 // Note: clocks are split into 2 sub-chains to have similar fanout loads for 90 and 270 clocks
-   wire clk_90_buf_a;
-   wire clk_270_buf_a;
-   wire clk_90_buf_b;
-   wire clk_270_buf_b;
-
    ehl_clock_mux #( .TECHNOLOGY ( TECHNOLOGY ) ) mux_0   ( .clk_0(dft_test_clock), .clk_1(clk_0),   .sel(dft_test_mode_n), .clk_out (test_clk_0));
    ehl_clock_mux #( .TECHNOLOGY ( TECHNOLOGY ) ) mux_90  ( .clk_0(dft_test_clock), .clk_1(clk_90),  .sel(dft_test_mode_n), .clk_out (clk_90_buf));
    ehl_clock_mux #( .TECHNOLOGY ( TECHNOLOGY ) ) mux_180 ( .clk_0(dft_test_clock), .clk_1(clk_180), .sel(dft_test_mode_n), .clk_out (test_clk_180));
@@ -104,113 +99,50 @@ module ehl_ddr_phyc
 //=====================
 // Stage 1. Re-capture from 0 to 180
 //=====================
-   reg [RANK_CNT-1:0] rsdram_cke;
-   reg [RANK_CNT-1:0] rsdram_cs_n;
-   reg rsdram_we_n;
-   reg rsdram_ras_n;
-   reg rsdram_cas_n;
-   reg rsdram_act_n;
-   reg [2:0] rsdram_cid;
-   reg [1:0] rsdram_bg;
-   reg rsdram_par;
-   reg [2:0] rsdram_ba;
-   reg [15:0] rsdram_a;
-   reg [RANK_CNT-1:0] rsdram_odt;
+   localparam DFI_WIDTH = 3*RANK_CNT+29;
+   wire [DFI_WIDTH-1:0] dfi_in = {dfi_cke, dfi_cs_n, dfi_odt,
+      dfi_we_n, dfi_ras_n, dfi_cas_n,
+      dfi_act_n, dfi_cid, dfi_bg, dfi_par,
+      dfi_bank, dfi_address};
+   reg [DFI_WIDTH-1:0] rsdram;
+   // Note: some signals require initial values while others not (order as per 'dfi_in'
+   localparam [DFI_WIDTH-1:0] RSDRAM_INIT = {{RANK_CNT{1'b0}}, {RANK_CNT{1'b1}}, {RANK_CNT{1'bx}}, 29'hx};
 
    reg rcmd_oe;
 // Note: as clock will not be generated after reset (until DLL stabilized) data will not be initialized
    always@(posedge test_clk_180 or negedge reset_n)
    if(!reset_n)
    begin
-      rsdram_cs_n  <= {RANK_CNT{1'b1}};
-      rsdram_cke   <= {RANK_CNT{1'b0}};
-      rcmd_oe      <= 1'b0;
-      // Note: no need to clear addresses here, as they are not cleared in memory controller
-      rsdram_ba    <= 3'hx;
-      rsdram_a     <= 16'hxxxx;
-      // Note: no need to clear intermediate flops, as they will be written upon reset, and will not be read upon reset
-      rsdram_we_n  <= 1'bx;
-      rsdram_ras_n <= 1'bx;
-      rsdram_cas_n <= 1'bx;
-      rsdram_act_n <= 1'bx;
-      rsdram_cid   <= 3'hx;
-      rsdram_bg    <= 2'hx;
-      rsdram_par   <= 1'bx;
-      rsdram_odt   <= {RANK_CNT{1'bx}};
+      rsdram  <= RSDRAM_INIT;
+      rcmd_oe <= 1'b0;
    end
    else
    begin
-      rsdram_cs_n  <= dfi_cs_n;
-      rsdram_cke   <= dfi_cke;
+      rsdram  <= dfi_in;
       // Note: software control over this feature
-      rcmd_oe      <= turn_off_inactive_io ? ~&dfi_cs_n : 1'b1;
-
-      rsdram_ba    <= dfi_bank;
-      rsdram_a     <= dfi_address;
-
-      rsdram_we_n  <= dfi_we_n;
-      rsdram_ras_n <= dfi_ras_n;
-      rsdram_cas_n <= dfi_cas_n;
-      rsdram_act_n <= dfi_act_n;
-      rsdram_cid   <= dfi_cid;
-      rsdram_bg    <= dfi_bg;
-      rsdram_par   <= dfi_par;
-      rsdram_odt   <= dfi_odt;
+      rcmd_oe <= turn_off_inactive_io ? ~&dfi_cs_n : 1'b1;
    end
 //=====================
 // Stage 2. Re-capture 180 to 90
 //=====================
-   reg [RANK_CNT-1:0] rsdram_cke2;
-   reg [RANK_CNT-1:0] rsdram_cs_n2;
-   reg rsdram_we_n2;
-   reg rsdram_ras_n2;
-   reg rsdram_cas_n2;
-   reg rsdram_act_n2;
-   reg [2:0] rsdram_cid_n2;
-   reg [1:0] rsdram_bg2;
-   reg rsdram_par2;
-   reg [2:0] rsdram_ba2;
-   reg [15:0] rsdram_a2;
-   reg [RANK_CNT-1:0] rsdram_odt2;
+   localparam [DFI_WIDTH-1:0] RSDRAM2_INIT = {{RANK_CNT{1'b0}}, {RANK_CNT{1'b1}}, {RANK_CNT{1'b0}}, 1'b1, 1'b1, 1'b1, 1'b1, 3'h7, 2'h0, 1'b0, 3'hx, 16'hx};
+   reg [DFI_WIDTH-1:0] rsdram2;
    reg rcmd_oe2;
 
 // Note: 'sdram_ck[_n]' is driven by clk_270[90]
 //       clk_90 also used internally to drive datapath.
 //       This leads to extra delay in clock tree of clk_90 relative to clk_270.
 //       To reduce clock tree impact, 'a' clocks used internally, and 'b' clocks used to drive IO
-
    always@(negedge test_clk_270_a or negedge reset_n) // Note: balance clock fanout
    if(!reset_n)
    begin
-      rsdram_cke2   <= {RANK_CNT{1'b0}};
-      rsdram_cs_n2  <= {RANK_CNT{1'b1}};
-      rsdram_we_n2  <= 1'b1;
-      rsdram_ras_n2 <= 1'b1;
-      rsdram_cas_n2 <= 1'b1;
-      rsdram_act_n2 <= 1'b1;
-      rsdram_cid_n2 <= 3'h7;
-      rsdram_bg2    <= 2'b0;
-      rsdram_par2   <= 1'b0;
-      rsdram_odt2   <= {RANK_CNT{1'b0}};
-      rcmd_oe2      <= 1'b0;
-      rsdram_ba2    <= 3'hx;
-      rsdram_a2     <= 16'hx;
+      rcmd_oe2 <= 1'b0;
+      rsdram2  <= RSDRAM2_INIT;
    end
    else
    begin
-      rsdram_cke2   <= rsdram_cke;
-      rsdram_cs_n2  <= rsdram_cs_n;
-      rsdram_we_n2  <= rsdram_we_n;
-      rsdram_ras_n2 <= rsdram_ras_n;
-      rsdram_cas_n2 <= rsdram_cas_n;
-      rsdram_act_n2 <= rsdram_act_n;
-      rsdram_cid_n2 <= rsdram_cid;
-      rsdram_bg2    <= rsdram_bg;
-      rsdram_par2   <= rsdram_par;
-      rsdram_odt2   <= rsdram_odt;
-      rcmd_oe2      <= rcmd_oe;
-      rsdram_ba2    <= rsdram_ba;
-      rsdram_a2     <= rsdram_a;
+      rsdram2  <= rsdram;
+      rcmd_oe2 <= rcmd_oe;
    end
 //=====================
 // Stage 3. Delay single cycle at 90
@@ -225,29 +157,28 @@ module ehl_ddr_phyc
       sdram_cas_n <= 1'b1;
       sdram_act_n <= 1'b1;
       sdram_cid   <= 3'h7;
-      sdram_bg    <= 2'b0;// TODO: balance clock fanout for new DDR4 signals
-
+      sdram_bg    <= 2'b0;
       sdram_par   <= 1'b0;
       sdram_odt   <= {RANK_CNT{1'b0}};
-      cmd_oe      <= 1'b0;
       sdram_ba    <= 3'hx;
       sdram_a     <= 16'hx;
+      cmd_oe      <= 1'b0;
    end
    else
    begin
-      sdram_cke   <= rsdram_cke2;
-      sdram_cs_n  <= rsdram_cs_n2;
-      sdram_we_n  <= rsdram_we_n2;
-      sdram_ras_n <= rsdram_ras_n2;
-      sdram_cas_n <= rsdram_cas_n2;
-      sdram_act_n <= rsdram_act_n2;
-      sdram_cid   <= rsdram_cid_n2;
-      sdram_bg    <= rsdram_bg2;
-      sdram_par   <= rsdram_par2;
-      sdram_odt   <= rsdram_odt2;
+      sdram_cke   <= rsdram2[29+2*RANK_CNT+:RANK_CNT];
+      sdram_cs_n  <= rsdram2[29+RANK_CNT+:RANK_CNT];
+      sdram_odt   <= rsdram2[29+:RANK_CNT];
+      sdram_we_n  <= rsdram2[28];
+      sdram_ras_n <= rsdram2[27];
+      sdram_cas_n <= rsdram2[26];
+      sdram_act_n <= rsdram2[25];
+      sdram_cid   <= rsdram2[24:22];
+      sdram_bg    <= rsdram2[21:20];
+      sdram_par   <= rsdram2[19];
+      sdram_ba    <= rsdram2[18:16];
+      sdram_a     <= rsdram2[15:0];
       cmd_oe      <= rcmd_oe2;
-      sdram_ba    <= rsdram_ba2;
-      sdram_a     <= rsdram_a2;
    end
 
    // Number of memory cycles after clock is disabled/enabled before it is applied to outputs (to compensate command line delay)

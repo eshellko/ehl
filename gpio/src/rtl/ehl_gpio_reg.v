@@ -12,8 +12,8 @@ module ehl_gpio_reg
    parameter REG_INIT = 0
 )
 (
-   input clk, reset_n, write_reg,
-   input [WIDTH-1:0] data_in, set_reg, clr_reg, inv_reg,
+   input wire clk, reset_n, write_reg,
+   input wire [WIDTH-1:0] data_in, set_reg, clr_reg, inv_reg,
    output reg [WIDTH-1:0] gpio_register
 );
    always@(posedge clk or negedge reset_n)

@@ -12,11 +12,11 @@ module ehl_gpio_filter
    META_ENA = 32'hFFFFFFFF
 )
 (
-   input                  clk,
+   input wire             clk,
                           reset_n,
-   input [WIDTH-1:0]      gfmr,     // 0 - bypass, 1 - three consecutive cycles in a row
+   input wire [WIDTH-1:0] gfmr,     // 0 - bypass, 1 - three consecutive cycles in a row
 //    input presc_mode, // 0 - bypass, 1 - every other cycle
-   input [WIDTH-1:0]      data_in,
+   input wire [WIDTH-1:0] data_in,
    output reg [WIDTH-1:0] data_out
 );
    wire [WIDTH-1:0] dsync;
