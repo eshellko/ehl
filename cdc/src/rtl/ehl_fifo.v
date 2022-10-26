@@ -37,23 +37,25 @@ module ehl_fifo
    parameter [0:0] USE_DPRAM      = 1'b0 // 0 - single port RAM, 1 - dual port RAM with registered output (another functionality)
 )
 (
-   input                                                                           wclk, rclk, wr, rd,
-                                                                                   w_reset_n, r_reset_n,
-   input [WIDTH_DIN-1:0]                                                           wdat,
-   output [WIDTH_DOUT-1:0]                                                         rdat,
-   output                                                                          w_overflow, r_underflow,
-   output                                                                          w_empty, r_empty, w_full, r_full,
-   output                                                                          w_aempty, r_aempty, w_afull, r_afull,
-   input                                                                           clr_of, clr_uf,
-   output [$clog2(WIDTH_DIN<=WIDTH_DOUT ? DEPTH : DEPTH*(WIDTH_DOUT/WIDTH_DIN)):0] write_credit
-
+   input                                                                          wclk, rclk, wr, rd,
+                                                                                  w_reset_n, r_reset_n,
+   input [WIDTH_DIN-1:0]                                                          wdat,
+   output [WIDTH_DOUT-1:0]                                                        rdat,
+   output                                                                         w_overflow, r_underflow,
+   output                                                                         w_empty, r_empty, w_full, r_full,
+   output                                                                         w_aempty, r_aempty, w_afull, r_afull,
+   input                                                                          clr_of, clr_uf,
+// Note: if DIN > DOUT, then number of write cells are equal to DEPTH
+//       if DIN < DOUT, then number of write cells are equal to DEPTH * DOUT/DIN
+//       and +1 for decimal format, where 0 - is full
+   output [$clog2(WIDTH_DIN>WIDTH_DOUT ? DEPTH*(WIDTH_DIN/WIDTH_DOUT) : DEPTH):0] write_credit
 );
    localparam WC_CNT = WIDTH_DIN<WIDTH_DOUT ? WIDTH_DOUT/WIDTH_DIN : 32'd1;
    localparam RC_CNT = WIDTH_DIN>WIDTH_DOUT ? WIDTH_DIN/WIDTH_DOUT : 32'd1;
    localparam FIFO_CNT = WC_CNT>1 ? WC_CNT : RC_CNT;
    localparam CS_WIDTH = FIFO_CNT==1 ? 32'd1 : $clog2(FIFO_CNT);
-   localparam FIFO_WIDTH = WIDTH_DIN<=WIDTH_DOUT ? WIDTH_DIN : WIDTH_DOUT;
-   localparam FIFO_DEPTH = WIDTH_DIN<=WIDTH_DOUT ? DEPTH/FIFO_CNT : DEPTH;
+   localparam FIFO_WIDTH = WIDTH_DIN < WIDTH_DOUT ? WIDTH_DIN : WIDTH_DOUT;
+   localparam FIFO_DEPTH = WIDTH_DIN < WIDTH_DOUT ? DEPTH / FIFO_CNT : DEPTH;
    localparam FIFO_ADR_WIDTH = FIFO_DEPTH<=1 ? 32'd0 : $clog2(FIFO_DEPTH);
    wire [FIFO_ADR_WIDTH:0] w_wptr, w_rptr, r_wptr, r_rptr;
    wire [FIFO_DEPTH==1 ? 0 : FIFO_ADR_WIDTH-1:0] waddr, raddr;
@@ -63,7 +65,6 @@ module ehl_fifo
 
    localparam AWIDTH = FIFO_ADR_WIDTH==0 ? 1 : FIFO_ADR_WIDTH;
 
-   genvar gen_ram;
    ehl_fifo_rc
    #(
       .FIFO_ADR_WIDTH ( FIFO_ADR_WIDTH ),
@@ -93,7 +94,6 @@ module ehl_fifo
    #(
       .FIFO_ADR_WIDTH ( FIFO_ADR_WIDTH ),
       .FIFO_CNT       ( FIFO_CNT       ),
-      .CS_WIDTH       ( CS_WIDTH       ),
       .WC_CNT         ( WC_CNT         ),
       .RC_CNT         ( RC_CNT         ),
       .FIFO_DEPTH     ( FIFO_DEPTH     )

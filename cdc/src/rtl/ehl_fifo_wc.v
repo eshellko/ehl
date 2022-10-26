@@ -19,7 +19,6 @@ module ehl_fifo_wc
 #(
    parameter FIFO_ADR_WIDTH = 32'd5,
              FIFO_CNT       = 32'd1,
-             CS_WIDTH       = 32'd1,
              WC_CNT         = 32'd1,
              RC_CNT         = 32'd1,
              FIFO_DEPTH     = 32'd3
@@ -60,7 +59,7 @@ module ehl_fifo_wc
    localparam LSB_AWIDTH = $clog2(FIFO_CNT);
    localparam MSB_AWIDTH = $clog2(FIFO_DEPTH);
 
-   wire [FIFO_CNT-1:0] fptr = (FIFO_CNT==1) ? 1'b1 : (FIFO_CNT == WC_CNT) ? 1 << waddr_bin[LSB_AWIDTH-1:0] : {FIFO_CNT{1'b1}}; // Note: integer used with gap at the moment
+   wire [FIFO_CNT-1:0] fptr = (FIFO_CNT==1) ? 1'b1 : (FIFO_CNT == WC_CNT) ? 1 << waddr_bin[(LSB_AWIDTH==0)?0:LSB_AWIDTH-1:0] : {FIFO_CNT{1'b1}}; // Note: integer used with gap at the moment
    assign cs = (wr & !w_full) ? fptr : {FIFO_CNT{1'b0}};
 
    wire [GRAY_AWIDTH:0] rptr_bin;

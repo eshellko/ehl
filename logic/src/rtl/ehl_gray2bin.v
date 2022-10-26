@@ -11,7 +11,7 @@ module ehl_gray2bin
    parameter WIDTH = 5
 )
 (
-   input [WIDTH-1:0] data_gray,
+   input wire [WIDTH-1:0] data_gray,
    output reg [WIDTH-1:0] data_bin
 );
 //   wire [WIDTH:0] data_bin_ext;

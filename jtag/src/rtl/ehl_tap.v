@@ -22,17 +22,17 @@ module ehl_tap
    parameter [31:0] ID = 0             // user identification register (LSB defines if register and instruction present: 1 - present)
 )
 (
-   input                     tck,
+   input wire                tck,
                              tdi,
                              tms,
                              trst_n,
    output reg                tdo,
-   output                    shift_dr,
+   output wire               shift_dr,
                              capture_dr,
                              update_dr,
                              reset_state,
    output reg                tdo_en,
-   input                     tdr_in,     // data from TDRs (LSBs)
+   input  wire               tdr_in,     // data from TDRs (LSBs)
    output reg [IR_WIDTH-1:0] instruction // Width of instruction register - 
 );
 `ifndef SYNTHESIS

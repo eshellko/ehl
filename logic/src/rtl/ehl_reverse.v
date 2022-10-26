@@ -9,7 +9,7 @@ module ehl_reverse
    parameter WIDTH = 1
 )
 (
-   input [WIDTH-1:0] din,
+   input wire [WIDTH-1:0] din,
    output reg [WIDTH-1:0] dout
 );
    integer i;

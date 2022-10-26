@@ -1,7 +1,11 @@
 module ehl_ecc_tb;
 `include "test.v"
    parameter SECDED = 1;
+`ifdef CVC
+   parameter WIDTH = 16;
+`else
    parameter WIDTH = 8;
+`endif
    localparam CWIDTH = 1 + $clog2(WIDTH);
    integer k, j;
    reg [WIDTH:0] i;

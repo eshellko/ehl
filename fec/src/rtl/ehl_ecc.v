@@ -29,17 +29,17 @@ module ehl_ecc
    SECDED = 1           // 1 - SECDED, 0 - SEC (cbout[0], a.k.a. parity is not used)
 )
 (
-   input gen,                               // mode: 1-generator
-   input chk,                               // mode: 1-checker (should be: chk & gen == 0)
-   input [WIDTH-1:0] din,                   // input data
-   input [1+$clog2(WIDTH):0] cbin,          // input check bits
-   output [WIDTH-1:0] dout,                 // output (corrected) data
-   output [1+$clog2(WIDTH):0] cbout,        // generated check bits
-   output [WIDTH-1:0] se_pat_dout,          // pattern of corrected data (for single errors)
-   output [1+$clog2(WIDTH):0] se_pat_cbout, // pattern of corrected check bits (for single errors)
-   output single_err,                       // asserted when single error detected and corrected
-   double_err,                              // asserted when double error detected
-   cb_err                                   // asserted if single_error detected and error in cbits
+   input wire                      gen,          // mode: 1-generator
+   input wire                      chk,          // mode: 1-checker (should be: chk & gen == 0)
+   input wire [WIDTH-1:0]          din,          // input data
+   input wire [1+$clog2(WIDTH):0]  cbin,         // input check bits
+   output wire [WIDTH-1:0]         dout,         // output (corrected) data
+   output wire [1+$clog2(WIDTH):0] cbout,        // generated check bits
+   output wire [WIDTH-1:0]         se_pat_dout,  // pattern of corrected data (for single errors)
+   output wire [1+$clog2(WIDTH):0] se_pat_cbout, // pattern of corrected check bits (for single errors)
+   output wire                     single_err,   // asserted when single error detected and corrected
+                                   double_err,   // asserted when double error detected
+                                   cb_err        // asserted if single_error detected and error in cbits
 );
    localparam CWIDTH = $clog2(WIDTH) + 1;
 // Note: masks for data to create XOR bits. All columns should have unique values without running-1(checkbits) and all-zero(parity)

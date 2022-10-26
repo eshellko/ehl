@@ -78,7 +78,8 @@ module ehl_spram_apb
       .adr_wr  ( adr[AWIDTH-1:2] ),
       .adr_rd  ( adr[AWIDTH-1:2] ),
       .din     ( wdata           ),
-      .dout    ( rdata           )
+      .dout    ( rdata           ),
+      .mem_cfg ( 3'h0            )
    );
 
 endmodule
