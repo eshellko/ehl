@@ -34,5 +34,52 @@
       <p>Произведение <b>WIDTH_DIN</b> * <b>DEPTH</b> не должно превышать 65536.</p>
       <p>Должно выполняться соотношение <b>DEPTH</b>*<b>WIDTH_DIN</b>≥<b>WIDTH_DOUT</b>.</p>
 
+      <h3>Соотношение шин данных</h3>
+      <p>При работе с блоком возможны 3 варианта соотношений ширины данных входного и выходного интерфейсов.</p>
+      <li><b>WIDTH_DIN</b> > <b>WIDTH_DOUT</b></li>
+      <p>Параметр <b>DEPTH</b> определяет количество ячеек в буфере с учетом умножения на (<b>WIDTH_DIN</b> / <b>WIDTH_DOUT</b>). Например, для <b>DEPTH</b>=4 и соотношении ширин входов, равном 2.</p>
+      <ul>
+      <table cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col></colgroup>
+         <tbody>
+            <tr> <td></td> <td></td> </tr>
+            <tr> <td></td> <td></td> </tr>
+            <tr> <td></td> <td></td> </tr>
+            <tr> <td></td> <td></td> </tr>
+         </tbody>
+      </table>
+      </ul>
+      <p>За один раз записываются две ячейки одной строки, считывается одна ячейка. <b>write_credit</b> отражает количество свободных ячеек. При этом, если прочитана часть ячеек в строке (одна из двух в примере), то <b>write_credit</b> указывает, что заняты все ячейки в строке (две в примере).</p>
+
+      <li><b>WIDTH_DIN</b> = <b>WIDTH_DOUT</b></li>
+      <p>Параметр <b>DEPTH</b> определяет количество ячеек в буфере. Например, при значении 4, буфер будет иметь следующий вид:</p>
+      <ul>
+      <table cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col></colgroup>
+         <tbody>
+            <tr> <td></td> </tr>
+            <tr> <td></td> </tr>
+            <tr> <td></td> </tr>
+            <tr> <td></td> </tr>
+         </tbody>
+      </table>
+      </ul>
+      <p>За один раз записываются и считываются по одной строке. <b>write_credit</b> отражает количество свободных строк.</p>
+
+      <li><b>WIDTH_DIN</b> < <b>WIDTH_DOUT</b></li>
+      <p>Параметр <b>DEPTH</b> определяет количество ячеек в буфере. Например, при значении 8 и соотношении ширин входов, равном 2, буфер будет иметь следующий вид:</p>
+      <ul>
+      <table cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+         <colgroup><col><col><col><col></colgroup>
+         <tbody>
+            <tr> <td></td> <td></td> </tr>
+            <tr> <td></td> <td></td> </tr>
+            <tr> <td></td> <td></td> </tr>
+            <tr> <td></td> <td></td> </tr>
+         </tbody>
+      </table>
+      </ul>
+      <p>За один раз записывается одна ячейка, считывается одна строка. <b>write_credit</b> отражает количество свободных ячеек.</p>
+
    </body>
 </html>

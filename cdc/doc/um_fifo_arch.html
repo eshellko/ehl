@@ -77,7 +77,7 @@
             <tr> <td>w_overflow</td>   <td>1</td> <td>O</td> <td>Флаг ошибки записи буфера.</td> </tr>
             <tr> <td>r_underflow</td>  <td>1</td> <td>O</td> <td>Флаг ошибки чтения буфера.</td> </tr>
             <tr> <td>rdat</td>         <td>WIDTH_DOUT</td> <td>O</td> <td>Данные, читаемые из  буфера.</td> </tr>
-            <tr> <td>write_credit</td> <td>log2(WIDTH_DIN<=WIDTH_DOUT ? DEPTH : DEPTH*(WIDTH_DOUT/WIDTH_DIN))</td> <td>O</td> <td>Количество свободных ячеек в буфере (количество возможных операций записи в буфер).</td> </tr>
+            <tr> <td>write_credit</td> <td>log2(WIDTH_DIN>WIDTH_DOUT ? DEPTH*(WIDTH_DIN/WIDTH_DOUT) : DEPTH)</td> <td>O</td> <td>Количество свободных ячеек в буфере (количество возможных операций записи в буфер).</td> </tr>
          </tbody>
       </table>
       <p></p>

@@ -42,9 +42,9 @@
             <tr> <td>SNUM</td>             <td>8</td> <td>1-16</td>         <td>Количество подключенных AHB Slave устройств.</td> </tr>
             <tr> <td>MNUM</td>             <td>8</td> <td>1-16</td>         <td>Количество подключенных AHB Master устройств.</td> </tr>
             <tr> <td>SLV0_BASE</td>        <td>0x00000000</td> <td>0x00000000-0xFFFFFFFF</td> <td>Базовый адрес Slave 0.</td> </tr>
-            <tr> <td>SLV0_MASK</td>        <td>0x00000000</td> <td>0x00000000-0xFFFFFFFF</td> <td>Маска адреса Slave 0. Значение 1 в любом бите исключает его из проверки адреса при перенаправлениии транзакций Master в выбранный Slave.</td> </tr>
+            <tr> <td>SLV0_MASK</td>        <td>0x00000000</td> <td>0x00000000-0xFFFFFFFF</td> <td>Маска адреса Slave 0. Значение 1 в любом бите означает проверку указанного бита на соответствие адресу Slave.</td> </tr>
             <tr> <td>RSLV0_BASE</td>       <td>0x00000000</td> <td>0x00000000-0xFFFFFFFF</td> <td>Базовый адрес Slave 0 в режиме REMAP.</td> </tr>
-            <tr> <td>RSLV0_MASK</td>       <td>0x00000000</td> <td>0x00000000-0xFFFFFFFF</td> <td>Маска адреса Slave 0 в режиме REMAP. Значение 1 в любом бите исключает его из проверки адреса при перенаправлениии транзакций Master в выбранный Slave.</td> </tr>
+            <tr> <td>RSLV0_MASK</td>       <td>0x00000000</td> <td>0x00000000-0xFFFFFFFF</td> <td>Маска адреса Slave 0 в режиме REMAP. Значение 1 в любом бите означает проверку указанного бита на соответствие адресу Slave.</td> </tr>
          </tbody>
       </table>
       <p>Параметры <b>SLV1_BASE</b>-<b>SLV15_BASE</b> и <b>SLV1_MASK</b>-<b>SLV15_MASK</b> аналогичны параметрам <b>SLV0_BASE</b> и <b>SLV0_MASK</b> для соответствующих Slave.</p>

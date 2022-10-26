@@ -20,7 +20,7 @@
       <p>В данной спецификации описываются структура, порядок использования и технические характеристики блока декодера Хэмминга.</p>
 
       <h2>Справочные материалы</h2>
-      <table cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+      <table cellpadding="4" border="1" cellspacing="0" rules="all">
          <colgroup><col><col></colgroup>
          <thead>
             <tr bgcolor="#C0C0C0"> <th>Номер</th> <th>Наименование</th> </tr>
@@ -31,14 +31,15 @@
       </table>
 
       <h2>Условные обозначения и сокращения</h2>
-      <table cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+      <table cellpadding="4" border="1" cellspacing="0" rules="all">
          <colgroup><col><col></colgroup>
          <thead>
             <tr bgcolor="#C0C0C0"> <th>Сокращение</th> <th>Расшифровка</th> </tr>
          </thead>
          <tbody>
-            <tr> <td>ECC</td>  <td>Error Correction Code</td> </tr>
-            <tr> <td>EDAC</td>  <td>Error Detection and Correction</td> </tr>
+            <tr> <td>ECC</td>    <td>Error Correction Code</td> </tr>
+            <tr> <td>EDAC</td>   <td>Error Detection and Correction</td> </tr>
+            <tr> <td>SEC</td>    <td>Single Error Correction</td> </tr>
             <tr> <td>SECDED</td> <td>Single Error Correction Double Error Detection</td> </tr>
          </tbody>
       </table>
@@ -61,7 +62,7 @@
       <pre class="small">---| chk           single_error |---</pre>
       <pre class="small">   |____________________________|</pre>
 
-      <table summary="io" cellpadding="4" width="0%" border="1" cellspacing="0" rules="all">
+      <table summary="io" cellpadding="4" border="1" cellspacing="0" rules="all">
          <colgroup><col><col><col><col></colgroup>
          <thead>
             <tr bgcolor="#C0C0C0">
@@ -98,7 +99,7 @@
 
       <h3>Параметры</h3>
       <p><b>ehl_ecc</b> может быть настроен под задачу пользователя. За настройку отвечают параметры, представленные в таблице.</p>
-      <table cellpadding="4" width="80%" border="1" cellspacing="0" rules="all">
+      <table cellpadding="4" border="1" cellspacing="0" rules="all">
          <colgroup><col><col><col><col></colgroup>
          <thead>
             <tr bgcolor="#C0C0C0">
@@ -109,7 +110,8 @@
             </tr>
          </thead>
          <tbody>
-            <tr> <td>WIDTH</td> <td>8</td> <td>8, 16, 32, 64</td> <td>Количество бит данных.</td> </tr>
+            <tr> <td>WIDTH</td>  <td>8</td> <td>8, 16, 32, 64</td> <td>Количество бит данных.</td> </tr>
+            <tr> <td>SECDED</td> <td>0</td> <td>0, 1</td> <td>1 - SECDED, 0 - SEC.</td> </tr>
          </tbody>
       </table>
       <p>Параметр <b>WIDTH</b> может принимать значения 8, 16, 32, 64. В этом случае количество проверочных бит равно соответственно 5, 6, 7, 8.</p>
@@ -121,7 +123,7 @@
       <h3>Функциональная верификация</h3>
       <p>Верификация <b>ehl_ecc</b> проводится с помощью тестового модуля <b>ehl_ecc_tb</b>. В процессе теста проверяется реакция модуля на данные с различным количеством ошибок.</p>
       <p><b>ehl_ecc_tb</b> показывает следующие результаты по покрытию кода (см. таблицу).</p>
-      <table cellpadding="4" width="80%" border="1" cellspacing="0" rules="all">
+      <table cellpadding="4" border="1" cellspacing="0" rules="all">
          <colgroup><col><col></colgroup>
          <thead>
             <tr bgcolor="#C0C0C0">
