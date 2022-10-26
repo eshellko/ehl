@@ -26,19 +26,19 @@ module ehl_gpio_core
    REGISTERED_OUTPUT = 0
 )
 (
-   input reset_n, clk, clk_ug,
+   input wire reset_n, clk, clk_ug,
    write_gdor, write_goer, write_gafr, write_gper,
    write_gptr, write_gier, write_gisr, write_gcmr, write_gfmr,
    read_gdor, read_goer, read_gafr, read_gper,
    read_gptr, read_gier, read_gisr, read_gifr, read_gdir, read_gcmr, read_gfmr,
-   input [WIDTH-1:0] gpio_in, data_in,
+   input wire [WIDTH-1:0] gpio_in, data_in,
    set_gdor, set_goer, set_gafr, set_gper,
    set_gptr, set_gier, set_gisr, set_gcmr, set_gfmr,
    clr_gdor, clr_goer, clr_gafr, clr_gper,
    clr_gptr, clr_gier, clr_gisr, clr_gifr, clr_gcmr, clr_gfmr,
    inv_gdor, inv_goer, inv_gafr, inv_gper,
    inv_gptr, inv_gier, inv_gisr, inv_gcmr, inv_gfmr,
-   output [WIDTH-1:0] gdor, goer, gafr,
+   output wire [WIDTH-1:0] gdor, goer, gafr,
    data_out,   // Register's Output Data
    pull_up,    // Pull Up Resistor Enable
    pull_down,  // Pull Down Resistor Enable
