@@ -1,5 +1,4 @@
 if [ "$test" == "fifo" ] ; then
-
    for WIDTH_DIN_VALUE in 8 16 32; do
    for WIDTH_DOUT_VALUE in 8 16 32; do
    for DEPTH_VALUE in 8 4; do
@@ -14,7 +13,7 @@ if [ "$test" == "fifo" ] ; then
          -D __ehl_vcd__UNUSED \
          -I ../verification/src/fv/tasks -g2005 -s ehl_fifo_tb -o data/ehl_fifo_tb.vvp -tvvp src/fv/ehl_fifo_tb.v ../techmap/src/rtl/ehl_cdc.v src/rtl/ehl_fifo.v src/rtl/ehl_fifo_rc.v src/rtl/ehl_fifo_wc.v src/rtl/ehl_gray_cnt.v \
          ../techmap/src/rtl/ehl_spram.v ../techmap/src/rtl/ehl_dpram.v \
-         ../logic/src/rtl/ehl_bin2gray.v ../logic/src/rtl/ehl_gray2bin.v
+         ../logic/src/rtl/ehl_gray2bin.v
       vvp -n -l reports/ehl_fifo_tb_${WIDTH_DIN_VALUE}_${WIDTH_DOUT_VALUE}_${DEPTH_VALUE}_${SYNC_STAGE_VALUE}_${DPRAM}.log data/ehl_fifo_tb.vvp
       rm -f data/ehl_fifo_tb.vvp
    done
@@ -37,7 +36,8 @@ elif [ "$test" == "fpga_cdc" ] ; then
    vvp -l reports/cdc_ivl.log a.out
    rm -f a.out
 elif [ "$test" == "sc_fifo" ] ; then
-   iverilog -I ../verification/src/fv/tasks -D__ehl_vcd__ -s ehl_sc_fifo_tb src/rtl/ehl_sc_fifo.v src/fv/ehl_sc_fifo_tb.v ../techmap/src/rtl/ehl_spram.v
+   iverilog -I ../verification/src/fv/tasks -D__ehl_vcd__ -s ehl_sc_fifo_tb src/rtl/ehl_sc_fifo.v src/fv/ehl_sc_fifo_tb.v ../techmap/src/rtl/ehl_spram.v \
+      -DCOMPARE src/rtl/ehl_fifo.v src/rtl/ehl_fifo_wc.v src/rtl/ehl_fifo_rc.v ../techmap/src/rtl/ehl_cdc.v src/rtl/ehl_gray_cnt.v ../logic/src/rtl/ehl_gray2bin.v
    vvp -l reports/sc_fifo_ivl.log a.out
    rm -f a.out
 
