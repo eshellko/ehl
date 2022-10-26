@@ -1,17 +1,24 @@
+// Design:           Default AHB Slave - error responser
+// Revision:         1.0
+// Date:             2021-02-07
+// Company:          Eshell
+// Designer:         A.Kornukhin (kornukhin@mail.ru)
+// Last modified by: 1.0 2021-02-07 A.Kornukhin: initial release
+
 module ehl_ahb_default_slave
 (
 // AHB
 // haddr, hsize... hburst, hprot, hwrite, hwdata
-   input hclk, hresetn,
-   input [1:0] htrans,
-   input hsel,
-   input hready_in,
+   input wire        hclk, hresetn,
+   input wire [1:0]  htrans,
+   input wire        hsel,
+   input wire        hready_in,
    output reg        hready,
    output reg [1:0]  hresp,
    output reg [31:0] hrdata,
 // configuration
-   input [7:0] resp_delay,
-   input resp_val
+   input wire [7:0] resp_delay,
+   input wire       resp_val
 );
    reg [7:0] wait_cnt;
    reg [1:0] state;

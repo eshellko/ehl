@@ -48,7 +48,11 @@ module ehl_ahb_matrix_tb;
       .SLV0_BASE ( 32'h10000000 ),
       .SLV0_MASK ( 32'hF0000000 ),
       .SLV1_BASE ( 32'h30000000 ),
-      .SLV1_MASK ( 32'hF0000000 )
+      .SLV1_MASK ( 32'hF0000000 ),
+      .RSLV0_BASE ( 32'h10000000 ),
+      .RSLV0_MASK ( 32'hF0000000 ),
+      .RSLV1_BASE ( 32'h30000000 ),
+      .RSLV1_MASK ( 32'hF0000000 )
    ) dut
    (
       .hclk      ( hclk                ),
@@ -63,6 +67,7 @@ module ehl_ahb_matrix_tb;
       .im_hwdata ( {hwhwdata,hwdata}   ),
 
       .im_route  ( {2'b01, 2'b11}      ), // HW master only allowed to access Slave0
+      .remap     ( 1'b0                ),
 // Outputs to masters
       .om_hrdata ( om_hrdata           ),
       .om_hready ( om_hready           ),

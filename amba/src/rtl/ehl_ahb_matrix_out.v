@@ -10,30 +10,30 @@ module ehl_ahb_matrix_out
    parameter MNUM = 8
 )
 (
-   input                   hclk, hresetn,
+   input wire               hclk, hresetn,
 // Inputs from master
-   input [MNUM*32-1:0]     im_haddr,
-   input [MNUM*2-1:0]      im_htrans,
-   input [MNUM-1:0]        im_hwrite,
-   input [MNUM*3-1:0]      im_hsize, im_hburst,
-   input [MNUM*4-1:0]      im_hprot,
-   input [MNUM*32-1:0]     im_hwdata,
+   input wire [MNUM*32-1:0] im_haddr,
+   input wire [MNUM*2-1:0]  im_htrans,
+   input wire [MNUM-1:0]    im_hwrite,
+   input wire [MNUM*3-1:0]  im_hsize, im_hburst,
+   input wire [MNUM*4-1:0]  im_hprot,
+   input wire [MNUM*32-1:0] im_hwdata,
 // Outputs to masters
-   output reg [31:0]       om_hrdata,
-   output reg [MNUM-1:0]   om_hready,
-   output reg [1:0]        om_hresp,
+   output reg [31:0]        om_hrdata,
+   output reg [MNUM-1:0]    om_hready,
+   output reg [1:0]         om_hresp,
 // Inputs to Slave
-   output reg [31:0]       os_haddr,
-   output reg [1:0]        os_htrans,
-   output reg              os_hwrite,
-   output reg [2:0]        os_hsize, os_hburst,
-   output reg [3:0]        os_hprot,
-   output reg [31:0]       os_hwdata,
-   output                  os_hsel,
+   output reg [31:0]        os_haddr,
+   output reg [1:0]         os_htrans,
+   output reg               os_hwrite,
+   output reg [2:0]         os_hsize, os_hburst,
+   output reg [3:0]         os_hprot,
+   output reg [31:0]        os_hwdata,
+   output wire              os_hsel,
 // Outputs from Slaves
-   input [31:0]            is_hrdata,
-   input                   is_hready,
-   input [1:0]             is_hresp
+   input wire [31:0]        is_hrdata,
+   input wire               is_hready,
+   input wire [1:0]         is_hresp
 );
    wire [31:0]     haddr  [MNUM-1:0];
    wire [1:0]      htrans [MNUM-1:0];
@@ -65,7 +65,6 @@ endgenerate
    reg [2:0]      hsize_r  [MNUM-1:0];
    reg [2:0]      hburst_r [MNUM-1:0];
    reg [3:0]      hprot_r  [MNUM-1:0];
-   reg [31:0]     hwdata_r [MNUM-1:0];
 
    // request master access
    reg [MNUM-1:0]  ahb_req;  // pulsed when MASTER requests the bus
@@ -99,18 +98,17 @@ endgenerate
 
    integer i;
    reg [MNUM-1:0] write_trx; // set if command is write to route write data with 1 cycle delay
+// TODO: [QoR] alternative implementation can be made if it is known that master can produce only 1 transaction at time
+//       so registered versions of signal can be registered in a single place, and not in every output stage...
    always@(posedge hclk or negedge hresetn)
    if(!hresetn)
    begin
-      om_hrdata <= 32'h0;
-      om_hresp  <= 2'h0;
       hwrite_r  <= {MNUM{1'h0}};
       write_trx <= {MNUM{1'b0}};
       for(i=0; i<MNUM; i=i+1)
       begin
          htrans_r [i] <= 2'h0;
          haddr_r  [i] <= 32'h0; // Note: no need to reset
-         hwdata_r [i] <= 32'h0;
          hprot_r  [i] <= 4'h0;
          hburst_r [i] <= 3'h0;
          hsize_r  [i] <= 3'h0;
@@ -118,8 +116,6 @@ endgenerate
    end
    else
    begin
-      om_hresp <= 2'b00;
-
       for(i=0; i<MNUM; i=i+1)
       begin
          // capture master transaction (if not granted)
@@ -139,26 +135,24 @@ endgenerate
          end
          else if(ahb_ack[i])
             htrans_r [i] <= 1'b0;
-
-         if(ahb_ack[i] & is_hready & write_trx[i])
-            hwdata_r [i] <= hwdata[i];
-
-         // route response channel
-         if(ahb_ack[i])
-         begin
-            om_hresp  <= is_hresp;
-            om_hrdata <= is_hrdata;
-         end
       end
    end
 
    integer g;
    always@*
    begin
-      om_hready <= {MNUM{1'b1}};
+      om_hready = {MNUM{1'b1}};
+      om_hrdata = 32'h0;
+      om_hresp  = 2'h0;
       for(g=0; g<MNUM; g=g+1)
          if(ahb_ack[g])
-            om_hready[g] <= is_hready;
+            om_hready[g] = is_hready;
+      // route response channel
+      if(ahb_ack) // Q: route always?
+      begin
+         om_hresp  = is_hresp;
+         om_hrdata = is_hrdata;
+      end
    end
 
    integer k;
@@ -191,8 +185,10 @@ endgenerate
             os_hwrite = hwrite_r [k];
             os_hburst = hburst_r [k];
             os_hprot  = hprot_r  [k];
-            os_hwdata = hwdata_r [k];
          end
+
+         if(ahb_ack[k] & write_trx[k]) // ack -> proceed transaction from master; gated to avoid toggles
+            os_hwdata = hwdata [k]; // must be stable at master side
       end
    end
 
