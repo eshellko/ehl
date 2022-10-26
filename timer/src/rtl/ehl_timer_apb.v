@@ -86,16 +86,16 @@ module ehl_timer_apb
       .CPT_SYNC       ( CPT_SYNC       )
    ) timer_inst
    (
-      .clk     ( pclk    ),
-      .reset_n ( presetn ),
-      .wr      ( wr      ),
-      .addr    ( adr     ),
-      .din     ( wdata   ),
-      .dout    ( rdata   ),
+      .clk         ( pclk               ),
+      .reset_n     ( presetn            ),
+      .wr          ( wr                 ),
+      .addr        ( adr                ),
+      .din         ( wdata              ),
+      .dout        ( rdata              ),
       .tmr_clk     ( {NTIMERS{pclk}}    ),
       .tmr_reset_n ( {NTIMERS{presetn}} ),
-      .irq     ( ifg     ),
-      .test_mode ( 1'b0    ), // TODO: propagate
+      .irq         ( ifg                ),
+      .test_mode   ( 1'b0               ), // TODO: propagate
       .cpt_in,
       .cmp_oe_n,
       .cmp_out,
